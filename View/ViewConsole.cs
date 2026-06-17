@@ -8,6 +8,9 @@ namespace RetailApplication.View
 {
     internal class ViewConsole
     {
-
+        public void DisplayLoginPage()
+        {
+            //Add text to display here
+        }
     }
 }

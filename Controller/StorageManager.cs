@@ -11,7 +11,7 @@ namespace RetailApplication.Controller
     public class StorageManager
     {
         private SqlConnection connection;
-        StorageManager(string connectionString)
+        public StorageManager(string connectionString)
         {
             try
             {
