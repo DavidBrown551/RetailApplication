@@ -11,6 +11,36 @@ namespace RetailApplication.Controller
     public class StorageManager
     {
         private SqlConnection connection;
+        StorageManager(string connectionString)
+        {
+            try
+            {
+                connection = new SqlConnection(connectionString);
+                connection.Open();
+                Console.WriteLine("Connection Successful");
+            }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine("Invalid connection string or connection already open");
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+                if (e.Message.Contains("attach an auto-named database"))
+                {
+                    Console.WriteLine("Fix: Database is already attached OR file is in use.");
+                    Console.WriteLine("Try this:");
+                    Console.WriteLine("1. Remove AttachDbFilename from connection string");
+                    Console.WriteLine("2. Use Initial Catalog instead");
+                    Console.WriteLine("3. Or delete/rename duplicate DB in SQL Server");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error connecting to database: {ex.Message}");
+            }
+        }
+
 
 
     }
