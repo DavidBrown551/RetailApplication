@@ -1,4 +1,5 @@
-﻿namespace RetailApplication
+﻿using Microsoft.Data.SqlClient;
+namespace RetailApplication
 {
     internal class Program
     {
