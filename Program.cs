@@ -19,8 +19,9 @@ namespace RetailApplication
             mainview = new ViewConsole();
             connection = new StorageManager(connectionString);
 
-            //After establishing a connection to the database
+            //After establishing a connection to the database, the login page is shown
             mainview.DisplayLoginPage();
+
         }
     }
 }
