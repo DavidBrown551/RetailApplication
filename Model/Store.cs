@@ -8,16 +8,23 @@ namespace RetailApplication.Model
 {
     internal class Store
     {
-        public ushort StoreID { get; }
+        public int StoreID { get; }
         public string StoreName { get; set; }
-        public string Address { get; 
-            
-            if ()
-	{
+        public string Address { get; set; }//The address should be checked for formatting here
+        public  decimal Rent { get; set; }    
 
-	}set;}
+        public Store(int storeID,string storeName, string address, decimal rent)
+        {
+            this.StoreID = storeID;
+            this.StoreName = storeName;
+            this.Address = address;
+            this.Rent = rent;
 
-
+        }
+        public override string ToString()
+        {
+            return $"({StoreID},{StoreName},{Address},{Rent})";
+        }
 
     }
 }
