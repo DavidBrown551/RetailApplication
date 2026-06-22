@@ -15,6 +15,7 @@ namespace RetailApplication.Model
 
         public Store(int storeID,string storeName, string address, decimal rent)
         {
+            //This is a standard constructor
             this.StoreID = storeID;
             this.StoreName = storeName;
             this.Address = address;
@@ -23,6 +24,7 @@ namespace RetailApplication.Model
         }
         public override string ToString()
         {
+            //Returns a string in the formatting used for inserting an sql record
             return $"({StoreID},{StoreName},{Address},{Rent})";
         }
 
