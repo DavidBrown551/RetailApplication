@@ -12,7 +12,7 @@ namespace RetailApplication.View
         public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
         //it is changed whenever a new page is output
-        //The PageNum value will be used by the main program to determine what pages the user can visit
+        //The PageNum value will be used by the main program to determine what pages the user can visit, in conjunction with the employee permission level
 
         public void DisplayLoginPage()
         {
@@ -76,6 +76,12 @@ namespace RetailApplication.View
             PageNum = 7;
         }
         
+        public void DisplayReportMenu(int perlvl)
+        {
+            //Add text to display here, conditional on what perlvl the user has
+            PageNum = 9;
+        }
+
         public void ConcealTypedField()
         {
             //This method will obscure the password field when the employee logs in
