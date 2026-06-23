@@ -17,6 +17,10 @@ namespace RetailApplication.View
         public void DisplayLoginPage()
         {
             //Add text to display here
+            Console.WriteLine("Please Enter your Employee Number:");
+            Console.WriteLine();
+            Console.WriteLine("Please Enter your Password:");
+            Console.SetCursorPosition(0,1);
             PageNum = 1;
             return;
         }
@@ -86,7 +90,9 @@ namespace RetailApplication.View
         {
             //This method will obscure the password field when the employee logs in
             //Will get and store each character, replace it with a *, allow mid-string replacement of characters
-
+            //Get characters using Console.ReadKey().KeyChar
+            //This preserves capitalisation but responds to enters
+            //Check with .Equals
         }
 
     }

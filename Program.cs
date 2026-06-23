@@ -21,7 +21,7 @@ namespace RetailApplication
 
             //After establishing a connection to the database, the login page is shown
             mainview.DisplayLoginPage();
-
+            
         }
     }
 }

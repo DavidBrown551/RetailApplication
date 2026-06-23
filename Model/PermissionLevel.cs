@@ -18,6 +18,9 @@ namespace RetailApplication.Model
             this.LevelName = levelName;
             this.PerLevel = perLevel;
         }
-
+        public override string ToString()
+        {
+            return $"({LevelName},{PerLevel})" ;
+        }
     }
 }
