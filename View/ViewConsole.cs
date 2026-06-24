@@ -16,7 +16,7 @@ namespace RetailApplication.View
 
         public void DisplayLoginPage()
         {
-            //Add text to display here
+            Console.Clear();
             Console.WriteLine("Please Enter your Employee Number:");
             Console.WriteLine();
             Console.WriteLine("Please Enter your Password:");
@@ -28,7 +28,8 @@ namespace RetailApplication.View
 
         public void DisplayLogoutConfirmation()
         {
-            //Add text to display here
+            Console.Clear();
+            Console.WriteLine("Log out of the program? User State will not be preserved.\nLogout:Y\t Return to the program:N");
 
             //The PageNum value is not changed to allow the program to maintain user state if the user stays logged in. If the user logs out, they will be taken to the login screen, otherwise they will return to their previous page
             //Logout will only be allowed from menus, to avoid the difficulties of maintaining complex user states
@@ -36,8 +37,8 @@ namespace RetailApplication.View
 
         public void DisplayExitConfirmation()
         {
-            //Add text to display here
-
+            Console.Clear();
+            Console.WriteLine("Exit the program? User state will not be preserved and the program will have to reconnect on startup\nExit the program:Y \t Return to the menu:N");
             //This method is similar in function to DisplayLogoutConfirmation, but will ask if the user wishes to close the program instead of if they wish to log out.
         }
 
