@@ -96,5 +96,9 @@ namespace RetailApplication.View
             //Check with .Equals
         }
 
+        public void DisplayReport(string[] columnHeadings, string[] records)
+        {
+            //Add conditional logic for diplaying passed arrays here
+        }
     }
 }
