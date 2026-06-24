@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace RetailApplication.Model
 {
-    internal class PermissionLevel
+    public class PermissionLevel
     {
-        public ushort PerLevelID { get; }
+        public short PerLevelID { get; }
         public String LevelName { get; set; }
-        public ushort PerLevel { get; set; }
+        public short PerLevel { get; set; }
 
-        public PermissionLevel(ushort perLevelId,String levelName,ushort perLevel)
+        public PermissionLevel(short perLevelId,String levelName,short perLevel)
         {
             this.PerLevelID = perLevelId;
             this.LevelName = levelName;

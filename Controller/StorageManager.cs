@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using RetailApplication.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,35 @@ namespace RetailApplication.Controller
             }
         }
 
+        public List<PermissionLevel> GetPermissionLevels()
+        {
+            List<PermissionLevel> perLevelList = new List<PermissionLevel> { };
+            string query = "SELECT * FROM tblPermissionLevel ORDER BY PermissionLevel desc;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PermissionLevel perlevel = new PermissionLevel(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2));
+                            perLevelList.Add(perlevel);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving brands: {ex.Message}");
+            }
+            return perLevelList;
+        }
 
 
     }
