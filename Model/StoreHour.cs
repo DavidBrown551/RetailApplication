@@ -15,13 +15,20 @@ namespace RetailApplication.Model
         public TimeOnly OpenTime { get; set; }
         public TimeOnly CloseTime { get; set; }//CloseTime must be after OpenTime
 
-        public StoreHour(int storeHourId,int storeId,string weekday, SqlDateTime openTime, SqlDateTime closeTime)
+        public StoreHour(int storeHourId,int storeId,string weekday, TimeOnly openTime, TimeOnly closeTime)
+            //!URGENT!
+        //TimeOnly may not be compatible with the SQL date/time formatting. This needs to be checked before completion of the project.
         {
             this.StoreHourID = storeHourId;
             this.StoreID = storeId;
             this.Weekday = weekday;
-            this.OpenTime = Convert.ToDateTime(openTime);
-            this.CloseTime=
+            this.OpenTime = openTime;
+            this.CloseTime = closeTime;
+        }
+
+        public override string ToString()
+        {
+            return $"({StoreID},{Weekday},{OpenTime},{CloseTime})";
         }
     }
 }
