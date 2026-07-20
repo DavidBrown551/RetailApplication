@@ -168,13 +168,21 @@ namespace RetailApplication.View
 
 
 
-        public void ConcealTypedField()
+        public List<char> ConcealTypedField()
         {
             //This method will obscure the password field when the employee logs in
             //Will get and store each character, replace it with a *, allow mid-string replacement of characters
             //Get characters using Console.ReadKey().KeyChar
             //This preserves capitalisation but responds to enters
-            //Check with .Equals
+            //Check with .Equals(after .MD5)
+            List<char> password = new List<char>();
+            do
+            {
+                password.Add(Console.ReadKey(true).KeyChar);//This stores the inputted character without it being printed to the console
+                Console.Write("*");
+            } while (Console.ReadKey(true).Key==ConsoleKey.Enter);
+            return password;
+
         }
 
         public void DisplayReport(string[] columnHeadings, string[] records)
