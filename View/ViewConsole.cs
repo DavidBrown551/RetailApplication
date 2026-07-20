@@ -176,12 +176,19 @@ namespace RetailApplication.View
             //This preserves capitalisation but responds to enters
             //Check with .Equals(after .MD5)
             List<char> password = new List<char>();
+            char buffer;
             do
             {
-                password.Add(Console.ReadKey(true).KeyChar);//This stores the inputted character without it being printed to the console
+                buffer = Console.ReadKey(true).KeyChar;
+                password.Add(buffer);//This stores the inputted character without it being printed to the console
                 Console.Write("*");
-            } while (Console.ReadKey(true).Key==ConsoleKey.Enter);
+            } while (!buffer.Equals(ConsoleKey.Enter));//When the user presses enter, their password will be verified
             return password;
+
+            //After some testing in another IDE window, this is the current version. Two problems have been identified:
+            //1: Pressing enter does not actually submit the password, as the character in the buffer is not ConsoleKey.Enter.
+            //2: Backspace actually adds a * to the screen when pressed, and does not perform its intended function.
+
 
         }
 
