@@ -183,10 +183,14 @@ namespace RetailApplication.View
                 switch (buffer)
                 {
                     case '\r':
-                        //This empty case exists so the input is not handled as default
+                        //This empty case exists so the enter key is not handled as default
+                        break;
+                    case '\0':
+                        //Likewise with this empty case(\0 is an arrow key)
                         break;
                     case '\b':
                         password.RemoveAt(password.Count-1);//Removes the previous character in the list
+                        Console.Write('\b');
                         break;
                     default:
                         password.Add(buffer);//This stores the character the user pressed
@@ -197,11 +201,11 @@ namespace RetailApplication.View
                 
             } while (!(buffer=='\r'));//When the user presses enter, their password will be verified
             return password;
+            //This is the current version of the method. There are currently three identified problems:
+            //1: Pressing backspace now changes the position of the cursor, but does not remove the *.
+            //2: Pressing backspace when there are no characters in the password list causes a System.ArgumentOutOfRangeException
+            //3: The arrow keys do not move the cursor within the console(potentially beyond project scope to fix)
 
-            //This is the current version of the method. One problem remains:
-            //1: Pressing backspace removes the character in the list, but does not yet remove the character from the screen
-            
-            //Numerical characters and the shift key have been tested and function properly
         }
 
         public void DisplayReport(string[] columnHeadings, string[] records)
