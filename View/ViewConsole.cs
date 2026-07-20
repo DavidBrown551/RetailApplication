@@ -56,35 +56,94 @@ namespace RetailApplication.View
             return Console.ReadKey().KeyChar;
         }
 
-        public void DisplayMainMenu(int perlvl)
+        public void DisplayPer1MainMenu()
         {
-            //Add text to display here, conditional on what perlvl the user has
+            //Add text to display here, specific to users with a per level of 1
             PageNum = 2;
         }
-
-        //Shows the user a list of tables to insert values into based on their employee permission level
-        public void DisplayInsertMenu(int perlvl)
+        public void DisplayPer2MainMenu()
         {
-            //Add text to display here, conditional on what perlvl the user has
+            //Add text to display here, specific to users with a per level of 2
             PageNum = 3;
         }
-
-        public void DisplayUpdateMenu(int perlvl)
+        public void DisplayPer3MainMenu()
         {
-            //Add text to display here, conditional on what perlvl the user has
+            //Add text to display here, specific to users with a per level of 3
+            PageNum = 4;
+        }
+        public void DisplayPer4MainMenu()
+        {
+            //Add text to display here, showing all availible options
             PageNum = 5;
         }
 
-        public void DisplayDeleteMenu(int perlvl)
+        //Shows the user a list of tables to insert values into based on their employee permission level
+        public void DisplayPer1InsertMenu()
         {
-            //Add text to display here, conditional on what perlvl the user has
+            //Add text to display here, specific to users with a per level of 1
+            PageNum = 6;
+        }
+        public void DisplayPer2InsertMenu()
+        {
+            //Add text to display here, specific to users with a per level of 2
             PageNum = 7;
         }
-        
-        public void DisplayReportMenu(int perlvl)
+        public void DisplayPer3InsertMenu()
         {
-            //Add text to display here, conditional on what perlvl the user has
+            //Add text to display here, specific to users with a per level of 3
+            PageNum = 8;
+        }
+        public void DisplayPer4InsertMenu()
+        {
+            //Add text to display here, specific to users with a per level of 4
             PageNum = 9;
+        }
+        public void DisplayPer2UpdateMenu()
+        {
+            //Add text to display here, specific to users with a per level of 2
+            PageNum = 10;
+        }
+        public void DisplayPer3UpdateMenu()
+        {
+            //Add text to display here, specific to users with a per level of 3
+            PageNum = 11;
+        }
+        public void DisplayPer4UpdateMenu()
+        {
+            //Add text to display here, specific to users with a per level of 4
+            PageNum = 12;
+        }
+
+        public void DisplayPer3DeleteMenu()
+        {
+            //Add text to display here, specific to users with a per level of 3
+            PageNum = 13;
+        }
+        public void DisplayPer4DeleteMenu()
+        {
+            //Add text to display here, specific to users with a per level of 4
+            PageNum = 14;
+        }
+
+        public void DisplayPer1ReportMenu()
+        {
+            //Add text to display here, specific to users with a per level of 1
+            PageNum = 15;
+        }
+        public void DisplayPer2ReportMenu()
+        {
+            //Add text to display here, specific to users with a per level of 2
+            PageNum = 16;
+        }
+        public void DisplayPer3ReportMenu()
+        {
+            //Add text to display here, specific to users with a per level of 3
+            PageNum = 17;
+        }
+        public void DisplayPer4ReportMenu()
+        {
+            //Add text to display here, specific to users with a per level of 4
+            PageNum = 18;
         }
 
         public void ConcealTypedField()
