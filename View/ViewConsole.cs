@@ -145,6 +145,28 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 4
             PageNum = 18;
         }
+        public void DisplayPer1Help() 
+        {
+            //Add text to display here, specific to users with a per level of 1. This text should help explain how the website works and what they can and cannot do.
+            PageNum = 19;
+        }
+        public void DisplayPer2Help()
+        {
+            //Add text to display here, specific to users with a per level of 2. This text should help explain how the website works and what they can and cannot do.
+            PageNum = 20;
+        }
+        public void DisplayPer3Help()
+        {
+            //Add text to display here, specific to users with a per level of 3. This text should help explain how the website works and what they can and cannot do.
+            PageNum = 21;
+        }
+        public void DisplayPer4Help()
+        {
+            //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
+            PageNum = 22;
+        }
+
+
 
         public void ConcealTypedField()
         {
