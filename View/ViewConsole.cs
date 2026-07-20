@@ -175,21 +175,33 @@ namespace RetailApplication.View
             //Get characters using Console.ReadKey().KeyChar
             //This preserves capitalisation but responds to enters
             //Check with .Equals(after .MD5)
-            List<char> password = new List<char>();
+            List<char> password = new List<char>();//A list is used due to its variable length
             char buffer;
             do
             {
-                buffer = Console.ReadKey(true).KeyChar;
-                password.Add(buffer);//This stores the inputted character without it being printed to the console
-                Console.Write("*");
-            } while (!buffer.Equals(ConsoleKey.Enter));//When the user presses enter, their password will be verified
+                buffer = Console.ReadKey(true).KeyChar;//This gets the inputted character without it being printed to the console
+                switch (buffer)
+                {
+                    case '\r':
+                        //This empty case exists so the input is not handled as default
+                        break;
+                    case '\b':
+                        password.RemoveAt(password.Count-1);//Removes the previous character in the list
+                        break;
+                    default:
+                        password.Add(buffer);//This stores the character the user pressed
+                        Console.Write("*");
+                        break;
+                }
+                
+                
+            } while (!(buffer=='\r'));//When the user presses enter, their password will be verified
             return password;
 
-            //After some testing in another IDE window, this is the current version. Two problems have been identified:
-            //1: Pressing enter does not actually submit the password, as the character in the buffer is not ConsoleKey.Enter.
-            //2: Backspace actually adds a * to the screen when pressed, and does not perform its intended function.
-
-
+            //This is the current version of the method. One problem remains:
+            //1: Pressing backspace removes the character in the list, but does not yet remove the character from the screen
+            
+            //Numerical characters and the shift key have been tested and function properly
         }
 
         public void DisplayReport(string[] columnHeadings, string[] records)
