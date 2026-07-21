@@ -28,14 +28,9 @@ namespace RetailApplication
             //Handle the EmployeeID here
 
             //The below block handles getting the user password and sending it to be verified(UNFINISHED)
-            byte[] bytes = new byte[200];
-            int a=0;
-            foreach (char character in mainview.ConcealTypedField())
-            {
-                bytes[a]=  Convert.ToByte(character);
-                a++;
-            }
-            hash.ComputeHash(bytes);
+         
+         
+            hash.ComputeHash(mainview.ConcealTypedField());//A section needs to be added here to prompt StorageController to retrieve the password corresponding to the entered employee number from the database.
 
         }
     }

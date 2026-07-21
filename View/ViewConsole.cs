@@ -195,7 +195,7 @@ namespace RetailApplication.View
 
 
 
-        public List<char> ConcealTypedField()
+        public byte[] ConcealTypedField()
         {
             //This method will obscure the password field when the employee logs in
             //Will get and store each character, replace it with a *, allow mid-string replacement of characters(FIRST PART)
@@ -231,7 +231,14 @@ namespace RetailApplication.View
                 
                 
             } while (!(buffer=='\r'));//When the user presses enter, their password will be verified
-            return password;
+
+            byte[] bytepassword = new byte[password.Count];
+            foreach (char item in password)
+            {
+                bytepassword[password.IndexOf(item)] = Convert.ToByte(item);
+                //The length-unfixed List<char> is converted to a byte[] to format it for hashing
+            }
+            return bytepassword;
             //This is the current version of the method. There are currently three identified problems:
             //1: Pressing backspace now changes the position of the cursor, but does not remove the *.
             //2: Pressing backspace when there are no characters in the password list causes a System.ArgumentOutOfRangeException(fix pending testing)
