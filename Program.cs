@@ -26,12 +26,22 @@ namespace RetailApplication
             //After establishing a connection to the database, the login page is shown
             mainview.DisplayLoginPage();
             //Handle the EmployeeID here
+            int enteredEmpId=0;//PLACEHOLDER
+            //The input will need to be checked for incorrect characters
 
             //The below block handles getting the user password and sending it to be verified(UNFINISHED)
-         
-         
-            hash.ComputeHash(mainview.ConcealTypedField());//A section needs to be added here to prompt StorageController to retrieve the password corresponding to the entered employee number from the database.
+            //Null passwords are not currently handled and will cause a crash
+            string hashedUserPassword = Convert.ToString(hash.ComputeHash(mainview.ConcealTypedField()));//A section needs to be added here to prompt StorageController to retrieve the password corresponding to the entered employee number from the database.
 
+            if (hashedUserPassword.Equals(connection.GetUserPassword(enteredEmpId)))
+            {
+                //Send User to main menu
+            }
+            else
+            {
+                //send user back to password screen with error message
+            }
+            
         }
     }
 }

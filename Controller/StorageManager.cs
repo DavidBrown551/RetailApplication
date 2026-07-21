@@ -72,6 +72,33 @@ namespace RetailApplication.Controller
             return perLevelList;
         }
 
+        public string GetUserPassword(int empId)
+        {
+            string password="null";
+            string query = "SELECT Password FROM tblEmployee WHERE EmpID=@empid";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@empid",empId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            password = reader.GetString(0);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                Console.WriteLine();
+                password = "Error";
+                throw;
+            }
+            return password;
+        }
 
     }
 }
