@@ -57,7 +57,7 @@ namespace RetailApplication.View
         public char GetCharacterInput()
         {
             
-            return Console.ReadKey().KeyChar;
+            return Console.ReadKey(true).KeyChar;
         }
 
         public void DisplayPer1MainMenu()
@@ -274,6 +274,7 @@ namespace RetailApplication.View
             //Try avoid using windows-specific functions to help pagination
             //If impossible to do this ensure it is mentioned in documentation
             //(mostly) FIXED-core functions like Console.ReadKey are unsupported on several non-windows architechtures
+            PageNum = 23;
         }
     }
 }

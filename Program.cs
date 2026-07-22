@@ -63,11 +63,177 @@ namespace RetailApplication
                     mainview.DisplayPer4MainMenu();
                     break;
                 default:
-                    Console.WriteLine("Error: the user does not have a valid permission level");
+                    mainview.DisplayMessage("Error: the user does not have a valid permission level");
                     //Current handling of this error insufficient
                     break;
             }
+            goto HandleCharInput;
 
+        HandleCharInput:;
+            char buffer= mainview.GetCharacterInput();
+            switch (mainview.PageNum)
+            {
+                case 2://Main menu(Perlevel1)
+                    switch (buffer)
+                    {
+
+                        default:
+                            break;
+                    }
+                    break;
+                case 3://Main menu(Perlevel2)
+                    switch (buffer)
+                    {
+
+                        default:
+                            break;
+                    }
+                    break;
+                case 4://Main menu(Perlevel3)
+                    switch (buffer)
+                    {
+
+                        default:
+                            break;
+                    }
+                    break;
+                case 5://Main menu(Perlevel4)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 6://Insert menu(Perlevel1)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 7://Insert menu(Perlevel2)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 8://Insert menu(Perlevel3)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 9://Insert menu(Perlevel4)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 10://Update menu(Perlevel2)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 11://Update menu(Perlevel3)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 12://Update menu(Perlevel4)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 13://Delete menu(Perlevel3)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 14://Delete menu(Perlevel4)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 15://Report menu(perLevel1)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 16://Report menu(perLevel2)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 17://Report menu(perLevel3)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 18://Report menu(perLevel4)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 19://Help(perLevel1)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 20://Help(perLevel2)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 21://Help(perLevel3)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 22://Help(perLevel4)
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+                case 23://Report view
+                    switch (buffer)
+                    {
+                        default:
+                            break;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 }
