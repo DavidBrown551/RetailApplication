@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -10,6 +11,10 @@ namespace RetailApplication.View
 {
     internal class ViewConsole
     {
+        private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 999,999,999.";
+
+
+
         public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
         //it is changed whenever a new page is output
@@ -58,6 +63,23 @@ namespace RetailApplication.View
         {
             
             return Console.ReadKey(true).KeyChar;
+        }
+
+
+        //This method gets and returns a (error-corrected) integer of maximum size 999,999,999
+        public int GetIntegerInput()
+        {
+            int returnValue=0;
+            do
+            {
+                string inputString = Console.ReadLine();
+                if (!int.TryParse(inputString, out returnValue))//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
+                {
+                    Console.WriteLine(BADINTMESSAGE);
+                }
+            } while (returnValue==0);//This is a crude method. It will hopefully work since the user is unlikely to enter zero as their employee number, but this is less than ideal. 
+            
+            return returnValue;
         }
 
         public void DisplayPer1MainMenu()
