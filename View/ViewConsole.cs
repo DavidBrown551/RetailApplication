@@ -63,6 +63,7 @@ namespace RetailApplication.View
         public void DisplayPer1MainMenu()
         {
             Console.Title = "Main Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 1
             //Text below is preliminary
             Console.WriteLine($"Register a Transaction(A)   View Details(V)   Help With the Interface(H)   Log Out(X)   Exit Program(Esc)");
@@ -71,18 +72,21 @@ namespace RetailApplication.View
         public void DisplayPer2MainMenu()
         {
             Console.Title = "Main Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 3;
         }
         public void DisplayPer3MainMenu()
         {
             Console.Title = "Main Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 4;
         }
         public void DisplayPer4MainMenu()
         {
             Console.Title = "Admin Main Menu";
+            Console.Clear();
             //Add text to display here, showing all availible options
             PageNum = 5;
         }
@@ -91,42 +95,49 @@ namespace RetailApplication.View
         public void DisplayPer1InsertMenu()
         {
             Console.Title = "Add Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 1
             PageNum = 6;
         }
         public void DisplayPer2InsertMenu()
         {
             Console.Title = "Add Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 7;
         }
         public void DisplayPer3InsertMenu()
         {
             Console.Title = "Add Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 8;
         }
         public void DisplayPer4InsertMenu()
         {
             Console.Title = "Add Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 9;
         }
         public void DisplayPer2UpdateMenu()
         {
             Console.Title = "Update Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 10;
         }
         public void DisplayPer3UpdateMenu()
         {
             Console.Title = "Update Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 11;
         }
         public void DisplayPer4UpdateMenu()
         {
             Console.Title = "Update Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 12;
         }
@@ -134,12 +145,14 @@ namespace RetailApplication.View
         public void DisplayPer3DeleteMenu()
         {
             Console.Title = "Delete Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 13;
         }
         public void DisplayPer4DeleteMenu()
         {
             Console.Title = "Delete Records";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 14;
         }
@@ -147,48 +160,56 @@ namespace RetailApplication.View
         public void DisplayPer1ReportMenu()
         {
             Console.Title = "Report Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 1
             PageNum = 15;
         }
         public void DisplayPer2ReportMenu()
         {
             Console.Title = "Report Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 16;
         }
         public void DisplayPer3ReportMenu()
         {
             Console.Title = "Report Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 17;
         }
         public void DisplayPer4ReportMenu()
         {
             Console.Title = "Report Menu";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 18;
         }
         public void DisplayPer1Help() 
         {
             Console.Title = "Help Page";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 1. This text should help explain how the website works and what they can and cannot do.
             PageNum = 19;
         }
         public void DisplayPer2Help()
         {
             Console.Title = "Help Page";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 2. This text should help explain how the website works and what they can and cannot do.
             PageNum = 20;
         }
         public void DisplayPer3Help()
         {
             Console.Title = "Help Page";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 3. This text should help explain how the website works and what they can and cannot do.
             PageNum = 21;
         }
         public void DisplayPer4Help()
         {
             Console.Title = "Help Page";
+            Console.Clear();
             //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
             PageNum = 22;
         }
@@ -248,6 +269,7 @@ namespace RetailApplication.View
 
         public void DisplayReport(string[] columnHeadings, string[] records)
         {
+            Console.Clear();
             //Add conditional logic for displaying passed arrays here
             //Try avoid using windows-specific functions to help pagination
             //If impossible to do this ensure it is mentioned in documentation
