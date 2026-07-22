@@ -130,24 +130,38 @@ namespace RetailApplication.Controller
         }
 
 
-       /* public List<T> ParameterisationTemplate(object[] parameters)
+        /*public List<string[]> ParameterisationTemplate(object[] parameters)
         {
-            List<T> output;
+            List<string[]> output=new List<string[]>();
             string query = "sample_query";
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
-                    for (int i = 0; i < parameters.Length; i++)
+                    if (parameters.Length==0)
                     {
-                        cmd.Parameters.AddWithValue("@", parameters[i]);
+                        cmd.Parameters.AddWithValue("@",DBNull.Value);
                     }
-                    
+                    else
+                    {
+                        for (int i = 0; i < parameters.Length; i++)
+                        {
+                            cmd.Parameters.AddWithValue("@", parameters[i]);
+                        }
+                    }
+                      
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            output = reader.GetByte(0);
+                            string[] record = new string[numberofcolumns];
+                            record[0]= reader.GetString(0);
+                            record[1] = reader.GetString(1);
+                            ...
+                            record[^1] = reader.GetString(record.Length - 1);
+
+
+                            output.Add(record);
                         }
                         reader.Close();
                     }
