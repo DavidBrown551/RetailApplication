@@ -273,7 +273,7 @@ namespace RetailApplication.View
                 }
                 
                 
-            } while (!(buffer=='\r'));//When the user presses enter, their password will be verified
+            } while (!(buffer=='\r')&&password.Count==0);//When the user presses enter, their password will be verified(as long as the password is of non-zero length)
 
             byte[] bytepassword = new byte[password.Count];
             foreach (char item in password)
@@ -283,7 +283,7 @@ namespace RetailApplication.View
             }
             return bytepassword;
             //This is the current version of the method. There are currently three identified problems:
-            //1: Pressing backspace now changes the position of the cursor, but does not remove the *.
+            //1: Pressing backspace now changes the position of the cursor, but does not remove the *.(This functionality is availible automatically when using Console.ReadLine, but obsfuscating the characters becomes harder.
             //2: Pressing backspace when there are no characters in the password list causes a System.ArgumentOutOfRangeException(fix pending testing)
             //3: The arrow keys do not move the cursor within the console(potentially beyond project scope to fix)
 

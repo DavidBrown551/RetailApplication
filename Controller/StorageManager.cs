@@ -129,5 +129,40 @@ namespace RetailApplication.Controller
             return perLevel;
         }
 
+
+       /* public List<T> ParameterisationTemplate(object[] parameters)
+        {
+            List<T> output;
+            string query = "sample_query";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@", parameters[i]);
+                    }
+                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            output = reader.GetByte(0);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                Console.WriteLine(sampleerrormessage);
+                
+                throw;
+            }
+
+            return output;
+        }*/
+
+
     }
 }

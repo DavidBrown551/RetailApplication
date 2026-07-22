@@ -27,7 +27,7 @@ namespace RetailApplication
 
             //After establishing a connection to the database, the login page is shown
 
-            Password:;
+            Login:;
 
             mainview.DisplayLoginPage();
             //Handle the EmployeeID here
@@ -45,6 +45,7 @@ namespace RetailApplication
             else
             {
                 //send user back to password screen with error message
+                goto Login;
             }
 
         Main_Menu:;
