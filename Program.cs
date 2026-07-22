@@ -23,25 +23,51 @@ namespace RetailApplication
             mainview = new ViewConsole();
             connection = new StorageManager(connectionString);
 
+            byte userPermissionLevel=0; //This value is used to determine which pages the user can access
+
             //After establishing a connection to the database, the login page is shown
+
+            Password:;
+
             mainview.DisplayLoginPage();
             //Handle the EmployeeID here
             int enteredEmpId=0;//PLACEHOLDER
             //The input will need to be checked for incorrect characters
 
-            //The below block handles getting the user password and sending it to be verified(UNFINISHED)
             //Null passwords are not currently handled and will cause a crash
-            string hashedUserPassword = Convert.ToString(hash.ComputeHash(mainview.ConcealTypedField()));//A section needs to be added here to prompt StorageController to retrieve the password corresponding to the entered employee number from the database.
+            string hashedUserPassword = Convert.ToString(hash.ComputeHash(mainview.ConcealTypedField()));
 
             if (hashedUserPassword.Equals(connection.GetUserPassword(enteredEmpId)))
             {
-                //Send User to main menu
+                userPermissionLevel = connection.GetUserPermission(enteredEmpId);
+                goto Main_Menu;
             }
             else
             {
                 //send user back to password screen with error message
             }
-            
+
+        Main_Menu:;
+            switch (userPermissionLevel)
+            {
+                case 1:
+                    mainview.DisplayPer1MainMenu();
+                    break;
+                case 2:
+                    mainview.DisplayPer2MainMenu();
+                    break;
+                case 3:
+                    mainview.DisplayPer3MainMenu();
+                    break;
+                case 4:
+                    mainview.DisplayPer4MainMenu();
+                    break;
+                default:
+                    Console.WriteLine("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+
         }
     }
 }

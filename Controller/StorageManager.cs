@@ -100,5 +100,34 @@ namespace RetailApplication.Controller
             return password;
         }
 
+        public byte GetUserPermission(int empId)
+        {
+            byte perLevel=0;
+            string query = "SELECT PermissionLevel FROM tblPermissionLevel P, tblEmployee E WHERE EmpID=@empid AND P.LevelID=E.LevelID";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@empid", empId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            perLevel = reader.GetByte(0);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                Console.WriteLine();
+                perLevel = 0;
+                throw;
+            }
+
+            return perLevel;
+        }
+
     }
 }
