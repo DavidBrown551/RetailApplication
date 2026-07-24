@@ -273,7 +273,7 @@ namespace RetailApplication.View
                 }
                 
                 
-            } while (!(buffer=='\r')&&password.Count==0);//When the user presses enter, their password will be verified(as long as the password is of non-zero length)
+            } while (!(buffer=='\r')||password.Count==0);//When the user presses enter, their password will be verified(as long as the password is of non-zero length)
 
             byte[] bytepassword = new byte[password.Count];
             foreach (char item in password)
@@ -295,8 +295,60 @@ namespace RetailApplication.View
             //Add conditional logic for displaying passed arrays here
             //Try avoid using windows-specific functions to help pagination
             //If impossible to do this ensure it is mentioned in documentation
-            //(mostly) FIXED-core functions like Console.ReadKey are unsupported on several non-windows architechtures
+            //(mostly) FIXED:core functions like Console.ReadKey are unsupported on several non-windows architechtures
             PageNum = 23;
         }
+
+
+        public bool AskIfParametersWanted()
+        {
+            Console.WriteLine("Do you want to filter what the report returns?[Y/N]");
+            do
+            {
+
+                char buffer = Console.ReadKey(true).KeyChar;
+                if (buffer=='y'||buffer=='Y')
+                {
+                    return true;
+                }
+                else if (buffer == 'n' || buffer == 'N')
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("That is not a valid character. Please try again.");
+                }
+            } while (true);//Acceptable coding?
+        }
+
+      /*  public string[] AskParameters(int querynum)
+        {
+
+            //Only users with a Permission Level of 3 or 4 will be using this menu. Users with a lower Permission Level will have any parameterisation they require done automatically.
+            //try order cases by how often they are likely to be used
+
+            char userKey;
+            switch (querynum)
+            {
+                case 1:
+                    Console.WriteLine("Sample parameters");
+                    userKey = Console.ReadKey(true).KeyChar;
+                    break;
+                    //...;
+
+                case 15:
+                    Console.WriteLine("Sample parameters");
+                    userKey = Console.ReadKey(true).KeyChar;
+                    break;
+                default:
+                    break;
+            }
+
+
+
+            return;
+        }*/
+
     }
 }

@@ -140,7 +140,7 @@ namespace RetailApplication.Controller
                 {
                     if (parameters.Length==0)
                     {
-                        cmd.Parameters.AddWithValue("@",DBNull.Value);
+                        cmd.Parameters.AddWithValue("@"," ");
                     }
                     else
                     {

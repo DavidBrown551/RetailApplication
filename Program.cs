@@ -22,6 +22,7 @@ namespace RetailApplication
 
             mainview = new ViewConsole();
             connection = new StorageManager(connectionString);
+            hash = MD5.Create();
 
             byte userPermissionLevel=0; //This value is used to determine which pages the user can access
 
@@ -32,10 +33,9 @@ namespace RetailApplication
             mainview.DisplayLoginPage();
             //Handle the EmployeeID here
             int enteredEmpId=0;//PLACEHOLDER
-            //The input will need to be checked for incorrect characters
+            //The input will need to be checked for incorrect characters(use int.TryParse)
 
-            //Null passwords are not currently handled and will cause a crash
-            string hashedUserPassword = Convert.ToString(hash.ComputeHash(mainview.ConcealTypedField()));
+            string hashedUserPassword = Convert.ToHexStringLower(hash.ComputeHash(mainview.ConcealTypedField()));
 
             if (hashedUserPassword.Equals(connection.GetUserPassword(enteredEmpId)))
             {
@@ -77,7 +77,7 @@ namespace RetailApplication
                 case 2://Main menu(Perlevel1)
                     switch (buffer)
                     {
-
+                        
                         default:
                             break;
                     }
