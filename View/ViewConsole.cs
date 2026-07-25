@@ -82,6 +82,32 @@ namespace RetailApplication.View
             return returnValue;
         }
 
+
+        public void GotoMainMenu(int userPerLevel)
+        {
+            switch (userPerLevel)
+            {
+                case 1:
+                    this.DisplayPer1MainMenu();
+                    break;
+                case 2:
+                    this.DisplayPer2MainMenu();
+                    break;
+                case 3:
+                    this.DisplayPer3MainMenu();
+                    break;
+                case 4:
+                    this.DisplayPer4MainMenu();
+                    break;
+                default:
+                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+            return;
+        }
+
+
         public void DisplayPer1MainMenu()
         {
             Console.Title = "Main Menu";
@@ -113,6 +139,32 @@ namespace RetailApplication.View
             PageNum = 5;
         }
 
+
+        public void GotoInsertMenu(int userPerLevel)
+        {
+            switch (userPerLevel)
+            {
+                case 1:
+                    this.DisplayPer1InsertMenu();
+                    break;
+                case 2:
+                    this.DisplayPer2InsertMenu();
+                    break;
+                case 3:
+                    this.DisplayPer3InsertMenu();
+                    break;
+                case 4:
+                    this.DisplayPer4InsertMenu();
+                    break;
+                default:
+                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+            return;
+        }
+
+
         //Shows the user a list of tables to insert values into based on their employee permission level
         public void DisplayPer1InsertMenu()
         {
@@ -142,6 +194,30 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 4
             PageNum = 9;
         }
+
+
+        public void GotoUpdateMenu(int userPerLevel)
+        {
+            switch (userPerLevel)
+            {
+                case 2:
+                    this.DisplayPer2UpdateMenu();
+                    break;
+                case 3:
+                    this.DisplayPer3UpdateMenu();
+                    break;
+                case 4:
+                    this.DisplayPer4UpdateMenu();
+                    break;
+                default:
+                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+            return;
+        }
+
+
         public void DisplayPer2UpdateMenu()
         {
             Console.Title = "Update Records";
@@ -164,6 +240,25 @@ namespace RetailApplication.View
             PageNum = 12;
         }
 
+
+        public void GotoDeleteMenu(int userPerLevel)
+        {
+            switch (userPerLevel)
+            {
+                
+                case 3:
+                    this.DisplayPer3DeleteMenu();
+                    break;
+                case 4:
+                    this.DisplayPer4DeleteMenu();
+                    break;
+                default:
+                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+            return;
+        }
         public void DisplayPer3DeleteMenu()
         {
             Console.Title = "Delete Records";
@@ -178,6 +273,33 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 4
             PageNum = 14;
         }
+
+
+
+        public void GotoReportMenu(int userPerLevel)
+        {
+            switch (userPerLevel)
+            {
+                case 1:
+                    this.DisplayPer1ReportMenu();
+                    break;
+                case 2:
+                    this.DisplayPer2ReportMenu();
+                    break;
+                case 3:
+                    this.DisplayPer3ReportMenu();
+                    break;
+                case 4:
+                    this.DisplayPer4ReportMenu();
+                    break;
+                default:
+                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+            return;
+        }
+
 
         public void DisplayPer1ReportMenu()
         {
@@ -207,6 +329,33 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 4
             PageNum = 18;
         }
+
+
+
+        public void GotoHelp(int userPerLevel)
+        {
+            switch (userPerLevel)
+            {
+                case 1:
+                    this.DisplayPer1Help();
+                    break;
+                case 2:
+                    this.DisplayPer2Help();
+                    break;
+                case 3:
+                    this.DisplayPer3Help();
+                    break;
+                case 4:
+                    this.DisplayPer4Help();
+                    break;
+                default:
+                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    //Current handling of this error insufficient
+                    break;
+            }
+            return;
+        }
+
         public void DisplayPer1Help() 
         {
             Console.Title = "Help Page";
@@ -235,6 +384,7 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
             PageNum = 22;
         }
+
 
 
 
@@ -322,7 +472,7 @@ namespace RetailApplication.View
             } while (true);//Acceptable coding?
         }
 
-      /*  public string[] AskParameters(int querynum)
+       /* public string[] AskParameters(int querynum)
         {
 
             //Only users with a Permission Level of 3 or 4 will be using this menu. Users with a lower Permission Level will have any parameterisation they require done automatically.
@@ -333,18 +483,18 @@ namespace RetailApplication.View
             {
                 case 1:
                     Console.WriteLine("Sample parameters");
-                    userKey = Console.ReadKey(true).KeyChar;
+                    
                     break;
                     //...;
 
                 case 15:
                     Console.WriteLine("Sample parameters");
-                    userKey = Console.ReadKey(true).KeyChar;
+                    
                     break;
                 default:
                     break;
             }
-
+            userKey=Console.ReadKey(true).KeyChar;
 
 
             return;

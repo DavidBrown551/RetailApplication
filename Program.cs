@@ -49,29 +49,11 @@ namespace RetailApplication
             }
 
         Main_Menu:;
-            switch (userPermissionLevel)
-            {
-                case 1:
-                    mainview.DisplayPer1MainMenu();
-                    break;
-                case 2:
-                    mainview.DisplayPer2MainMenu();
-                    break;
-                case 3:
-                    mainview.DisplayPer3MainMenu();
-                    break;
-                case 4:
-                    mainview.DisplayPer4MainMenu();
-                    break;
-                default:
-                    mainview.DisplayMessage("Error: the user does not have a valid permission level");
-                    //Current handling of this error insufficient
-                    break;
-            }
+            mainview.GotoMainMenu(userPermissionLevel);//Displays the main menu for the user
             goto HandleCharInput;
 
         HandleCharInput:;
-            char buffer= mainview.GetCharacterInput();
+            char buffer= mainview.GetCharacterInput();//Bad code since it assumes that the interface relies on character input.
             switch (mainview.PageNum)
             {
                 case 2://Main menu(Perlevel1)
