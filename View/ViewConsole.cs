@@ -13,9 +13,14 @@ namespace RetailApplication.View
     {
         private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 999,999,999.";
 
+        //The current length of the following array is 23 pages
+        static char[][] AllValidChars =/* new char[23][]*/  
+            [ new char[] { 'a' },//PageNum=0,Page=login
+              new char[] {'i','I'},//PageNum=1, Page=Per1MainMenu
+            ];
+        //The AllValidChars array has characters in both cases to avoid having to set the character value to always be uppercase/lowercase
 
-
-        public int PageNum { get; set; }
+                 public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
         //it is changed whenever a new page is output
         //The PageNum value will be used by the main program to determine what pages the user can visit
@@ -28,11 +33,11 @@ namespace RetailApplication.View
             Console.WriteLine();
             Console.WriteLine("Please Enter your Password:");
             Console.SetCursorPosition(0,1);
-            PageNum = 1;
+            PageNum = 0;
             return;
         }
 
-
+        
         public void DisplayLogoutConfirmation()
         {
             Console.Title = "Confirm Logout";
@@ -83,6 +88,64 @@ namespace RetailApplication.View
         }
 
 
+        public int GetUserPageChangeValue()
+        {
+            char? a;
+            int outInt;
+            while (!HandleCharInput(out a))
+            {
+                Console.WriteLine("Placeholder error message for invalid characters");
+            };
+
+            switch (a)
+            {
+                case 'i':
+                case 'I':
+                    outInt = 0;//numbers need to be defined that correspond to destinations e.g. 2 for main menu
+                    break;
+                case 'm':
+                case 'M':
+                    outInt = 3;
+                    break;
+                case 'H':
+                case 'h':
+                    outInt = 0;
+                    break;
+                case 'u':
+                case 'U':
+                    outInt = 0;
+                    break;
+                case 'x':
+                case'X':
+                    outInt = 0;
+                    break;
+                case 'd':
+                case 'D':
+                    outInt = 0;
+                    break;
+                default:outInt = 0; break;
+            }
+
+
+
+            return outInt;
+        }
+
+        public bool HandleCharInput(out char? enteredCharacterValid)
+        {
+            char userKey = Console.ReadKey(true).KeyChar;
+            if (AllValidChars[PageNum].Contains(userKey))
+            {
+                enteredCharacterValid = userKey;//If the user presses a valid key, it will be returned with the out parameter.
+                return true;
+            }
+            enteredCharacterValid = null;
+            return false;
+        }
+
+
+
+
         public void GotoMainMenu(int userPerLevel)
         {
             switch (userPerLevel)
@@ -115,28 +178,28 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 1
             //Text below is preliminary
             Console.WriteLine($"Register a Transaction(A)   View Details(V)   Help With the Interface(H)   Log Out(X)   Exit Program(Esc)");
-            PageNum = 2;
+            PageNum = 1;
         }
         public void DisplayPer2MainMenu()
         {
             Console.Title = "Main Menu";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 2
-            PageNum = 3;
+            PageNum = 2;
         }
         public void DisplayPer3MainMenu()
         {
             Console.Title = "Main Menu";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 3
-            PageNum = 4;
+            PageNum = 3;
         }
         public void DisplayPer4MainMenu()
         {
             Console.Title = "Admin Main Menu";
             Console.Clear();
             //Add text to display here, showing all availible options
-            PageNum = 5;
+            PageNum = 4;
         }
 
 
@@ -171,28 +234,28 @@ namespace RetailApplication.View
             Console.Title = "Add Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 1
-            PageNum = 6;
+            PageNum = 5;
         }
         public void DisplayPer2InsertMenu()
         {
             Console.Title = "Add Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 2
-            PageNum = 7;
+            PageNum = 6;
         }
         public void DisplayPer3InsertMenu()
         {
             Console.Title = "Add Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 3
-            PageNum = 8;
+            PageNum = 7;
         }
         public void DisplayPer4InsertMenu()
         {
             Console.Title = "Add Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 4
-            PageNum = 9;
+            PageNum = 8;
         }
 
 
@@ -223,21 +286,21 @@ namespace RetailApplication.View
             Console.Title = "Update Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 2
-            PageNum = 10;
+            PageNum = 9;
         }
         public void DisplayPer3UpdateMenu()
         {
             Console.Title = "Update Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 3
-            PageNum = 11;
+            PageNum = 10;
         }
         public void DisplayPer4UpdateMenu()
         {
             Console.Title = "Update Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 4
-            PageNum = 12;
+            PageNum = 11;
         }
 
 
@@ -264,14 +327,14 @@ namespace RetailApplication.View
             Console.Title = "Delete Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 3
-            PageNum = 13;
+            PageNum = 12;
         }
         public void DisplayPer4DeleteMenu()
         {
             Console.Title = "Delete Records";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 4
-            PageNum = 14;
+            PageNum = 13;
         }
 
 
@@ -306,28 +369,28 @@ namespace RetailApplication.View
             Console.Title = "Report Menu";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 1
-            PageNum = 15;
+            PageNum = 14;
         }
         public void DisplayPer2ReportMenu()
         {
             Console.Title = "Report Menu";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 2
-            PageNum = 16;
+            PageNum = 15;
         }
         public void DisplayPer3ReportMenu()
         {
             Console.Title = "Report Menu";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 3
-            PageNum = 17;
+            PageNum = 16;
         }
         public void DisplayPer4ReportMenu()
         {
             Console.Title = "Report Menu";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 4
-            PageNum = 18;
+            PageNum = 17;
         }
 
 
@@ -361,28 +424,28 @@ namespace RetailApplication.View
             Console.Title = "Help Page";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 1. This text should help explain how the website works and what they can and cannot do.
-            PageNum = 19;
+            PageNum = 18;
         }
         public void DisplayPer2Help()
         {
             Console.Title = "Help Page";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 2. This text should help explain how the website works and what they can and cannot do.
-            PageNum = 20;
+            PageNum = 19;
         }
         public void DisplayPer3Help()
         {
             Console.Title = "Help Page";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 3. This text should help explain how the website works and what they can and cannot do.
-            PageNum = 21;
+            PageNum = 20;
         }
         public void DisplayPer4Help()
         {
             Console.Title = "Help Page";
             Console.Clear();
             //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
-            PageNum = 22;
+            PageNum = 21;
         }
 
 
@@ -446,7 +509,7 @@ namespace RetailApplication.View
             //Try avoid using windows-specific functions to help pagination
             //If impossible to do this ensure it is mentioned in documentation
             //(mostly) FIXED:core functions like Console.ReadKey are unsupported on several non-windows architechtures
-            PageNum = 23;
+            PageNum = 22;
         }
 
 
