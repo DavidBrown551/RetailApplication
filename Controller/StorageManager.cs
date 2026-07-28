@@ -155,7 +155,7 @@ namespace RetailApplication.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving brands: {ex.Message}");
+                Console.WriteLine($"Error retrieving Stores: {ex.Message}");
             }
 
 
@@ -163,9 +163,140 @@ namespace RetailApplication.Controller
             return allStores;
         }
 
+        public List<Job> GetAllJobs()
+        {
+            List<Job> allJobs = new List<Job> { };
+
+            string query = "SELECT * FROM scheduling.tblJob;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Job job = new Job(reader.GetInt16(0), reader.GetString(1), reader.GetDecimal(2));
+                            allJobs.Add(job);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Jobs: {ex.Message}");
+            }
 
 
 
+            return allJobs;
+        }
+
+        public List<Employee> GetAllEmployees()
+        {
+            List<Employee> allEmployees = new List<Employee> { };
+
+            string query = "SELECT * FROM scheduling.tblEmployee;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Employee employee = new Employee(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetInt16(3), reader.GetString(4));
+                            allEmployees.Add(employee);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Employees: {ex.Message}");
+            }
+
+
+
+            return allEmployees;
+        }
+
+        public List<Product> GetAllProducts()
+        {
+            List<Product> allProducts = new List<Product> { };
+
+            string query = "SELECT * FROM sales.tblProduct;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Product product = new Product(reader.GetInt32(0), reader.GetInt16(1), reader.GetString(2), reader.GetDecimal(3), reader.GetDecimal(4), reader.GetString(5));
+                            allProducts.Add(product);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Products: {ex.Message}");
+            }
+
+
+
+            return allProducts;
+        }
+        public List<Provider> GetAllProviders()
+        {
+            List<Provider> allProviders = new List<Provider> { };
+
+            string query = "SELECT * FROM sales.tblProvider;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Provider provider = new Provider(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+                            allProviders.Add(provider);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Providers: {ex.Message}");
+            }
+
+
+
+            return allProviders;
+        }
         /*public List<string[]> ParameterisationTemplate(object[] parameters)
         {
             List<string[]> output=new List<string[]>();
