@@ -45,7 +45,7 @@ namespace RetailApplication.Controller
         public List<PermissionLevel> GetPermissionLevels()
         {
             List<PermissionLevel> perLevelList = new List<PermissionLevel> { };
-            string query = "SELECT * FROM tblPermissionLevel ORDER BY PermissionLevel desc;";
+            string query = "SELECT * FROM scheduling.tblPermissionLevel ORDER BY PermissionLevel desc;";
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -67,7 +67,7 @@ namespace RetailApplication.Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving brands: {ex.Message}");
+                Console.WriteLine($"Error retrieving Permission Levels: {ex.Message}");
             }
             return perLevelList;
         }
@@ -75,7 +75,7 @@ namespace RetailApplication.Controller
         public string GetUserPassword(int empId)
         {
             string password="null";
-            string query = "SELECT Password FROM tblEmployee WHERE EmpID=@empid";
+            string query = "SELECT Password FROM scheduling.tblEmployee WHERE EmpID=@empid";
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -103,7 +103,7 @@ namespace RetailApplication.Controller
         public byte GetUserPermission(int empId)
         {
             byte perLevel=0;
-            string query = "SELECT PermissionLevel FROM tblPermissionLevel P, tblEmployee E WHERE EmpID=@empid AND P.LevelID=E.LevelID";
+            string query = "SELECT PermissionLevel FROM scheduling.tblPermissionLevel P, scheduling.tblEmployee E WHERE EmpID=@empid AND P.LevelID=E.LevelID";
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -128,6 +128,42 @@ namespace RetailApplication.Controller
 
             return perLevel;
         }
+
+        public List<Store> GetAllStores() 
+        {
+            List<Store> allStores = new List<Store> { };
+
+            string query = "SELECT * FROM scheduling.tblStore;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Store store = new Store(reader.GetInt16(0), reader.GetString(1), reader.GetString(2),reader.GetDecimal(3));
+                            allStores.Add(store);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving brands: {ex.Message}");
+            }
+
+
+
+            return allStores;
+        }
+
+
 
 
         /*public List<string[]> ParameterisationTemplate(object[] parameters)

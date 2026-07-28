@@ -11,7 +11,7 @@ namespace RetailApplication.View
 {
     internal class ViewConsole
     {
-        private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 999,999,999.";
+        private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 2,147,483,648.";
 
         //The current length of the following array is 23 pages
         static char[][] AllValidChars =/* new char[23][]*/  
@@ -71,9 +71,10 @@ namespace RetailApplication.View
         }
 
 
-        //This method gets and returns a (error-corrected) integer of maximum size 999,999,999
+        //This method gets and returns a (error-corrected) integer
         public int GetIntegerInput()
         {
+            bool exitLoop=false;
             int returnValue=0;
             do
             {
@@ -82,7 +83,11 @@ namespace RetailApplication.View
                 {
                     Console.WriteLine(BADINTMESSAGE);
                 }
-            } while (returnValue==0);//This is a crude method. It will hopefully work since the user is unlikely to enter zero as their employee number, but this is less than ideal. 
+                else
+                {
+                    exitLoop = true;
+                }
+            } while (!exitLoop);
             
             return returnValue;
         }
@@ -94,34 +99,34 @@ namespace RetailApplication.View
             int outInt;
             while (!HandleCharInput(out a))
             {
-                Console.WriteLine("Placeholder error message for invalid characters");
+                Console.WriteLine("That is not a character recognised by the system");
             };
 
             switch (a)
             {
-                case 'i':
-                case 'I':
-                    outInt = 0;//numbers need to be defined that correspond to destinations e.g. 2 for main menu
+                case 'c'://C=create records
+                case 'C':
+                    outInt = 22;//numbers need to be defined that correspond to destinations e.g. 2 for main menu
                     break;
-                case 'm':
+                case 'm'://M=Main menu
                 case 'M':
-                    outInt = 3;
+                    outInt = 21;
                     break;
-                case 'H':
+                case 'H'://H=Help
                 case 'h':
-                    outInt = 0;
+                    outInt = 28;
                     break;
-                case 'u':
+                case 'u'://U=update menu
                 case 'U':
-                    outInt = 0;
+                    outInt = 24;
                     break;
-                case 'x':
-                case'X':
-                    outInt = 0;
+                case 'l'://L=Logout
+                case'L':
+                    outInt = 26;
                     break;
-                case 'd':
+                case 'd'://D=delete menu
                 case 'D':
-                    outInt = 0;
+                    outInt = 25;
                     break;
                 default:outInt = 0; break;
             }
@@ -143,7 +148,10 @@ namespace RetailApplication.View
             return false;
         }
 
-
+        public void DecipherGenericMenuOption(int userOption)
+        {
+           
+        }
 
 
         public void GotoMainMenu(int userPerLevel)

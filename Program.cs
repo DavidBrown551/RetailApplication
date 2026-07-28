@@ -19,16 +19,16 @@ namespace RetailApplication
         static void Main(string[] args)
         {
             string connectionString = "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=RetailApplication;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+            //This string allows connection to the database and must be changed if the file name or file path is changed.
 
             mainview = new ViewConsole();
             connection = new StorageManager(connectionString);
             hash = MD5.Create();
 
-            byte userPermissionLevel=0; //This value is used to determine which pages the user can access
+            byte userPermissionLevel; //This value is used to determine which pages the user can access
 
             //After establishing a connection to the database, the login page is shown
-
-            Login:;
+            Login:
 
             mainview.DisplayLoginPage();
             //Handle the EmployeeID here
@@ -44,24 +44,32 @@ namespace RetailApplication
             }
             else
             {
-                //send user back to password screen with error message
+                //Send user back to password screen with error message
                 goto Login;
             }
 
-        Main_Menu:;
+        Main_Menu:
             mainview.GotoMainMenu(userPermissionLevel);//Displays the main menu for the user
             goto HandleCharInput;
 
-        HandleCharInput:;
-            int placeholderName = mainview.GetUserPageChangeValue();
-            switch (placeholderName)
+        HandleCharInput:
+
+            int userPageChangeValue= mainview.GetUserPageChangeValue();
+            switch (userPageChangeValue)
             {
-
-
+                case <=20://A menu option. Further seperation of values necessary.
+                    //Send control to a method for determining what this generic option points to
+                    break;
+                case 21://Main Menu
+                    //
+                    break;
+                case 22://Create Menu
+                    break;
+                    //Other cases here
                 default:
                     break;
             }
-        }
+        
         }
     }
 }

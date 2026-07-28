@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RetailApplication.Model
 {
-    internal class Store
+    public class Store
     {
         public int StoreID { get; }
         public string StoreName { get; set; }
