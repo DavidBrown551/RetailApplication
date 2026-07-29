@@ -297,6 +297,71 @@ namespace RetailApplication.Controller
 
             return allProviders;
         }
+
+        public List<object[]> QryProductSales()
+        {
+            List<object[]> reportRecords = new List<object[]> { };
+            string query = "SELECT COALESCE(P.ProductName,Total)AS Product, COALESCE(S.StoreName, Subtotal) AS Store, SUM(T.Quantity)AS QUANTITY, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblProduct P, tblTransaction T RIGHT JOIN tblStore S ON T.StoreID=S.StoreID WHERE P.ProductID=T.ProductID GROUP BY ROLLUP(S.StoreName,P.ProductName) ORDER BY 1,2;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = { reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetDouble(3) };
+                            reportRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Product Sales Report: {ex.Message}");
+            }
+            return reportRecords;
+        }
+
+
+        public List<object[]> QryEmployeeShifts()
+        {
+            List<object[]> reportRecords = new List<object[]> { };
+            string query = "SELECT (E.FirstName+E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS Start Time, I.EndTime AS End Time, I.Weekday AS Day, J.JobName AS Job FROM tblEmployee E, tblStore S, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID ORDER BY 2,1,6,5,3,4;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = { reader.GetString(0), reader.GetString(1), reader.GetDateTime(2), reader.GetDateTime(3), reader.GetString(4),reader.GetString(5)};
+                            reportRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Employee Shifts Report: {ex.Message}");
+            }
+
+
+            return reportRecords;
+        }
+
+
         /*public List<string[]> ParameterisationTemplate(object[] parameters)
         {
             List<string[]> output=new List<string[]>();
