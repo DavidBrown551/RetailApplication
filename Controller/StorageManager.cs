@@ -361,6 +361,133 @@ namespace RetailApplication.Controller
             return reportRecords;
         }
 
+        public List<object[]> QryProductOrders()
+        {
+            List<object[]> reportRecords = new List<object[]> { };
+            string query = "SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM tblProduct P, tblStore S, tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 ORDER BY O.Date;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = { reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetDecimal(3)};
+                            reportRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Product Orders Report: {ex.Message}");
+            }
+
+
+            return reportRecords;
+        }
+
+        public List<object[]> QryStoreSales()
+        {
+            List<object[]> reportRecords = new List<object[]> { };
+            string query = "SELECT COALESCE(S.StoreName,Grand Total)AS Store, COALESCE(P.ProductName, Total Sales) AS Product, SUM(T.Quantity)AS QUANTITY, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblStore S, tblTransaction T RIGHT JOIN tblProduct P ON T.ProductID=P.ProductID WHERE S.StoreID=T.StoreID GROUP BY ROLLUP(P.ProductName,S.StoreName) ORDER BY 1,2;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = { reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetDecimal(3) };
+                            reportRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Store Sales Report: {ex.Message}");
+            }
+
+
+            return reportRecords;
+        }
+
+        public List<object[]> QryBestProducts()
+        {
+            List<object[]> reportRecords = new List<object[]> { };
+            string query = "SELECT TOP 50 P.ProductName AS Product, SUM(T.Quantity) AS Total Sales, SUM(T.Quantity*P.CustomerPrice) AS Total Revenue, SUM((T.Quantity*P.CustomerPrice)-(T.Quantity*P.SupplyPrice)) AS Profit FROM tblProduct P, tblStore S, tblTransaction T WHERE S.StoreID=T.StoreID AND P.ProductID=T.ProductID GROUP BY P.ProductID ORDER BY 2 desc, 4 desc;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = { reader.GetString(0), reader.GetInt32(1), reader.GetDecimal(2), reader.GetDecimal(3) };
+                            reportRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Best Products Report: {ex.Message}");
+            }
+
+
+            return reportRecords;
+        }
+
+        public List<object[]> QryEmployeePermissions()
+        {
+            List<object[]> reportRecords = new List<object[]> { };
+            string query = "SELECT E.EmpID AS Employee Number, E.FirstName+ ' '+ E.LastName AS Name, l.PermissionName AS Permission Level FROM tblEmployee E, tblPermissionLevel l WHERE E.LevelID=l.LevelID ORDER BY l.PermissionLevel desc, 2;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = { reader.GetInt32(0), reader.GetString(1), reader.GetString(2) };
+                            reportRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Employee Permissions Report: {ex.Message}");
+            }
+
+
+            return reportRecords;
+        }
 
         /*public List<string[]> ParameterisationTemplate(object[] parameters)
         {

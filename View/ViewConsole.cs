@@ -543,7 +543,7 @@ namespace RetailApplication.View
             } while (true);//Acceptable coding?
         }
 
-       /* public string[] AskParameters(int querynum)
+       public string[] AskParameters(int querynum)
         {
 
             //Only users with a Permission Level of 3 or 4 will be using this menu. Users with a lower Permission Level will have any parameterisation they require done automatically.
@@ -569,7 +569,7 @@ namespace RetailApplication.View
 
 
             return;
-        }*/
+        }
 
     }
 }
