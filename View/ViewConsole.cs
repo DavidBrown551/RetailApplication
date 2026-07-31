@@ -16,9 +16,12 @@ namespace RetailApplication.View
         //The current length of the following array is 23 pages
         static char[][] AllValidChars =/* new char[23][]*/  
             [ new char[] { 'a' },//PageNum=0,Page=login
-              new char[] {'i','I'},//PageNum=1, Page=Per1MainMenu
+              new char[] {'c','C'},//PageNum=1, Page=Per1MainMenu
             ];
         //The AllValidChars array has characters in both cases to avoid having to set the character value to always be uppercase/lowercase
+
+
+        static char[] genericOptionChars = ['1','2','3','4','5','6','7','8','9','0','q','w','e','t','y','i','o','p','a','s','f','g','h','j','k'];
 
                  public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
@@ -543,33 +546,42 @@ namespace RetailApplication.View
             } while (true);//Acceptable coding?
         }
 
-       public string[] AskParameters(int querynum)
-        {
+       public string AskParameters(int querynum, byte[][]queryTables, string[][] columnNames, byte[][]columnDatatypes)
+       {
 
             //Only users with a Permission Level of 3 or 4 will be using this menu. Users with a lower Permission Level will have any parameterisation they require done automatically.
-            //try order cases by how often they are likely to be used
 
             char userKey;
-            switch (querynum)
-            {
-                case 1:
-                    Console.WriteLine("Sample parameters");
-                    
-                    break;
-                    //...;
+            int charOptionNumber=0;
 
-                case 15:
-                    Console.WriteLine("Sample parameters");
-                    
-                    break;
-                default:
-                    break;
+            //This block prints each column in the tables that the query uses, along with a character allowing the choice of that column.
+            try
+            {
+                foreach (var table in queryTables[querynum])
+                {
+                    foreach (var column in columnNames[table])
+                    {
+                        Console.WriteLine(column + ": " + genericOptionChars[charOptionNumber]);
+                        charOptionNumber++;
+                    }
+                }
             }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine("Too many options to display choices for, please exit the page and report this error.");
+                throw;
+            }
+            
+            
             userKey=Console.ReadKey(true).KeyChar;
 
+            //Now: 
+            //1. determine which column the user wants to parameterise
+            //2. Get the position of the column in the tableColumnNames array and input the same indexes to the tableColumnDatatypes array. This will return an integer corresponding to the datatype of the column. Use this integer as the variable for a switch case pointing to blocks of code that will allow datatype-specific parameterisation.
 
-            return;
-        }
+
+            return"placeholder";
+       }
 
     }
 }
