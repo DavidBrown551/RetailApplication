@@ -333,7 +333,7 @@ namespace RetailApplication.Controller
             }
             catch (SqlException)
             {
-                Console.WriteLine("sampleerrormessage");
+                Console.WriteLine("");
                 
                 throw;
             }
@@ -342,5 +342,41 @@ namespace RetailApplication.Controller
         }
 
 
+
+        //This is the method that will get records from the database for the user. It takes the name of the table the user wants records from and a generic query from Program.cs as parameters, and returns the records as arrays of objects, with each object being a column in the record.
+        public List<object[]> GetRecordsHandler(string tableName,string query) 
+        {
+            List<object[]> tableRecords = new List<object[]> { };
+
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@", tableName);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            object[] record = new object[reader.FieldCount];
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                record[i] = reader.GetValue(i);
+                                //This way of getting records requires a lot of computationally expensive boxing of variables. Look for a better way of doing this.
+                            }
+                            tableRecords.Add(record);
+                        }
+                        reader.Close();
+                    }
+
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"Error retrieving records from table: {e.Message}");
+                throw;
+            }
+            
+            return tableRecords;
+        }
     }
 }

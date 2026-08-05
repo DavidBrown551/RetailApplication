@@ -11,17 +11,29 @@ namespace RetailApplication.View
 {
     internal class ViewConsole
     {
+
+        //The following are the error messages relating to data input and output that will be displayed to the user
+        private const string TOOMANYOPTIONSMESSAGE = "Too many options to display choices for, please exit the page and report this error.";
         private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 2,147,483,648.";
+        private const string INVALIDPERLEVELMESSAGE = "Error: the user does not have a valid permission level";
+
+
+
+
+        //The following are the page titles
+        private const string HELP_TITLE = "";
+        private const string MAINMENU_TITLE = "Main Menu";
+        private const string CREATEMENU_TITLE = "";
 
         //The current length of the following array is 23 pages
         static char[][] AllValidChars =/* new char[23][]*/  
-            [ new char[] { 'a' },//PageNum=0,Page=login
-              new char[] {'c','C'},//PageNum=1, Page=Per1MainMenu
+            [ ['a'],//PageNum=0,Page=login
+              ['c','C'],//PageNum=1, Page=Per1MainMenu
             ];
         //The AllValidChars array has characters in both cases to avoid having to set the character value to always be uppercase/lowercase
 
 
-        static char[] genericOptionChars = ['1','2','3','4','5','6','7','8','9','0','q','w','e','t','y','i','o','p','a','s','f','g','h','j','k'];
+        static char[] genericOptionChars = ['1','2','3','4','5','6','7','8','9','0','q','w','e','t','y','i','o','p','a','s','f'];
 
                  public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
@@ -99,7 +111,7 @@ namespace RetailApplication.View
         public int GetUserPageChangeValue()
         {
             char? a;
-            int outInt;
+            int outInt=0;
             while (!HandleCharInput(out a))
             {
                 Console.WriteLine("That is not a character recognised by the system");
@@ -131,10 +143,20 @@ namespace RetailApplication.View
                 case 'D':
                     outInt = 25;
                     break;
-                default:outInt = 0; break;
+                
+
+                default:
+                    for (int i = 0; i < genericOptionChars.Length; i++)
+                    {
+                        if (genericOptionChars[i]=='a')
+                        {
+                            outInt = i;
+                            break;
+                        }
+                    }
+                    break;
             }
-
-
+            
 
             return outInt;
         }
@@ -153,12 +175,16 @@ namespace RetailApplication.View
 
         public void DecipherGenericMenuOption(int userOption)
         {
-           
+           //Use PageNum to figure out which array to search for the option selected
+           //Then send the string and any relevant values to a method to display etc.
+           //Generic options lead to generic display methods
         }
 
 
         public void GotoMainMenu(int userPerLevel)
         {
+            Console.Title = MAINMENU_TITLE;
+            Console.Clear();
             switch (userPerLevel)
             {
                 case 1:
@@ -174,7 +200,7 @@ namespace RetailApplication.View
                     this.DisplayPer4MainMenu();
                     break;
                 default:
-                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -184,8 +210,6 @@ namespace RetailApplication.View
 
         public void DisplayPer1MainMenu()
         {
-            Console.Title = "Main Menu";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 1
             //Text below is preliminary
             Console.WriteLine($"Register a Transaction(A)   View Details(V)   Help With the Interface(H)   Log Out(X)   Exit Program(Esc)");
@@ -193,22 +217,19 @@ namespace RetailApplication.View
         }
         public void DisplayPer2MainMenu()
         {
-            Console.Title = "Main Menu";
-            Console.Clear();
+
             //Add text to display here, specific to users with a per level of 2
             PageNum = 2;
         }
         public void DisplayPer3MainMenu()
         {
-            Console.Title = "Main Menu";
-            Console.Clear();
+
             //Add text to display here, specific to users with a per level of 3
             PageNum = 3;
         }
         public void DisplayPer4MainMenu()
         {
             Console.Title = "Admin Main Menu";
-            Console.Clear();
             //Add text to display here, showing all availible options
             PageNum = 4;
         }
@@ -216,6 +237,8 @@ namespace RetailApplication.View
 
         public void GotoInsertMenu(int userPerLevel)
         {
+            Console.Title = "Add Records";
+            Console.Clear();
             switch (userPerLevel)
             {
                 case 1:
@@ -231,7 +254,7 @@ namespace RetailApplication.View
                     this.DisplayPer4InsertMenu();
                     break;
                 default:
-                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -241,30 +264,22 @@ namespace RetailApplication.View
 
         //Shows the user a list of tables to insert values into based on their employee permission level
         public void DisplayPer1InsertMenu()
-        {
-            Console.Title = "Add Records";
-            Console.Clear();
+        { 
             //Add text to display here, specific to users with a per level of 1
             PageNum = 5;
         }
         public void DisplayPer2InsertMenu()
         {
-            Console.Title = "Add Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 6;
         }
         public void DisplayPer3InsertMenu()
         {
-            Console.Title = "Add Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 7;
         }
         public void DisplayPer4InsertMenu()
         {
-            Console.Title = "Add Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 8;
         }
@@ -272,6 +287,9 @@ namespace RetailApplication.View
 
         public void GotoUpdateMenu(int userPerLevel)
         {
+
+            Console.Title = "Update Records";
+            Console.Clear();
             switch (userPerLevel)
             {
                 case 2:
@@ -284,7 +302,7 @@ namespace RetailApplication.View
                     this.DisplayPer4UpdateMenu();
                     break;
                 default:
-                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -294,22 +312,16 @@ namespace RetailApplication.View
 
         public void DisplayPer2UpdateMenu()
         {
-            Console.Title = "Update Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 9;
         }
         public void DisplayPer3UpdateMenu()
         {
-            Console.Title = "Update Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 10;
         }
         public void DisplayPer4UpdateMenu()
         {
-            Console.Title = "Update Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 11;
         }
@@ -317,6 +329,9 @@ namespace RetailApplication.View
 
         public void GotoDeleteMenu(int userPerLevel)
         {
+
+            Console.Title = "Delete Records";
+            Console.Clear();
             switch (userPerLevel)
             {
                 
@@ -327,7 +342,7 @@ namespace RetailApplication.View
                     this.DisplayPer4DeleteMenu();
                     break;
                 default:
-                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -335,15 +350,11 @@ namespace RetailApplication.View
         }
         public void DisplayPer3DeleteMenu()
         {
-            Console.Title = "Delete Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 12;
         }
         public void DisplayPer4DeleteMenu()
         {
-            Console.Title = "Delete Records";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 13;
         }
@@ -352,6 +363,8 @@ namespace RetailApplication.View
 
         public void GotoReportMenu(int userPerLevel)
         {
+            Console.Title = "Report Menu";
+            Console.Clear();
             switch (userPerLevel)
             {
                 case 1:
@@ -367,7 +380,7 @@ namespace RetailApplication.View
                     this.DisplayPer4ReportMenu();
                     break;
                 default:
-                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -377,29 +390,21 @@ namespace RetailApplication.View
 
         public void DisplayPer1ReportMenu()
         {
-            Console.Title = "Report Menu";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 1
             PageNum = 14;
         }
         public void DisplayPer2ReportMenu()
         {
-            Console.Title = "Report Menu";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 2
             PageNum = 15;
         }
         public void DisplayPer3ReportMenu()
         {
-            Console.Title = "Report Menu";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 3
             PageNum = 16;
         }
         public void DisplayPer4ReportMenu()
         {
-            Console.Title = "Report Menu";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 4
             PageNum = 17;
         }
@@ -408,6 +413,9 @@ namespace RetailApplication.View
 
         public void GotoHelp(int userPerLevel)
         {
+
+            Console.Title = "Help Page";
+            Console.Clear();
             switch (userPerLevel)
             {
                 case 1:
@@ -423,7 +431,7 @@ namespace RetailApplication.View
                     this.DisplayPer4Help();
                     break;
                 default:
-                    this.DisplayMessage("Error: the user does not have a valid permission level");
+                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -432,29 +440,21 @@ namespace RetailApplication.View
 
         public void DisplayPer1Help() 
         {
-            Console.Title = "Help Page";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 1. This text should help explain how the website works and what they can and cannot do.
             PageNum = 18;
         }
         public void DisplayPer2Help()
         {
-            Console.Title = "Help Page";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 2. This text should help explain how the website works and what they can and cannot do.
             PageNum = 19;
         }
         public void DisplayPer3Help()
         {
-            Console.Title = "Help Page";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 3. This text should help explain how the website works and what they can and cannot do.
             PageNum = 20;
         }
         public void DisplayPer4Help()
         {
-            Console.Title = "Help Page";
-            Console.Clear();
             //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
             PageNum = 21;
         }
@@ -466,9 +466,7 @@ namespace RetailApplication.View
         {
             //This method will obscure the password field when the employee logs in
             //Will get and store each character, replace it with a *, allow mid-string replacement of characters(FIRST PART)
-            //Get characters using Console.ReadKey().KeyChar(YES)
-            //This preserves capitalisation but responds to enters(HANDLED)
-            //Check with .Equals(after .MD5)(handled outside this method)
+            //Checked with .Equals outside this method
             List<char> password = new List<char>();//A list is used due to its variable length
             char buffer;
             do
@@ -513,14 +511,87 @@ namespace RetailApplication.View
 
         }
 
+
+        //This method displays the 
+        public void DisplayTableFieldOptions(string[] columnNames)
+        {
+
+            try
+            {
+                int charOptionNumber = 0;
+                foreach (var column in columnNames)
+                {
+                    Console.WriteLine(column + ": " + genericOptionChars[charOptionNumber]);
+                    charOptionNumber++;
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine(TOOMANYOPTIONSMESSAGE);
+                //This exception will occur if there are more columns in the table than generic option characters.
+                throw;
+            }
+
+            
+        }
+
+
+
+
+
+
         public void DisplayReport(string[] columnHeadings, string[] records)
         {
-            Console.Clear();
-            //Add conditional logic for displaying passed arrays here
+            PageNum = 22;
             //Try avoid using windows-specific functions to help pagination
             //If impossible to do this ensure it is mentioned in documentation
             //(mostly) FIXED:core functions like Console.ReadKey are unsupported on several non-windows architechtures
-            PageNum = 22;
+            int i = 0;
+            int outputPageNum = 1;
+            bool exitReport;
+            do
+            {
+                Console.Clear();
+                foreach (var heading in columnHeadings)
+                {
+                    Console.Write(heading+"\t");
+                }
+                Console.WriteLine("\n");//Clears the console, prints the column names, and moves two lines down.
+                
+                try
+                {
+                    do
+                    {
+                        Console.WriteLine(records[i]);
+                        i++;
+                    } while (Console.CursorTop < (Console.BufferHeight - 2)&&i<records.Length);//Stops printing records one line above the bottom of the buffer.
+
+                }
+                catch (IndexOutOfRangeException)
+                {
+
+                    throw;
+                }
+                
+                Console.WriteLine("Page:"+outputPageNum);
+                char userkey= Console.ReadKey().KeyChar;
+                if (userkey=='\n')
+                {
+                    outputPageNum++;
+                    exitReport = false;
+                }
+                else if (userkey=='\b')
+                {
+                    i -= (i + 1) / outputPageNum;//Reduces the index by the amount of records in a page
+                    outputPageNum--;
+                    exitReport = false;
+                }
+                else
+                {
+                    exitReport = true;
+                }
+            } while (exitReport);
+            
         }
 
 
@@ -553,7 +624,7 @@ namespace RetailApplication.View
 
             char userKey;
             int charOptionNumber=0;
-
+            string finalParameters;
             //This block prints each column in the tables that the query uses, along with a character allowing the choice of that column.
             try
             {
@@ -568,7 +639,7 @@ namespace RetailApplication.View
             }
             catch (IndexOutOfRangeException)
             {
-                Console.WriteLine("Too many options to display choices for, please exit the page and report this error.");
+                Console.WriteLine(TOOMANYOPTIONSMESSAGE);
                 throw;
             }
             
@@ -579,8 +650,13 @@ namespace RetailApplication.View
             //1. determine which column the user wants to parameterise
             //2. Get the position of the column in the tableColumnNames array and input the same indexes to the tableColumnDatatypes array. This will return an integer corresponding to the datatype of the column. Use this integer as the variable for a switch case pointing to blocks of code that will allow datatype-specific parameterisation.
 
+            //Datatypes:strings,integers, booleans, date/time
+            //Aggregate columns: sum, average, etc
+            //Are generic options always stored in arrays? if so, generic option input can be simplified to an array reference(YES)
+            //How to find which array to reference?
 
-            return"placeholder";
+            finalParameters = "Placeholder";
+            return finalParameters;
        }
 
     }
