@@ -21,21 +21,28 @@ namespace RetailApplication.View
 
 
         //The following are the page titles
-        private const string HELP_TITLE = "";
+        private const string HELP_TITLE = "Help Page";
         private const string MAINMENU_TITLE = "Main Menu";
-        private const string CREATEMENU_TITLE = "";
+        private const string CREATEMENU_TITLE = "Add Records";
+        private const string UPDATEMENU_TITLE = "Update Records";
+        private const string REPORTMENU_TITLE = "Report Menu";
+
+
 
         //The current length of the following array is 23 pages
+        //This is the array of all the valid characters for each page in the application. The array reference of the valid characters for a page is equal to its PageNum value.
         static char[][] AllValidChars =/* new char[23][]*/  
             [ ['a'],//PageNum=0,Page=login
-              ['c','C'],//PageNum=1, Page=Per1MainMenu
+              ['c','C','h','H','r','R','l','L','\e'],//PageNum=1, Page=Per1MainMenu
             ];
         //The AllValidChars array has characters in both cases to avoid having to set the character value to always be uppercase/lowercase
 
 
+        //This is the set of generic characters which are used for multi-choice options, e.g. fields in a table. Please Note: The length of this array is the maximum number of options the user can be presented with. The current length is 21 characters.
         static char[] genericOptionChars = ['1','2','3','4','5','6','7','8','9','0','q','w','e','t','y','i','o','p','a','s','f'];
 
-                 public int PageNum { get; set; }
+
+        public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
         //it is changed whenever a new page is output
         //The PageNum value will be used by the main program to determine what pages the user can visit
@@ -180,7 +187,7 @@ namespace RetailApplication.View
            //Generic options lead to generic display methods
         }
 
-
+        #region DisplayMenuMethods
         public void GotoMainMenu(int userPerLevel)
         {
             Console.Title = MAINMENU_TITLE;
@@ -237,7 +244,7 @@ namespace RetailApplication.View
 
         public void GotoInsertMenu(int userPerLevel)
         {
-            Console.Title = "Add Records";
+            Console.Title = CREATEMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
             {
@@ -288,7 +295,7 @@ namespace RetailApplication.View
         public void GotoUpdateMenu(int userPerLevel)
         {
 
-            Console.Title = "Update Records";
+            Console.Title = UPDATEMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
             {
@@ -363,7 +370,7 @@ namespace RetailApplication.View
 
         public void GotoReportMenu(int userPerLevel)
         {
-            Console.Title = "Report Menu";
+            Console.Title = REPORTMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
             {
@@ -414,7 +421,7 @@ namespace RetailApplication.View
         public void GotoHelp(int userPerLevel)
         {
 
-            Console.Title = "Help Page";
+            Console.Title = HELP_TITLE;
             Console.Clear();
             switch (userPerLevel)
             {
@@ -459,7 +466,7 @@ namespace RetailApplication.View
             PageNum = 21;
         }
 
-
+        #endregion
 
 
         public byte[] ConcealTypedField()
@@ -647,13 +654,19 @@ namespace RetailApplication.View
             userKey=Console.ReadKey(true).KeyChar;
 
             //Now: 
-            //1. determine which column the user wants to parameterise
+            //1. determine which column the user wants to parameterise using a switch statement with array references.
             //2. Get the position of the column in the tableColumnNames array and input the same indexes to the tableColumnDatatypes array. This will return an integer corresponding to the datatype of the column. Use this integer as the variable for a switch case pointing to blocks of code that will allow datatype-specific parameterisation.
 
             //Datatypes:strings,integers, booleans, date/time
             //Aggregate columns: sum, average, etc
             //Are generic options always stored in arrays? if so, generic option input can be simplified to an array reference(YES)
             //How to find which array to reference?
+
+
+
+
+
+
 
             finalParameters = "Placeholder";
             return finalParameters;

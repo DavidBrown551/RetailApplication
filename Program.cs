@@ -28,6 +28,7 @@ namespace RetailApplication
             connection = new StorageManager(connectionString);
             hash = MD5.Create();
 
+            #region Queries
             //The queries used by the program. These will be passed to the ReportHandler method in the Controller folder and used to query the database. The '@' is a universal entry point for parameters to be added, and is replaced by whitespace if the query is not parameterised.
             const string qryProductOrder = "SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM tblProduct P, tblStore S, tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 @ ORDER BY O.Date;";
             const string qryEmployeeShifts = "SELECT (E.FirstName+E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS Start Time, I.EndTime AS End Time, I.Weekday AS Day, J.JobName AS Job FROM tblEmployee E, tblStore S, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID @ ORDER BY 2,1,6,5,3,4;";
@@ -37,9 +38,9 @@ namespace RetailApplication
             const string qryEmployeePermissions = "SELECT E.EmpID AS Employee Number, E.FirstName+ ' '+ E.LastName AS Name, l.PermissionName AS Permission Level FROM tblEmployee E, tblPermissionLevel l WHERE E.LevelID=l.LevelID @ ORDER BY l.PermissionLevel desc, 2;";
             const string qryEmployeePay = "SELECT COALESCE(E.FirstName + ' ' + E.LastName, Total) AS Employee Name, SUM(DATEDIFF(hh, I.EndTime, I.StartTime)*J.Pay) FROM tblEmployee E, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND J.JobID=I.JobID @ GROUP BY ROLLUP(E.EmpID) ORDER BY 1;";
             const string qryProductStocks = "SELECT P.ProductName AS Product, S.StoreName AS Store, L.RmnStock AS Quantity FROM tblProduct P, tblStore S, tblStockLevel L WHERE P.ProductID=L.ProductID AND S.StoreID=L.StoreID @ ORDER BY 1,3 desc;";
+            const string qryAutoUpdateStocks = "UPDATE sales.tblStockLevel SET ";
 
-            const string qryGetRecords = "SELECT * FROM @;";//The @ in this query is replaced with the name of the table that the user needs records from. This could cause problems with larger tables, particularly with a bigger company due to the length of the read operation.
-
+            #endregion
 
 
 
@@ -107,17 +108,36 @@ namespace RetailApplication
                     break;
             }
 
+            //The following lists are used to store the records from the corresponding table.
+            List<Employee> Employees =  new List<Employee> { };
+            List<PermissionLevel> PerLevels = new List<PermissionLevel> { };
 
             //The following will be a block to get all the records from different tables in the database.
-            switch (some_intvalue)
+            //The results may have dependencies in other tables(Foreign Keys). These dependencies will need to be retrieved through the same code block.
+            int getTableRecordsValue=0;
+            switch (getTableRecordsValue)
             {
                 case 1://tblEmployees
-                    List<object[]> rawEmployees= connection.GetRecordsHandler("scheduling.tblEmployee",qryGetRecords);
-                    foreach (var rawEmployee in rawEmployees)
+
+                    //Gets the Employees and Permission Levels from the database if they have not been gotten already
+                    if (Employees.Count == 0)
                     {
-                        new Employee((int)rawEmployee[0], (string)rawEmployee[1], (string)rawEmployee[2], (short)rawEmployee[3], (string)rawEmployee[4]);
-                        //IMPORTANT: This is computationally expensive due to the large amount of boxing/unboxing required. Test this section for slowdowns.
+                        Employees = connection.GetAllEmployees();
                     }
+                    if (PerLevels.Count==0)
+                    {
+                        PerLevels = connection.GetPermissionLevels();//PermissionLevels are a dependency of Employees since PerLevelID is a foreign key in the scheduling.tblEmployee table.
+                    }
+                    //Format the strings and pass them to a TableRecordDisplayer method.
+                    foreach (var employee in Employees)
+                    {
+                        
+                       string employeeString= employee.ToDisplayString(out int perLevelId);
+                        string perLevelString = PerLevels.Find(x=> x.PerLevelID== perLevelId).LevelName;//Finds the record with the specified PerLevelID and assigns the name of that permissionlevel to a string.
+                        employeeString.Replace("@perlevel",perLevelString);//Assigns the name of the perlevel to the employee string.
+                    }
+                    //Strings formatted, now create and pass a list of strings to be displayed.
+                    
                     break;
                 case 2:
 
@@ -128,8 +148,6 @@ namespace RetailApplication
                 default:
                     break;
             }
-
-
 
         }
     }

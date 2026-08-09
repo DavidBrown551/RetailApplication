@@ -129,6 +129,11 @@ namespace RetailApplication.Controller
             return perLevel;
         }
 
+
+
+        //The following methods get all the records from a specific table and return them as list of the corresponding Object.
+        //These methods use hard-coded string literals to query the database.
+        #region GetRecordMethods
         public List<Store> GetAllStores() 
         {
             List<Store> allStores = new List<Store> { };
@@ -201,7 +206,7 @@ namespace RetailApplication.Controller
         {
             List<Employee> allEmployees = new List<Employee> { };
 
-            string query = "SELECT * FROM scheduling.tblEmployee;";
+            string query = "SELECT * FROM scheduling.tblEmployee;";//This string is hardcoded since it is not used anywhere else.
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -298,7 +303,13 @@ namespace RetailApplication.Controller
             return allProviders;
         }
 
-       
+        #endregion
+        ///End of GetRecords methods
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
         public List<string[]> ReportHandler(string query, string parameters)
         {
             List<string[]> output=new List<string[]>();
@@ -343,40 +354,58 @@ namespace RetailApplication.Controller
 
 
 
-        //This is the method that will get records from the database for the user. It takes the name of the table the user wants records from and a generic query from Program.cs as parameters, and returns the records as arrays of objects, with each object being a column in the record.
-        public List<object[]> GetRecordsHandler(string tableName,string query) 
+        public int DeleteRecordByID(string table, string IDColName, string ID)
         {
-            List<object[]> tableRecords = new List<object[]> { };
-
             try
             {
-                using (SqlCommand cmd = new SqlCommand(query, connection))
+                using (SqlCommand cmd = new SqlCommand("DELETE FROM @table WHERE @IDColName = @ID", connection))
                 {
-                    cmd.Parameters.AddWithValue("@", tableName);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            object[] record = new object[reader.FieldCount];
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                record[i] = reader.GetValue(i);
-                                //This way of getting records requires a lot of computationally expensive boxing of variables. Look for a better way of doing this.
-                            }
-                            tableRecords.Add(record);
-                        }
-                        reader.Close();
-                    }
-
+                    cmd.Parameters.AddWithValue("@table", table);
+                    cmd.Parameters.AddWithValue("@IDColName", IDColName);
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    return cmd.ExecuteNonQuery();
                 }
             }
             catch (SqlException e)
             {
-                Console.WriteLine($"Error retrieving records from table: {e.Message}");
+                Console.WriteLine($"Error deleting record: {e.Message}");
+                throw;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error deleting record: {e.Message}");
+                throw;
+            }
+
+           
+        }
+
+
+        public int UpdateRecordByID(string table, string IDColName, string ID,string colName,string value)
+        {
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand($"UPDATE @table SET @colName = @value WHERE @IDColName = @ID", connection))
+                {
+                    cmd.Parameters.AddWithValue("@table", table);
+                    cmd.Parameters.AddWithValue("@colName", colName);
+                    cmd.Parameters.AddWithValue("@value", value);
+                    cmd.Parameters.AddWithValue("@IDColName", IDColName);
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"Error updating record: {e.Message}");
+                throw;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error updating record: {e.Message}");
                 throw;
             }
             
-            return tableRecords;
         }
     }
 }
