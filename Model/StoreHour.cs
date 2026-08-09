@@ -30,5 +30,11 @@ namespace RetailApplication.Model
         {
             return $"({StoreID},{Weekday},{OpenTime},{CloseTime})";
         }
+
+        public string ToDisplayString(out int storeId)
+        {
+            storeId = StoreID;
+            return $"{StoreHourID}\t@store\t{Weekday}\t{OpenTime}\t{CloseTime}";
+        }
     }
 }

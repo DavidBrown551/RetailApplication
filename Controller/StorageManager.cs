@@ -402,6 +402,72 @@ namespace RetailApplication.Controller
             return allEmpShifts;
         }
 
+        public List<ProductOrder> GetAllProductOrders()
+        {
+            List<ProductOrder> allProductOrders = new List<ProductOrder> { };
+
+            string query = "SELECT * FROM sales.tblProductOrder;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProductOrder productOrder = new ProductOrder(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),  reader.GetInt16(3),reader.GetDateTime(4),reader.GetBoolean(5));
+                            allProductOrders.Add(productOrder);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Product Orders: {ex.Message}");
+            }
+
+
+            return allProductOrders;
+        }
+
+        public List<StoreHour> GetAllStoreHours()
+        {
+            List<StoreHour> allStoreHours = new List<StoreHour> { };
+
+            string query = "SELECT * FROM scheduling.tblStoreHour;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            StoreHour storeHour = new StoreHour(reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2), TimeOnly.FromDateTime(reader.GetDateTime(3)), TimeOnly.FromDateTime(reader.GetDateTime(4)));
+                            allStoreHours.Add(storeHour);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Store Hours: {ex.Message}");
+            }
+
+
+            return allStoreHours;
+        }
+
         #endregion
         ///End of GetRecords methods
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

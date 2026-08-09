@@ -27,5 +27,12 @@ namespace RetailApplication.Model
         {
             return $"({StoreID},{ProductID},{Timestamp},{Quantity})";
         }
+
+        public string ToDisplayString(out int storeId,out int productId)
+        {
+            storeId = StoreID;
+            productId = ProductID;
+            return$"{TransactionID}\t@store\t@product\t{Timestamp}\t{Quantity}" ; 
+        }
     }
 }

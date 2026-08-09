@@ -13,7 +13,7 @@ namespace RetailApplication.Model
         public string LastName { get; set; }//LastName has a maximum length of 20 characters
         public short PerLevelID { get; set; }
         private string Password { get; set; }//Password has a maximum length of 32 characters, however the field will be handled completely internally
-
+        public string FullName { get; }
 
         //A generic constructor for the Employee class. Initialises the object instance.
         public Employee(int employeeId,string firstName,string lastName, short perLevelId, string password)
@@ -23,6 +23,7 @@ namespace RetailApplication.Model
             this.LastName = lastName;
             this.PerLevelID = perLevelId;
             this.Password = password;
+            FullName = FirstName + " " + LastName;
         }
 
 

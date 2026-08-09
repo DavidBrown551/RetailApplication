@@ -11,10 +11,10 @@ namespace RetailApplication.Model
        public int OrderID { get; }
         public int StoreID { get; }
         public int ProductID { get; }
-        public ushort Quantity { get; }
+        public short Quantity { get; }
         public DateTime Date { get; }
         public bool Filled { get; set; }
-        ProductOrder(int orderId,int storeId,int productId,ushort quantity, DateTime date,bool filled)
+        public ProductOrder(int orderId,int storeId,int productId,short quantity, DateTime date,bool filled)
         {
             OrderID = orderId;
             StoreID = storeId;
@@ -23,6 +23,18 @@ namespace RetailApplication.Model
             Date = date;
             Filled = filled;
 
+        }
+
+        public override string ToString()
+        {
+            return $"({StoreID},{ProductID},{Quantity},{Date},{Filled})";
+        }
+
+        public string ToDisplayString(out int storeId,out int productId)
+        {
+            storeId = StoreID;
+            productId = ProductID;
+            return $"{}\t@store\t@product\t{}\t{}\t{}";
         }
     }
 }

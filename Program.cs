@@ -198,13 +198,116 @@ namespace RetailApplication
                 case 7://tblStockLevel
                     if (stockLevels.Count==0)
                     {
-                        stockLevels=connection.G
+                        stockLevels = connection.GetAllStocks();
+                    }
+                    if (products.Count==0)
+                    {
+                        products = connection.GetAllProducts();
+                    }
+                    if (stores.Count==0)
+                    {
+                        stores = connection.GetAllStores();
+                    }
+                    foreach (var stockLevel in stockLevels)
+                    {
+                        string stockString = stockLevel.ToDisplayString(out int storeId,out int productId);
+                        string productString = products.Find(x => x.ProductID == productId).ProductName;//Finds the record with the specified ProductID and assigns the name of that product to a string.
+                        string storeString = stores.Find(x => x.StoreID == storeId).StoreName;//Finds the record with the specified StoreID and assigns the name of that store to a string.
+                        stockString.Replace("@product", productString);//Assigns the name of the product to the stockLevel string.
+                        stockString.Replace("@store",storeString);//Assigns the name of the store to the stockLevel string.
                     }
                     break;
-                case 8:
-
+                case 8://tblTransaction
+                    if (transactions.Count==0)
+                    {
+                        transactions = connection.GetAllTransactions();
+                    }
+                    if (products.Count == 0)
+                    {
+                        products = connection.GetAllProducts();
+                    }
+                    if (stores.Count == 0)
+                    {
+                        stores = connection.GetAllStores();
+                    }
+                    foreach (var transaction in transactions)
+                    {
+                        string transactionString = transaction.ToDisplayString(out int storeId, out int productId);
+                        string productString = products.Find(x => x.ProductID == productId).ProductName;//Finds the record with the specified ProductID and assigns the name of that product to a string.
+                        string storeString = stores.Find(x => x.StoreID == storeId).StoreName;//Finds the record with the specified StoreID and assigns the name of that store to a string.
+                        transactionString.Replace("@product", productString);//Assigns the name of the product to the transaction string.
+                        transactionString.Replace("@store", storeString);//Assigns the name of the store to the transaction string.
+                    }
                     break;
-                case 9:
+                case 9://tblProductOrder
+                    if (productOrders.Count == 0)
+                    {
+                        productOrders = connection.GetAllProductOrders();
+                    }
+                    if (products.Count == 0)
+                    {
+                        products = connection.GetAllProducts();
+                    }
+                    if (stores.Count == 0)
+                    {
+                        stores = connection.GetAllStores();
+                    }
+                    foreach (var productOrder in productOrders)
+                    {
+                        string productOrderString = productOrder.ToDisplayString(out int storeId, out int productId);
+                        string productString = products.Find(x => x.ProductID == productId).ProductName;//Finds the record with the specified ProductID and assigns the name of that product to a string.
+                        string storeString = stores.Find(x => x.StoreID == storeId).StoreName;//Finds the record with the specified StoreID and assigns the name of that store to a string.
+                        productOrderString.Replace("@product", productString);//Assigns the name of the product to the productOrder string.
+                        productOrderString.Replace("@store", storeString);//Assigns the name of the store to the productOrder string.
+                    }
+                    break;
+
+                case 10://tblStoreHour
+                    if (storeHours.Count == 0)
+                    {
+                        storeHours = connection.GetAllStoreHours();
+                    }
+                    if (stores.Count == 0)
+                    {
+                        stores = connection.GetAllStores();//Stores are a dependency of StoreHours since StoreID is a foreign key in the scheduling.tblStoreHour table.
+                    }
+                    //Format the strings and pass them to a TableRecordDisplayer method.
+                    foreach (var storeHour in storeHours)
+                    {
+
+                        string storeHourString = storeHour.ToDisplayString(out int storeId);
+                        string storeString = stores.Find(x => x.StoreID == storeId).StoreName;//Finds the record with the specified StoreID and assigns the name of that store to a string.
+                        storeHourString.Replace("@perlevel", storeString);//Assigns the name of the store to the storeHour string.
+                    }
+                    break;
+                case 11://tblEmployeeShift
+                    if (employeeShifts.Count==0)
+                    {
+                        employeeShifts = connection.GetAllEmployeeShifts();
+                    }
+                    if (employees.Count==0)
+                    {
+                        employees = connection.GetAllEmployees();
+                    }
+                    if (stores.Count==0)
+                    {
+                        stores = connection.GetAllStores();
+                    }
+                    if (jobs.Count==0)
+                    {
+                        jobs = connection.GetAllJobs();
+                    }
+
+                    foreach (var employeeShift in employeeShifts)
+                    {
+                        string employeeShiftString = employeeShift.ToDisplayString(out int storeId, out int employeeId,out int jobId);
+                        string employeeString = employees.Find(x => x.EmployeeID == employeeId).FullName;//Finds the record with the specified EmployeeID and assigns the name of that employee to a string.
+                        string storeString = stores.Find(x => x.StoreID == storeId).StoreName;//Finds the record with the specified StoreID and assigns the name of that store to a string.
+                        string jobString = jobs.Find(x => x.JobID == jobId).JobName;//Finds the record with the specified JobID and assigns the name of that job to a string.
+                        employeeShiftString.Replace("@employee", employeeString);//Assigns the name of the employee to the employeeShift string.
+                        employeeShiftString.Replace("@store", storeString);//Assigns the name of the store to the employeeShift string.
+                        employeeShiftString.Replace("@job", jobString);//Assigns the name of the job to the employeeShift string.
+                    }
 
                     break;
                 default:

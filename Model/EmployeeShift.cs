@@ -32,5 +32,13 @@ namespace RetailApplication.Model
         {
             return $"({EmpID},{StoreID},{WeekDay},{StartTime},{EndTime},{JobID})";
         }
+
+        public string ToDisplayString(out int storeId,out int employeeId,out int jobId)
+        {
+            storeId = StoreID;
+            employeeId = EmpID;
+            jobId = JobID;
+            return $"{EmpShiftID}\t@store\t@employee\t@job\t{StartTime}\t{EndTime}\t{WeekDay}" ;
+        }
     }
 }

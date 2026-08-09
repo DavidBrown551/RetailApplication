@@ -26,5 +26,11 @@ namespace RetailApplication.Model
             return $"({StoreID},{ProductID},{RmnStock})";
         }
 
+        public string ToDisplayString(out int storeId,out int productId)
+        {
+            storeId = StoreID;
+            productId = ProductID;
+            return $"{StockLevelID}\t@store\t@product\t{RmnStock}";
+        }
     }
 }
