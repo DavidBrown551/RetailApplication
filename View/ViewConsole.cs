@@ -16,7 +16,7 @@ namespace RetailApplication.View
         private const string TOOMANYOPTIONSMESSAGE = "Too many options to display choices for, please exit the page and report this error.";
         private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 2,147,483,648.";
         private const string INVALIDPERLEVELMESSAGE = "Error: the user does not have a valid permission level";
-
+        private const string READONLYFIELDMESSAGE = "Error: This field is read-only. Please try updating a different field.";
 
 
 
@@ -136,7 +136,7 @@ namespace RetailApplication.View
                     break;
                 case 'H'://H=Help
                 case 'h':
-                    outInt = 28;
+                    outInt = 23;
                     break;
                 case 'u'://U=update menu
                 case 'U':
@@ -150,7 +150,13 @@ namespace RetailApplication.View
                 case 'D':
                     outInt = 25;
                     break;
-                
+                case '\e':
+                    outInt = 27;
+                break;
+                case 'r':
+                case 'R':
+                    outInt = 28;
+                    break;
 
                 default:
                     for (int i = 0; i < genericOptionChars.Length; i++)
@@ -187,6 +193,11 @@ namespace RetailApplication.View
            //Generic options lead to generic display methods
         }
 
+
+
+
+
+        //The following region contains the methods used to display the various menus of the application.
         #region DisplayMenuMethods
         public void GotoMainMenu(int userPerLevel)
         {
@@ -217,27 +228,33 @@ namespace RetailApplication.View
 
         public void DisplayPer1MainMenu()
         {
-            //Add text to display here, specific to users with a per level of 1
-            //Text below is preliminary
-            Console.WriteLine($"Register a Transaction(A)   View Details(V)   Help With the Interface(H)   Log Out(X)   Exit Program(Esc)");
+            //This is the text to be displayed here, specific to users with a per level of 1
+            Console.WriteLine($"Register a Transaction(C)   View Details(R)   Help With the Interface(H)   Log Out(L)   Exit Program(Esc)");
             PageNum = 1;
         }
         public void DisplayPer2MainMenu()
         {
 
-            //Add text to display here, specific to users with a per level of 2
+            //This is the text to be displayed here, specific to users with a per level of 2
+            Console.WriteLine($"Create a record(C)   View Details(R)   Help With the Interface(H)   Log Out(L)   Exit Program(Esc)");
+            Console.WriteLine($"Update Order Status(U)");
             PageNum = 2;
         }
         public void DisplayPer3MainMenu()
         {
+            //This is the text to be displayed here, specific to users with a per level of 3
+            Console.WriteLine($"Create Menu(C)   Report Menu(R)   Update Menu(U)   Delete Menu(D)");
+            Console.WriteLine($"Help(H)   Log Out(L)   Exit(Esc)");
 
-            //Add text to display here, specific to users with a per level of 3
             PageNum = 3;
         }
         public void DisplayPer4MainMenu()
         {
             Console.Title = "Admin Main Menu";
-            //Add text to display here, showing all availible options
+            //This is the text to be displayed here, showing all available options
+            Console.WriteLine($"Create Menu(C)   Report Menu(R)   Update Menu(U)   Delete Menu(D)");
+            Console.WriteLine($"Help(H)   Log Out(L)   Exit(Esc)");
+
             PageNum = 4;
         }
 
@@ -271,23 +288,45 @@ namespace RetailApplication.View
 
         //Shows the user a list of tables to insert values into based on their employee permission level
         public void DisplayPer1InsertMenu()
-        { 
-            //Add text to display here, specific to users with a per level of 1
+        {
+            //This is the text to be displayed here, specific to users with a per level of 1
+            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
             PageNum = 5;
         }
         public void DisplayPer2InsertMenu()
         {
-            //Add text to display here, specific to users with a per level of 2
+            //This is the text to be displayed here, specific to users with a per level of 2
+            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
+            Console.WriteLine($"Order a product({genericOptionChars[1]})");
             PageNum = 6;
         }
         public void DisplayPer3InsertMenu()
         {
-            //Add text to display here, specific to users with a per level of 3
+            //This is the text to be displayed here, specific to users with a per level of 3
+            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
+            Console.WriteLine($"Order a product({genericOptionChars[1]})");
+            Console.WriteLine($"Add an employee({genericOptionChars[2]})");
+            Console.WriteLine($"Add shifts for an employee({genericOptionChars[3]})");
+            Console.WriteLine($"Add hours for a store({genericOptionChars[4]})");
+            Console.WriteLine($"Add a product({genericOptionChars[5]})");
+            Console.WriteLine($"Add a provider({genericOptionChars[6]})");
+            Console.WriteLine($"Add a new store({genericOptionChars[7]})");
+            Console.WriteLine($"Add a new job({genericOptionChars[8]})");
             PageNum = 7;
         }
         public void DisplayPer4InsertMenu()
         {
-            //Add text to display here, specific to users with a per level of 4
+            //This is the text to be displayed here, specific to users with a per level of 4
+            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
+            Console.WriteLine($"Order a product({genericOptionChars[1]})");
+            Console.WriteLine($"Add an employee({genericOptionChars[2]})");
+            Console.WriteLine($"Add shifts for an employee({genericOptionChars[3]})");
+            Console.WriteLine($"Add hours for a store({genericOptionChars[4]})");
+            Console.WriteLine($"Add a product({genericOptionChars[5]})");
+            Console.WriteLine($"Add a provider({genericOptionChars[6]})");
+            Console.WriteLine($"Add a new store({genericOptionChars[7]})");
+            Console.WriteLine($"Add a new permission level({genericOptionChars[8]})");
+            Console.WriteLine($"Add a new job({genericOptionChars[9]})");
             PageNum = 8;
         }
 
@@ -319,17 +358,39 @@ namespace RetailApplication.View
 
         public void DisplayPer2UpdateMenu()
         {
-            //Add text to display here, specific to users with a per level of 2
+            //This is the text to be displayed here, specific to users with a per level of 2
+            Console.WriteLine($"Update Order Status({genericOptionChars[0]})");
+            Console.WriteLine($"Update employee details({genericOptionChars[1]})");
+            Console.WriteLine($"Update employee shift({genericOptionChars[2]})");
             PageNum = 9;
         }
         public void DisplayPer3UpdateMenu()
         {
-            //Add text to display here, specific to users with a per level of 3
+            //This is the text to be displayed here, specific to users with a per level of 3
+            Console.WriteLine($"Update Order Status({genericOptionChars[0]})");
+            Console.WriteLine($"Update employee details({genericOptionChars[1]})");
+            Console.WriteLine($"Update employee shift({genericOptionChars[2]})");
+            Console.WriteLine($"Update provider contact details({genericOptionChars[3]})");
+            Console.WriteLine($"Update store details({genericOptionChars[4]})");
+            Console.WriteLine($"Update job details({genericOptionChars[5]})");
+            Console.WriteLine($"Update store hours({genericOptionChars[6]})");
+            Console.WriteLine($"Update product details({genericOptionChars[7]})");
             PageNum = 10;
         }
         public void DisplayPer4UpdateMenu()
         {
-            //Add text to display here, specific to users with a per level of 4
+            //This is the text to be displayed here, specific to users with a per level of 4
+            Console.WriteLine($"Update Order Status({genericOptionChars[0]})");
+            Console.WriteLine($"Update employee details({genericOptionChars[1]})");
+            Console.WriteLine($"Update employee shifts({genericOptionChars[2]})");
+            Console.WriteLine($"Update provider details({genericOptionChars[3]})");
+            Console.WriteLine($"Update store details({genericOptionChars[4]})");
+            Console.WriteLine($"Update job details({genericOptionChars[5]})");
+            Console.WriteLine($"Update permission levels({genericOptionChars[6]})");
+            Console.WriteLine($"Update transaction({genericOptionChars[7]})");
+            Console.WriteLine($"Update store hours({genericOptionChars[8]})");
+            Console.WriteLine($"Update store stocks({genericOptionChars[9]})");
+            Console.WriteLine($"Update product details({genericOptionChars[10]})");
             PageNum = 11;
         }
 
@@ -358,11 +419,13 @@ namespace RetailApplication.View
         public void DisplayPer3DeleteMenu()
         {
             //Add text to display here, specific to users with a per level of 3
+            Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
             PageNum = 12;
         }
         public void DisplayPer4DeleteMenu()
         {
             //Add text to display here, specific to users with a per level of 4
+            Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
             PageNum = 13;
         }
 

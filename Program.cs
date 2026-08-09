@@ -46,19 +46,54 @@ namespace RetailApplication
 
             byte userPermissionLevel; //This value is used to determine which pages the user can access
 
+
+            //The following region contains the arrays that store the data used by the program(coulumn names, datatypes, etc.)
+            #region lookupArrays
+
             string[][] tableColumnNames=
                 [
-                ["StoreID","StoreName","Address","Rent"],
-                ["LevelID","LevelName","PermissionLevel"],
-                ["EmpID","FirstName","LastName","LevelID"],
-                ["ProviderID","ProviderName","Contact"],
-                ["ProductID","ProviderID","ProductName","CustomerPrice","SupplyPrice","Amount"],
-                ["StockID","StoreID","ProductID","RmnStock"],
-                ["TransactionID","StoreID","ProductID","Timestamp","Quantity"],
-                [],
+                ["StoreID","StoreName","Address","Rent"],//tblStore
+                ["LevelID","LevelName","PermissionLevel"],//tblPermissionLevel
+                ["EmpID","FirstName","LastName","LevelID"],//tblEmployee
+                ["ProviderID","ProviderName","Contact"],//tblProvider
+                ["ProductID","ProviderID","ProductName","CustomerPrice","SupplyPrice","Amount"],//tblProduct
+                ["StockID","StoreID","ProductID","RmnStock"],//tblStockLevel
+                ["TransactionID","StoreID","ProductID","Timestamp","Quantity"],//tblTransaction
+                ["JobID","JobName","Pay"],//tblJob
+                ["StrHrID","StoreID","Weekday","OpenTime","CloseTime"],//tblStoreHour
+                ["ShiftID","EmpID","StoreID","WeekDay","StartTime","EndTime","JobID"],//tblEmployeeShift
+                ["OrderID","StoreID","ProductID","Quantity","Date","Filled"]//tblProductOrder
                 ];
-            byte[][] tableColumnDatatypes;
-            byte[][] tablesInQueries;//Populate these later
+
+            //1=int32
+            //2=int16
+            //3=string
+            //4=Time
+            //5=Date
+            //6=decimal
+            //7=Date+Time
+            //8=day of week
+            //9=bool
+
+            byte[][] tableColumnDatatypes=
+                [
+                [1,3,3,6],//tblStore
+                [1,3,1],//tblPermissionLevel
+                [1,3,3,2],//tblEmployee
+                [1,3,3],//tblProvider
+                [1,1,3,6,6,3],//tblProduct
+                [1,1,1,1],//tblStockLevel
+                [1,1,1,7,1],//tblTransaction
+                [1,3,6],//tblJob
+                [1,1,3,4,4],//tblStoreHour
+                [1,1,1,8,4,4,1],//tblEmployeeShift
+                [1,1,1,1,5,9]//tblProductOrder
+                ];
+            byte[][] tablesInQueries;//Populate this later
+
+#endregion
+
+
 
             //After establishing a connection to the database, the login page is shown
         Login:
@@ -100,10 +135,24 @@ namespace RetailApplication
                 case 22://Create Menu
                     mainview.GotoInsertMenu(userPermissionLevel);
                     break;
-                case 23:
-
+                case 23://Help Page
+                    mainview.GotoHelp(userPermissionLevel);
                     break;
-                    //Other cases here
+                case 24://Update Menu
+                    mainview.GotoUpdateMenu(userPermissionLevel);
+                    break;
+                case 25://Delete Menu
+                    mainview.GotoDeleteMenu(userPermissionLevel);
+                    break;
+                case 26://Logout
+                    mainview.DisplayLogoutConfirmation();
+                    break;
+                case 27://Exit
+                    mainview.DisplayExitConfirmation();
+                    break;
+                case 28://Report Menu
+                    mainview.GotoReportMenu(userPermissionLevel);
+                    break;
                 default:
                     break;
             }
@@ -124,6 +173,8 @@ namespace RetailApplication
             //The following will be a block to get all the records from different tables in the database.
             //The results may have dependencies in other tables(Foreign Keys). These dependencies will need to be retrieved through the same code block.
             int getTableRecordsValue=0;
+
+            #region getRecordStrings
             switch (getTableRecordsValue)
             {
                 case 1://tblEmployee
@@ -313,6 +364,8 @@ namespace RetailApplication
                 default:
                     break;
             }
+
+            #endregion
 
         }
     }
