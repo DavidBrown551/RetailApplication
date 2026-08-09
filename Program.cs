@@ -111,6 +111,12 @@ namespace RetailApplication
             //The following lists are used to store the records from the corresponding table.
             List<Employee> Employees =  new List<Employee> { };
             List<PermissionLevel> PerLevels = new List<PermissionLevel> { };
+            List<Store> Stores = new List<Store> { };
+            List<StoreHour> StoreHours = new List<StoreHour> { };
+            List<Job> Jobs = new List<Job> { };
+            List<Provider> Providers = new List<Provider> { };
+            List<ProductOrder> ProductOrders = new List<ProductOrder> { };
+            List<Product> Products = new List<Product> { };
 
             //The following will be a block to get all the records from different tables in the database.
             //The results may have dependencies in other tables(Foreign Keys). These dependencies will need to be retrieved through the same code block.
@@ -136,11 +142,12 @@ namespace RetailApplication
                         string perLevelString = PerLevels.Find(x=> x.PerLevelID== perLevelId).LevelName;//Finds the record with the specified PerLevelID and assigns the name of that permissionlevel to a string.
                         employeeString.Replace("@perlevel",perLevelString);//Assigns the name of the perlevel to the employee string.
                     }
+                    
                     //Strings formatted, now create and pass a list of strings to be displayed.
                     
                     break;
                 case 2:
-
+                     
                     break;
                 case 3:
 

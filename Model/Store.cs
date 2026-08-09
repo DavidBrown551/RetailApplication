@@ -25,7 +25,7 @@ namespace RetailApplication.Model
         public override string ToString()
         {
             //Returns a string in the formatting used for inserting an sql record
-            return $"({StoreName},{Address},{Rent})";
+            return $"(\"{StoreName}\",\"{Address}\",{Rent})";
         }
 
     }

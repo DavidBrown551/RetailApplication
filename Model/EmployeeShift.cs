@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RetailApplication.Model
+{
+    public class EmployeeShift
+    {
+        public int EmpShiftID { get; }
+        public int EmpID { get; }
+        public int StoreID { get; set; }
+        public int JobID { get; set; }
+        public TimeOnly StartTime{ get; set; }
+        public TimeOnly EndTime { get; set; }
+        public DayOfWeek WeekDay { get; set; }
+
+        public EmployeeShift(int empShiftId,int empId,int storeId,DayOfWeek weekDay ,int jobId,TimeOnly startTime, TimeOnly endTime)
+        {
+            EmpShiftID = empShiftId;
+            EmpID = empId;
+            StoreID = storeId;
+            JobID = jobId;
+            StartTime = startTime;
+            EndTime = endTime;
+            WeekDay = weekDay;
+
+        }
+
+        public override string ToString()
+        {
+            return $"({EmpID},{StoreID},{WeekDay},{StartTime},{EndTime},{JobID})";
+        }
+    }
+}
