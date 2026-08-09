@@ -36,7 +36,7 @@ namespace RetailApplication.Model
         public string ToDisplayString(out int perLevelId)
         {
             perLevelId = PerLevelID;
-            return $"{FirstName}\t{LastName}\t@perLevel";
+            return $"{EmployeeID}\t{FirstName}\t{LastName}\t@perLevel";
         }
     }
 }

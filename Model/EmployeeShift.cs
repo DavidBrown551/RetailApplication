@@ -16,7 +16,7 @@ namespace RetailApplication.Model
         public TimeOnly EndTime { get; set; }
         public DayOfWeek WeekDay { get; set; }
 
-        public EmployeeShift(int empShiftId,int empId,int storeId,DayOfWeek weekDay ,int jobId,TimeOnly startTime, TimeOnly endTime)
+        public EmployeeShift(int empShiftId,int empId,int storeId,DayOfWeek weekDay ,TimeOnly startTime, TimeOnly endTime, int jobId)
         {
             EmpShiftID = empShiftId;
             EmpID = empId;

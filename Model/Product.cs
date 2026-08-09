@@ -29,6 +29,10 @@ namespace RetailApplication.Model
         {
             return $"({ProviderID},{ProductName},{CustomerPrice},{SupplyPrice},{Amount})";
         }
-
+        public string ToDisplayString(out int providerId)
+        {
+            providerId = ProviderID;
+            return $"{ProductID}\t{ProductName}\t{Amount}\t{CustomerPrice}\t{SupplyPrice}\t@provider" ;
+        }
     }
 }

@@ -303,6 +303,105 @@ namespace RetailApplication.Controller
             return allProviders;
         }
 
+        public List<StockLevel> GetAllStocks()
+        {
+            List<StockLevel> allStocks = new List<StockLevel> { };
+
+            string query = "SELECT * FROM sales.tblStockLevel;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            StockLevel stock = new StockLevel(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),reader.GetInt32(3));
+                            allStocks.Add(stock);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Stocks: {ex.Message}");
+            }
+
+
+            return allStocks;
+        }
+
+        public List<Transaction> GetAllTransactions()
+        {
+            List<Transaction> allTransactions = new List<Transaction> { };
+
+            string query = "SELECT * FROM sales.tblTransaction;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Transaction transaction = new Transaction(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),reader.GetDateTime(3),reader.GetInt16(4));
+                            allTransactions.Add(transaction);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Transactions: {ex.Message}");
+            }
+
+
+            return allTransactions;
+        }
+
+        public List<EmployeeShift> GetAllEmployeeShifts()
+        {
+            List<EmployeeShift> allEmpShifts = new List<EmployeeShift> { };
+
+            string query = "SELECT * FROM sscheduling.tblEmpShift;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            EmployeeShift empShift = new EmployeeShift(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),reader.GetDateTime(3).DayOfWeek,TimeOnly.FromDateTime(reader.GetDateTime(4)),TimeOnly.FromDateTime(reader.GetDateTime(5)),reader.GetInt32(6));
+                            allEmpShifts.Add(empShift);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Employee Shifts: {ex.Message}");
+            }
+
+
+            return allEmpShifts;
+        }
+
         #endregion
         ///End of GetRecords methods
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

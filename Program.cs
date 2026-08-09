@@ -109,47 +109,102 @@ namespace RetailApplication
             }
 
             //The following lists are used to store the records from the corresponding table.
-            List<Employee> Employees =  new List<Employee> { };
-            List<PermissionLevel> PerLevels = new List<PermissionLevel> { };
-            List<Store> Stores = new List<Store> { };
-            List<StoreHour> StoreHours = new List<StoreHour> { };
-            List<Job> Jobs = new List<Job> { };
-            List<Provider> Providers = new List<Provider> { };
-            List<ProductOrder> ProductOrders = new List<ProductOrder> { };
-            List<Product> Products = new List<Product> { };
+            List<Employee> employees =  new List<Employee> { };
+            List<PermissionLevel> perLevels = new List<PermissionLevel> { };
+            List<Store> stores = new List<Store> { };
+            List<StoreHour> storeHours = new List<StoreHour> { };
+            List<Job> jobs = new List<Job> { };
+            List<Provider> providers = new List<Provider> { };
+            List<ProductOrder> productOrders = new List<ProductOrder> { };
+            List<Product> products = new List<Product> { };
+            List<EmployeeShift> employeeShifts = new List<EmployeeShift> { };
+            List<Transaction> transactions = new List<Transaction> { };
+            List<StockLevel> stockLevels = new List<StockLevel> { };
 
             //The following will be a block to get all the records from different tables in the database.
             //The results may have dependencies in other tables(Foreign Keys). These dependencies will need to be retrieved through the same code block.
             int getTableRecordsValue=0;
             switch (getTableRecordsValue)
             {
-                case 1://tblEmployees
+                case 1://tblEmployee
 
                     //Gets the Employees and Permission Levels from the database if they have not been gotten already
-                    if (Employees.Count == 0)
+                    if (employees.Count == 0)
                     {
-                        Employees = connection.GetAllEmployees();
+                        employees = connection.GetAllEmployees();
                     }
-                    if (PerLevels.Count==0)
+                    if (perLevels.Count==0)
                     {
-                        PerLevels = connection.GetPermissionLevels();//PermissionLevels are a dependency of Employees since PerLevelID is a foreign key in the scheduling.tblEmployee table.
+                        perLevels = connection.GetPermissionLevels();//PermissionLevels are a dependency of Employees since PerLevelID is a foreign key in the scheduling.tblEmployee table.
                     }
                     //Format the strings and pass them to a TableRecordDisplayer method.
-                    foreach (var employee in Employees)
+                    foreach (var employee in employees)
                     {
                         
                        string employeeString= employee.ToDisplayString(out int perLevelId);
-                        string perLevelString = PerLevels.Find(x=> x.PerLevelID== perLevelId).LevelName;//Finds the record with the specified PerLevelID and assigns the name of that permissionlevel to a string.
+                        string perLevelString = perLevels.Find(x=> x.PerLevelID== perLevelId).LevelName;//Finds the record with the specified PerLevelID and assigns the name of that permissionlevel to a string.
                         employeeString.Replace("@perlevel",perLevelString);//Assigns the name of the perlevel to the employee string.
                     }
                     
                     //Strings formatted, now create and pass a list of strings to be displayed.
                     
                     break;
-                case 2:
-                     
+                case 2://tblPermissionLevel
+                    if (perLevels.Count==0)
+                    {
+                        perLevels = connection.GetPermissionLevels();
+                    }
+
                     break;
-                case 3:
+                case 3://tblStore
+                    if (stores.Count==0)
+                    {
+                        stores = connection.GetAllStores();
+                    }
+                    break;
+
+                case 4://tblProvider
+                    if (providers.Count==0)
+                    {
+                        providers = connection.GetAllProviders();
+                    }
+                    break;
+
+                case 5://tblJob
+                    if (jobs.Count==0)
+                    {
+                        jobs = connection.GetAllJobs();
+                    }
+                    break;
+
+                case 6://tblProduct
+                    if (products.Count==0)
+                    {
+                        products = connection.GetAllProducts();
+                    }
+                    if (providers.Count==0)
+                    {
+                        providers = connection.GetAllProviders();
+                    }
+                    foreach (var product in products)
+                    {
+
+                        string productString = product.ToDisplayString(out int perLevelId);
+                        string providerString = providers.Find(x => x.ProviderID == perLevelId).ProviderName;//Finds the record with the specified ProviderID and assigns the name of that provider to a string.
+                        productString.Replace("@provider", providerString);//Assigns the name of the provider to the product string.
+                    }
+                    break;
+
+                case 7://tblStockLevel
+                    if (stockLevels.Count==0)
+                    {
+                        stockLevels=connection.G
+                    }
+                    break;
+                case 8:
+
+                    break;
+                case 9:
 
                     break;
                 default:
