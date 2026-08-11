@@ -9,10 +9,10 @@ namespace RetailApplication.Model
     public class Employee
     {
         public int EmployeeID { get; }
-        public string FirstName { get; set; }//FirstName has a maximum length of 10 characters
+        public string FirstName { get; set;}//FirstName has a maximum length of 10 characters
         public string LastName { get; set; }//LastName has a maximum length of 20 characters
         public short PerLevelID { get; set; }
-        private string Password { get; set; }//Password has a maximum length of 32 characters, however the field will be handled completely internally
+        private string Password { get; set; }//Password has a maximum length of 32 characters, however the field will be handled completely internally so does not need validation.
         public string FullName { get; }
 
         //A generic constructor for the Employee class. Initialises the object instance.

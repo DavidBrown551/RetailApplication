@@ -28,8 +28,9 @@ namespace RetailApplication
             connection = new StorageManager(connectionString);
             hash = MD5.Create();
 
+            //The queries used to get reports from the database
             #region Queries
-            //The queries used by the program. These will be passed to the ReportHandler method in the Controller folder and used to query the database. The '@' is a universal entry point for parameters to be added, and is replaced by whitespace if the query is not parameterised.
+            //These will be passed to the ReportHandler method in the Controller folder and used to query the database. The '@' is a universal entry point for parameters to be added, and is replaced by whitespace if the query is not parameterised.
             const string qryProductOrder = "SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM tblProduct P, tblStore S, tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 @ ORDER BY O.Date;";
             const string qryEmployeeShifts = "SELECT (E.FirstName+E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS Start Time, I.EndTime AS End Time, I.Weekday AS Day, J.JobName AS Job FROM tblEmployee E, tblStore S, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID @ ORDER BY 2,1,6,5,3,4;";
             const string qryProductSales = "SELECT COALESCE(P.ProductName,Total)AS Product, COALESCE(S.StoreName, Subtotal) AS Store, SUM(T.Quantity)AS QUANTITY, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblProduct P, tblTransaction T RIGHT JOIN tblStore S ON T.StoreID=S.StoreID WHERE P.ProductID=T.ProductID @ GROUP BY ROLLUP(S.StoreName,P.ProductName) ORDER BY 1,2;";
@@ -367,6 +368,36 @@ namespace RetailApplication
 
             #endregion
 
+
+
+            //The following region is the block of code which inserts records into the database.
+            #region InsertStatements
+            var recordsToInsert;//Assign this list from a method.
+            switch (recordsToInsert)
+            {
+                case List<Employee>:
+                    connection.InsertRecords<Employee>(recordsToInsert, "scheduling.tblEmployee");
+                    break;
+
+                case List<Store>:
+                    connection.InsertRecords<Store>(recordsToInsert, "scheduling.tblStore");
+                    break;
+                case List<StoreHour>:
+                    connection.InsertRecords<StoreHour>(recordsToInsert, "scheduling.tblStoreHours");
+                    break;
+                default:
+                    break;
+            }
+
+            #endregion
+
+            //Remaining to do: 
+            //-fill out array of valid characters
+            //-finish parameterisation methods
+            //-connect finished blocks to complete functionality
+            //-implement string-length checks on all string values in the Model folder
+            //-other?
+            //fully organise and comment code(stretch goal)
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace RetailApplication.View
         private const string BADINTMESSAGE = "You must input a number-only reply with a maximum size of 2,147,483,648.";
         private const string INVALIDPERLEVELMESSAGE = "Error: the user does not have a valid permission level";
         private const string READONLYFIELDMESSAGE = "Error: This field is read-only. Please try updating a different field.";
-
+        private const string INVALIDCHARINPUTMESSAGE = "Error: That is not a character recognised by the system. Please try again.";
 
 
         //The following are the page titles
@@ -27,26 +28,57 @@ namespace RetailApplication.View
         private const string UPDATEMENU_TITLE = "Update Records";
         private const string REPORTMENU_TITLE = "Report Menu";
 
+        //The arrays of valid characters used by the program to check user input.
+        #region validCharArrays
+
+        //This is the set of generic characters which are used for multi-choice options, e.g. fields in a table. Please Note: The length of this array is the maximum number of options the user can be presented with. The current length is 21 characters.
+        static char[] genericOptionChars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e', 't', 'y', 'i', 'o', 'p', 'a', 's', 'f'];
 
 
         //The current length of the following array is 23 pages
         //This is the array of all the valid characters for each page in the application. The array reference of the valid characters for a page is equal to its PageNum value.
-        static char[][] AllValidChars =/* new char[23][]*/  
-            [ ['a'],//PageNum=0,Page=login
-              ['c','C','h','H','r','R','l','L','\e'],//PageNum=1, Page=Per1MainMenu
+        static char[][] AllValidChars =
+            [
+            ['a'],//PageNum=0,Page=login
+            ['c','C','h','H','r','R','l','L','\e'],//PageNum=1, Page=Per1MainMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U'],//PageNum=2, Page=Per2MainMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=3, Page=Per3MainMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=4, Page=Per4MainMenu
+            ['m','M','h','H','r','R','l','L','\e'],//PageNum=5, Page=Per1InsertMenu
+            ['m','M','h','H','r','R','l','L','\e','u','U'],//PageNum=6, Page=Per2InsertMenu
+            ['m','M','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=7, Page=Per3InsertMenu
+            ['m','M','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=8, Page=Per4InsertMenu
+            ['c','C','h','H','r','R','l','L','\e','m','M'],//PageNum=9, Page=Per2UpdateMenu
+            ['c','C','h','H','r','R','l','L','\e','m','M','d','D'],//PageNum=10, Page=Per3UpdateMenu
+            ['c','C','h','H','r','R','l','L','\e','m','M','d','D'],//PageNum=11, Page=Per4UpdateMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U','m','M'],//PageNum=12, Page=Per3DeleteMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U','m','M'],//PageNum=13, Page=Per4DeleteMenu
+            ['c','C','h','H','m','M','l','L','\e'],//PageNum=14, Page=Per1ReportMenu
+            ['c','C','h','H','m','M','l','L','\e','u','U'],//PageNum=15, Page=Per2ReportMenu
+            ['c','C','h','H','m','M','l','L','\e','u','U','d','D'],//PageNum=16, Page=Per3ReportMenu
+            ['c','C','h','H','m','M','l','L','\e','u','U','d','D'],//PageNum=17, Page=Per4ReportMenu
+            ['c','C','m','M','r','R','l','L','\e'],//PageNum=18, Page=Per1Help
+            ['c','C','m','M','r','R','l','L','\e','u','U'],//PageNum=19, Page=Per2Help
+            ['c','C','m','M','r','R','l','L','\e','u','U','d','D'],//PageNum=20, Page=Per3Help
+            ['c','C','m','M','r','R','l','L','\e','u','U','d','D'],//PageNum=21, Page=Per4Help
+            [],//PageNum=22, Page=DisplayReport
+            ['\e','l','L'],//PageNum=23, Page=Update/Insert/Delete page
+            [],//PageNum=24,
+            [],//PageNum=25,
+
             ];
         //The AllValidChars array has characters in both cases to avoid having to set the character value to always be uppercase/lowercase
+        //all of the insert,update,delete,and report menus have the generic option characters as well
 
 
-        //This is the set of generic characters which are used for multi-choice options, e.g. fields in a table. Please Note: The length of this array is the maximum number of options the user can be presented with. The current length is 21 characters.
-        static char[] genericOptionChars = ['1','2','3','4','5','6','7','8','9','0','q','w','e','t','y','i','o','p','a','s','f'];
-
+        #endregion
 
         public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
         //it is changed whenever a new page is output
         //The PageNum value will be used by the main program to determine what pages the user can visit
 
+        //This method displays the login page to the user. 
         public void DisplayLoginPage()
         {
             Console.Title = "Login Page";
@@ -66,7 +98,7 @@ namespace RetailApplication.View
             Console.Clear();
             Console.WriteLine("Log out of the program? User State will not be preserved.\nLogout:Y\t Return to the program:N");
 
-            //The PageNum value is not changed to allow the program to maintain user state if the user stays logged in. If the user logs out, they will be taken to the login screen, otherwise they will return to their previous page
+            //The PageNum value is not changed to allow the program to maintain user state if the user stays logged in. If the user logs out, they will be taken to the login screen, otherwise they will return to their previous page(realistic with current program?)
             //Logout will only be allowed from menus, to avoid the difficulties of maintaining complex user states
         }
 
@@ -121,18 +153,18 @@ namespace RetailApplication.View
             int outInt=0;
             while (!HandleCharInput(out a))
             {
-                Console.WriteLine("That is not a character recognised by the system");
+                Console.WriteLine(INVALIDCHARINPUTMESSAGE);
             };
 
             switch (a)
             {
-                case 'c'://C=create records
-                case 'C':
-                    outInt = 22;//numbers need to be defined that correspond to destinations e.g. 2 for main menu
-                    break;
                 case 'm'://M=Main menu
                 case 'M':
                     outInt = 21;
+                    break;
+                case 'c'://C=create records
+                case 'C':
+                    outInt = 22;//numbers need to be defined that correspond to destinations e.g. 2 for main menu
                     break;
                 case 'H'://H=Help
                 case 'h':
@@ -142,13 +174,13 @@ namespace RetailApplication.View
                 case 'U':
                     outInt = 24;
                     break;
-                case 'l'://L=Logout
-                case'L':
-                    outInt = 26;
-                    break;
                 case 'd'://D=delete menu
                 case 'D':
                     outInt = 25;
+                    break;
+                case 'l'://L=Logout
+                case'L':
+                    outInt = 26;
                     break;
                 case '\e':
                     outInt = 27;
@@ -161,7 +193,7 @@ namespace RetailApplication.View
                 default:
                     for (int i = 0; i < genericOptionChars.Length; i++)
                     {
-                        if (genericOptionChars[i]=='a')
+                        if (genericOptionChars[i]==a)
                         {
                             outInt = i;
                             break;
@@ -191,6 +223,11 @@ namespace RetailApplication.View
            //Use PageNum to figure out which array to search for the option selected
            //Then send the string and any relevant values to a method to display etc.
            //Generic options lead to generic display methods
+
+
+
+
+
         }
 
 
@@ -536,7 +573,7 @@ namespace RetailApplication.View
         {
             //This method will obscure the password field when the employee logs in
             //Will get and store each character, replace it with a *, allow mid-string replacement of characters(FIRST PART)
-            //Checked with .Equals outside this method
+            //Checked for matching string with .Equals outside this method
             List<char> password = new List<char>();//A list is used due to its variable length
             char buffer;
             do
@@ -551,7 +588,7 @@ namespace RetailApplication.View
                         //Likewise with this empty case(\0 is an arrow key)
                         break;
                     case '\b':
-                        if (password.Count > 0)
+                        if (password.Count > 0)//This conditional prevents a System.ArgumentOutOfRangeException that could occur if the user pressed backspace when the password had length=0.
                         {
                             password.RemoveAt(password.Count - 1);//Removes the previous character in the list
                             Console.Write('\b');
@@ -574,15 +611,14 @@ namespace RetailApplication.View
                 //The length-unfixed List<char> is converted to a byte[] to format it for hashing
             }
             return bytepassword;
-            //This is the current version of the method. There are currently three identified problems:
+            //This is the current version of the method. There are currently two identified problems:
             //1: Pressing backspace now changes the position of the cursor, but does not remove the *.(This functionality is availible automatically when using Console.ReadLine, but obsfuscating the characters becomes harder.
-            //2: Pressing backspace when there are no characters in the password list causes a System.ArgumentOutOfRangeException(fix pending testing)
-            //3: The arrow keys do not move the cursor within the console(potentially beyond project scope to fix)
+            //2: The arrow keys do not move the cursor within the console(potentially beyond project scope to fix)
 
         }
 
 
-        //This method displays the 
+        //This method displays the fields in a user-chosen table, labelled with the generic option characters.
         public void DisplayTableFieldOptions(string[] columnNames)
         {
 
@@ -689,7 +725,7 @@ namespace RetailApplication.View
 
        public string AskParameters(int querynum, byte[][]queryTables, string[][] columnNames, byte[][]columnDatatypes)
        {
-
+            Console.Title = "Parameterisation";
             //Only users with a Permission Level of 3 or 4 will be using this menu. Users with a lower Permission Level will have any parameterisation they require done automatically.
 
             char userKey;
@@ -700,11 +736,9 @@ namespace RetailApplication.View
             {
                 foreach (var table in queryTables[querynum])
                 {
-                    foreach (var column in columnNames[table])
-                    {
-                        Console.WriteLine(column + ": " + genericOptionChars[charOptionNumber]);
-                        charOptionNumber++;
-                    }
+                    DisplayTableFieldOptions(columnNames[table]);
+                    //Try using DisplayTableFieldOptions here.
+
                 }
             }
             catch (IndexOutOfRangeException)
@@ -725,7 +759,7 @@ namespace RetailApplication.View
             //Are generic options always stored in arrays? if so, generic option input can be simplified to an array reference(YES)
             //How to find which array to reference?
 
-
+            
 
 
 
@@ -734,6 +768,41 @@ namespace RetailApplication.View
             finalParameters = "Placeholder";
             return finalParameters;
        }
+
+        //This method handles assigning parameters for all fields. 
+        public string GetParameters<T>()
+        {
+            //String Operations supported:
+            //-Starts with
+            //-Ends with
+            //-contains
+            //-is exact
+            //Int operations supported:
+            //-Greater than
+            //-less than
+            //-equal to
+            //-between(two literals)
+            string[] predicateBeginnings = ["@col_name LIKE \"", "@col_name LIKE \"%", "@col_name LIKE \"%","@col_name LIKE \""];
+            string[] predicateEndings = ["%\"","\"","%\"","\""];
+
+            //Display heading
+            //Display options
+            Console.WriteLine("");
+
+            //Get input for which parameter
+
+            do
+            {
+                string rawParameter = Console.ReadLine();
+                if (!string.IsNullOrEmpty(rawParameter))
+                {
+                    return"placeholder";//
+                }
+            } while (true);
+            
+
+        }
+
 
     }
 }

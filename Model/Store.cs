@@ -28,5 +28,10 @@ namespace RetailApplication.Model
             return $"(\"{StoreName}\",\"{Address}\",{Rent})";
         }
 
+        public string ToDisplayString()
+        {
+            return $"{StoreID}\t{StoreName}\t{Address}\t{Rent}" ;
+        }
+
     }
 }

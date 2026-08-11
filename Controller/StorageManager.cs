@@ -474,7 +474,7 @@ namespace RetailApplication.Controller
 
 
 
-
+        //This method gets a report using the provided query and parameters, returning it as a list of strings representing the records.
         public List<string[]> ReportHandler(string query, string parameters)
         {
             List<string[]> output=new List<string[]>();
@@ -518,7 +518,7 @@ namespace RetailApplication.Controller
         }
 
 
-
+        //This method deletes the record with the provided ID from the provided table. It is used for all the tables in the database.
         public int DeleteRecordByID(string table, string IDColName, string ID)
         {
             try
@@ -545,7 +545,7 @@ namespace RetailApplication.Controller
            
         }
 
-
+        //This method
         public int UpdateRecordByID(string table, string IDColName, string ID,string colName,string value)
         {
             try
@@ -562,7 +562,7 @@ namespace RetailApplication.Controller
             }
             catch (SqlException e)
             {
-                Console.WriteLine($"Error updating record: {e.Message}");
+                Console.WriteLine($"Database Error updating record: {e.Message}");
                 throw;
             }
             catch (Exception e)
@@ -572,5 +572,34 @@ namespace RetailApplication.Controller
             }
             
         }
+
+        //This method handles the insertion of new records to the database. It takes a list of objects and inserts them into the supplied table.
+        public int InsertRecords<T>(List<T> records, string table)
+        {
+            try
+            {
+                using (SqlCommand cmd=new SqlCommand($"INSERT INTO @table VALUES @values;",connection))
+                {
+                    foreach (var record in records)
+                    {
+                        cmd.Parameters.AddWithValue("@values", record + ",\n@values");//This calls the override ToString in the class, formatting the values like an SQL insert statement.
+                        //The above line replaces @values with the string representation of the object, followed by a comma, new line, and an @values for the next parameter.
+                    }
+                    cmd.Parameters.Remove(",\n@values");//Removes the parameter and statement terminator from the end of the query.
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+            catch(SqlException e)
+            {
+                Console.WriteLine($"Database Error inserting record/s: {e.Message}");
+                throw;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error inserting record/s: {e.Message}");
+                throw;
+            }
+        }
+
     }
 }
