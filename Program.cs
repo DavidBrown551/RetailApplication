@@ -21,12 +21,13 @@ namespace RetailApplication
         
         static void Main(string[] args)
         {
-            string connectionString = "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=RetailApplication;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+            string connectionString = "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=RetailDB;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
             //This string allows connection to the database and must be changed if the file name or file path is changed.
 
             mainview = new ViewConsole();
             connection = new StorageManager(connectionString);
             hash = MD5.Create();
+            //The MD5 class does not have a constructor
 
             //The queries used to get reports from the database
             #region Queries
@@ -51,6 +52,23 @@ namespace RetailApplication
             //The following region contains the arrays that store the data used by the program(coulumn names, datatypes, etc.)
             #region lookupArrays
 
+            //This array stores the names of the tables
+            string[] tables = 
+                [
+                "tblStore",
+                "tblPermissionLevel",
+                "tblEmployee",
+                "tblProvider",
+                "tblProduct",
+                "tblStockLevel",
+                "tblTransaction",
+                "tblJob",
+                "tblStoreHour",
+                "tblEmployeeShift",
+                "tblProductOrder"
+                ];
+
+            //This array stores the column names of each table. Note that currently these are used in both user-facing display and query parameterisation.
             string[][] tableColumnNames=
                 [
                 ["StoreID","StoreName","Address","Rent"],//tblStore
@@ -76,6 +94,7 @@ namespace RetailApplication
             //8=day of week
             //9=bool
 
+            //This array stores a numerical representation of the datatypes in each table column
             byte[][] tableColumnDatatypes=
                 [
                 [1,3,3,6],//tblStore
@@ -90,10 +109,41 @@ namespace RetailApplication
                 [1,1,1,8,4,4,1],//tblEmployeeShift
                 [1,1,1,1,5,9]//tblProductOrder
                 ];
-            byte[][] tablesInQueries;//Populate this later
 
-#endregion
+            //This array stores the array references to the tables used in the associated query
+            byte[][] tablesInQueries=
+                [
+                [0,4,6],//qryProductSales
+                [0,2,9],//qryEmployeeShifts
+                [0,8],//qryStoreHour
+                [2,7,9],//qryEmployeePay
+                [0,4,5],//qryProductStocks
+                [0,4,6],//qryBestProducts
+                [0,4,10],//qryProductOrders
+                [1,2],//qryEmployeePermissions
+                [2],//qryEmployee
+                [1],//qryPermissions
+                [3,4],//qryProductProviders
+                [0,4,6],//qryStoreSales
+                [],//qry
+                ];//could remove qry from beginning of string when displaying
 
+            #endregion
+
+            //The following lists are used to store the records from the corresponding table.
+            #region tableLists
+            List<Employee> employees = new List<Employee> { };
+            List<PermissionLevel> perLevels = new List<PermissionLevel> { };
+            List<Store> stores = new List<Store> { };
+            List<StoreHour> storeHours = new List<StoreHour> { };
+            List<Job> jobs = new List<Job> { };
+            List<Provider> providers = new List<Provider> { };
+            List<ProductOrder> productOrders = new List<ProductOrder> { };
+            List<Product> products = new List<Product> { };
+            List<EmployeeShift> employeeShifts = new List<EmployeeShift> { };
+            List<Transaction> transactions = new List<Transaction> { };
+            List<StockLevel> stockLevels = new List<StockLevel> { };
+            #endregion
 
 
             //After establishing a connection to the database, the login page is shown
@@ -103,8 +153,8 @@ namespace RetailApplication
             
 
             int enteredEmpId=mainview.GetIntegerInput();
-            //Gets an error-corrected integer from the user representing their employee number
-
+            //Gets an error-corrected integer from the user representing their employsee number
+            
             string hashedUserPassword = Convert.ToHexStringLower(hash.ComputeHash(mainview.ConcealTypedField()));
 
             if (hashedUserPassword.Equals(connection.GetUserPassword(enteredEmpId)))
@@ -127,7 +177,7 @@ namespace RetailApplication
             int userPageChangeValue= mainview.GetUserPageChangeValue();
             switch (userPageChangeValue)
             {
-                case <=20://A menu option. Further seperation of values necessary.
+                case <= 20://A menu option. Further seperation of values necessary.
                     //Send control to a method for determining what this generic option points to
                     break;
                 case 21://Main Menu
@@ -157,19 +207,61 @@ namespace RetailApplication
                 default:
                     break;
             }
+            //where to from here? use gotos? methods?
+            //either page has been printed and is ready for user input or a generic option needs to be deciphered.
+            //decipher generic options inside same switch as 
 
-            //The following lists are used to store the records from the corresponding table.
-            List<Employee> employees =  new List<Employee> { };
-            List<PermissionLevel> perLevels = new List<PermissionLevel> { };
-            List<Store> stores = new List<Store> { };
-            List<StoreHour> storeHours = new List<StoreHour> { };
-            List<Job> jobs = new List<Job> { };
-            List<Provider> providers = new List<Provider> { };
-            List<ProductOrder> productOrders = new List<ProductOrder> { };
-            List<Product> products = new List<Product> { };
-            List<EmployeeShift> employeeShifts = new List<EmployeeShift> { };
-            List<Transaction> transactions = new List<Transaction> { };
-            List<StockLevel> stockLevels = new List<StockLevel> { };
+
+
+
+
+            //The following block will determine the page/table/record/etc the generic option points to. It will use the userPageChangeValue and PageNum to find where to find the relevant data for the following generic method.
+            switch (mainview.PageNum)
+            {
+                case < 8:
+                    //points to tableColumnNames
+                    //pass tableColumnNames[userPageChangeValue] to display method
+                    //insert pages
+                    mainview.DisplayInsertRecordsPage(tableColumnNames[userPageChangeValue], tableColumnDatatypes[userPageChangeValue]);
+                    //method to get records to insert; assign to a List<var> or similar
+
+                    //pass list from previous to insert method
+                    break;
+                case < 12:
+                    //points to tableColumnNames
+                    //pass tableColumnNames[userPageChangeValue] to display method
+                    //update pages
+                    break;
+                case < 14:
+                    //points to tableColumnNames
+                    //pass tableColumnNames[userPageChangeValue] to display method
+                    //delete pages.
+                    break;
+                case < 18:
+                    //points to tablesInQueries
+                    //pass tablesInQueries[userPageChangeValue] to method
+                    //within method, foreach on that array to find potentially multiple arrays of column names, assigning them to a list and printing the list.
+                    //covers reports
+                    break;
+
+                default:
+                    break;
+            }
+            if (true)//PageNum values not yet defined
+            {
+                //points to lists with records-needs to have a way to get the list to index
+                //covers records
+
+            }
+            else if (true)//PageNum values not yet defined
+            {
+                //points to parameter pages(pages for query parameterisation, dependent on column datatype)
+            }
+
+
+    
+
+
 
             //The following will be a block to get all the records from different tables in the database.
             //The results may have dependencies in other tables(Foreign Keys). These dependencies will need to be retrieved through the same code block.
@@ -386,13 +478,14 @@ namespace RetailApplication
                     connection.InsertRecords<StoreHour>(recordsToInsert, "scheduling.tblStoreHours");
                     break;
                 default:
+
                     break;
             }
-
+            //Entire layout of this code in question- since type in <> is defined at compile time, it may be better to switch before assigning types
             #endregion
 
             //Remaining to do: 
-            //-fill out array of valid characters
+            //-fill out array of valid characters(mostly done)
             //-finish parameterisation methods
             //-connect finished blocks to complete functionality
             //-implement string-length checks on all string values in the Model folder

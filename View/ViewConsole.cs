@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using RetailApplication.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,6 +34,7 @@ namespace RetailApplication.View
 
         //This is the set of generic characters which are used for multi-choice options, e.g. fields in a table. Please Note: The length of this array is the maximum number of options the user can be presented with. The current length is 21 characters.
         static char[] genericOptionChars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e', 't', 'y', 'i', 'o', 'p', 'a', 's', 'f'];
+        //This array may be too short for some lists of options. Functional testing required.
 
 
         //The current length of the following array is 23 pages
@@ -164,7 +166,7 @@ namespace RetailApplication.View
                     break;
                 case 'c'://C=create records
                 case 'C':
-                    outInt = 22;//numbers need to be defined that correspond to destinations e.g. 2 for main menu
+                    outInt = 22;
                     break;
                 case 'H'://H=Help
                 case 'h':
@@ -217,21 +219,6 @@ namespace RetailApplication.View
             enteredCharacterValid = null;
             return false;
         }
-
-        public void DecipherGenericMenuOption(int userOption)
-        {
-           //Use PageNum to figure out which array to search for the option selected
-           //Then send the string and any relevant values to a method to display etc.
-           //Generic options lead to generic display methods
-
-
-
-
-
-        }
-
-
-
 
 
         //The following region contains the methods used to display the various menus of the application.
@@ -456,12 +443,32 @@ namespace RetailApplication.View
         public void DisplayPer3DeleteMenu()
         {
             //Add text to display here, specific to users with a per level of 3
+            Console.WriteLine($"Delete Stores({genericOptionChars[0]})");
+            Console.WriteLine($"Delete Employees({genericOptionChars[2]})");
+            Console.WriteLine($"Delete Product Providers({genericOptionChars[3]})");
+            Console.WriteLine($"Delete Products({genericOptionChars[4]})");
+            Console.WriteLine($"Delete Jobs({genericOptionChars[7]})");
+            Console.WriteLine($"Delete Store Hours({genericOptionChars[8]})");
+            Console.WriteLine($"Delete Employee Shifts({genericOptionChars[9]})");
             Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
             PageNum = 12;
         }
         public void DisplayPer4DeleteMenu()
         {
             //Add text to display here, specific to users with a per level of 4
+            Console.WriteLine($"Delete Stores({genericOptionChars[0]})");
+            Console.WriteLine($"Delete Permission Levels({genericOptionChars[1]})");
+            Console.WriteLine($"Delete Employees({genericOptionChars[2]})");
+            Console.WriteLine($"Delete Product Providers({genericOptionChars[3]})");
+            Console.WriteLine($"Delete Products({genericOptionChars[4]})");
+            Console.WriteLine($"Delete Stock Levels({genericOptionChars[5]})");
+            Console.WriteLine($"Delete Transactions({genericOptionChars[6]})");
+            Console.WriteLine($"Delete Jobs({genericOptionChars[7]})");
+            Console.WriteLine($"Delete Store Hours({genericOptionChars[8]})");
+            Console.WriteLine($"Delete Employee Shifts({genericOptionChars[9]})");
+            Console.WriteLine($"Delete Product Orders({genericOptionChars[10]})");
+            Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
+
             Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
             PageNum = 13;
         }
@@ -569,6 +576,64 @@ namespace RetailApplication.View
         #endregion
 
 
+
+        public void DisplayUpdateRecordsPage(string[] tableColumns) 
+        {
+            Console.Title = "Update Records";
+            //Print header here
+            //print columns here
+            //print records here, with attached option characters
+            //print footer here
+
+            //how to decipher generic character input?
+            //-find number of records/page
+            //-find page number(NOT PageNum)
+            //-re-retrieve record using these values((pagenumber-1)*(records/page)+i where inputval= genericOptionCharacters[i]
+
+
+            DisplayTableFieldOptions(tableColumns);
+            //Get user input for which column to modify
+            //allow user to input literal to modify column in record to
+            //perform input validation on literal
+            //exit when valid literal aquired
+            //note- this does not allow for updating multiple records at once.
+        }
+
+        public void DisplayInsertRecordsPage(string[] columnNames, byte[] columnDatatypes)
+        {
+            Console.Title = "Insert Records";
+            //Displays the page for record creation.
+            Console.WriteLine($"sample header text");
+            foreach (var column in columnNames)
+            {
+                Console.Write(column+"  ");
+            }
+            //needs to:
+            //-inform user of datatype of columns
+            //-autofill date/time columns(display to user as "Current Date/Time" or hide altogether?)
+            //pass back to main then to other method for input
+           
+        }
+
+        //The foillowing method will prompt the user for records to insert, 
+        public T GetRecordsToInsert<T>(string[] columnNames)
+        {
+            T i;
+            return i;
+
+            //autofill current store using current time, day of week, logged-in employee, to find empshift then find storeID of empshift(needs exception handing)
+            //challenge: how to make compiler realise that fields will be valid.
+            //challenge: how to ensure type requirements are met.
+            //challenge: how to 
+        }
+
+
+        public void DisplayUpdateRecordsPage() 
+        {
+
+        }
+
+
         public byte[] ConcealTypedField()
         {
             //This method will obscure the password field when the employee logs in
@@ -576,6 +641,7 @@ namespace RetailApplication.View
             //Checked for matching string with .Equals outside this method
             List<char> password = new List<char>();//A list is used due to its variable length
             char buffer;
+            Console.SetCursorPosition(Console.GetCursorPosition().Left,Console.GetCursorPosition().Top+1);//Moves the cursor down one row.
             do
             {
                 buffer = Console.ReadKey(true).KeyChar;//This gets the inputted character without it being printed to the console
@@ -645,13 +711,10 @@ namespace RetailApplication.View
 
 
 
-
+        //This method prints reports to the console using the provided string arrays. Pressing any key other than enter or backspace will exit the method
         public void DisplayReport(string[] columnHeadings, string[] records)
         {
             PageNum = 22;
-            //Try avoid using windows-specific functions to help pagination
-            //If impossible to do this ensure it is mentioned in documentation
-            //(mostly) FIXED:core functions like Console.ReadKey are unsupported on several non-windows architechtures
             int i = 0;
             int outputPageNum = 1;
             bool exitReport;
@@ -725,19 +788,18 @@ namespace RetailApplication.View
 
        public string AskParameters(int querynum, byte[][]queryTables, string[][] columnNames, byte[][]columnDatatypes)
        {
-            Console.Title = "Parameterisation";
             //Only users with a Permission Level of 3 or 4 will be using this menu. Users with a lower Permission Level will have any parameterisation they require done automatically.
-
+            Console.Title = "Parameterisation";
             char userKey;
             int charOptionNumber=0;
-            string finalParameters;
+            string finalParameters="";
             //This block prints each column in the tables that the query uses, along with a character allowing the choice of that column.
             try
             {
                 foreach (var table in queryTables[querynum])
                 {
                     DisplayTableFieldOptions(columnNames[table]);
-                    //Try using DisplayTableFieldOptions here.
+                    
 
                 }
             }
@@ -764,13 +826,11 @@ namespace RetailApplication.View
 
 
 
-
-            finalParameters = "Placeholder";
             return finalParameters;
        }
 
         //This method handles assigning parameters for all fields. 
-        public string GetParameters<T>()
+        public string GetParameters<T>(string colName)
         {
             //String Operations supported:
             //-Starts with
@@ -782,8 +842,10 @@ namespace RetailApplication.View
             //-less than
             //-equal to
             //-between(two literals)
-            string[] predicateBeginnings = ["@col_name LIKE \"", "@col_name LIKE \"%", "@col_name LIKE \"%","@col_name LIKE \""];
-            string[] predicateEndings = ["%\"","\"","%\"","\""];
+            string[] stringPredicateBeginnings = ["@col_name LIKE \"", "@col_name LIKE \"%", "@col_name LIKE \"%","@col_name LIKE \""];
+            string[] stringPredicateEndings = ["%\"","\"","%\"","\""];
+            string[] intPredicates = ["@col_name =", "@col_name <", "@col_name >"];
+            string[] boolPredicates = ["@col_name IS TRUE", "@col_name IS FALSE"];
 
             //Display heading
             //Display options
@@ -796,7 +858,7 @@ namespace RetailApplication.View
                 string rawParameter = Console.ReadLine();
                 if (!string.IsNullOrEmpty(rawParameter))
                 {
-                    return"placeholder";//
+                    return"placeholder".Replace("@col_name",colName);//
                 }
             } while (true);
             

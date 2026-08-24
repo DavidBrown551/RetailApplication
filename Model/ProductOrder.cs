@@ -34,7 +34,7 @@ namespace RetailApplication.Model
         {
             storeId = StoreID;
             productId = ProductID;
-            return $"{}\t@store\t@product\t{}\t{}\t{}";
+            return $"{OrderID}\t@store\t@product\t{Quantity}\t{Date}\t{Filled}";
         }
     }
 }

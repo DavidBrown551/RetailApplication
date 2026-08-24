@@ -507,9 +507,9 @@ namespace RetailApplication.Controller
                     }
                 }
             }
-            catch (SqlException)
+            catch (SqlException e)
             {
-                Console.WriteLine("");
+                Console.WriteLine($"There was a database error while retrieving the report: {e.Message}");
                 
                 throw;
             }
@@ -582,6 +582,7 @@ namespace RetailApplication.Controller
                 {
                     foreach (var record in records)
                     {
+                        cmd.Parameters.AddWithValue("@table",table);
                         cmd.Parameters.AddWithValue("@values", record + ",\n@values");//This calls the override ToString in the class, formatting the values like an SQL insert statement.
                         //The above line replaces @values with the string representation of the object, followed by a comma, new line, and an @values for the next parameter.
                     }
