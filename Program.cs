@@ -174,35 +174,77 @@ namespace RetailApplication
 
         HandleCharInput:
 
-            int userPageChangeValue= mainview.GetUserPageChangeValue();
+            int userPageChangeValue= mainview.GetUserPageChangeValue(out int genericValue);
             switch (userPageChangeValue)
             {
-                case <= 20://A menu option. Further seperation of values necessary.
-                    //Send control to a method for determining what this generic option points to
-                    break;
-                case 21://Main Menu
+                case 0://Main Menu
                     mainview.GotoMainMenu(userPermissionLevel);
                     break;
-                case 22://Create Menu
+                case 1://Create Menu
                     mainview.GotoInsertMenu(userPermissionLevel);
                     break;
-                case 23://Help Page
+                case 2://Help Page
                     mainview.GotoHelp(userPermissionLevel);
                     break;
-                case 24://Update Menu
+                case 3://Update Menu
                     mainview.GotoUpdateMenu(userPermissionLevel);
                     break;
-                case 25://Delete Menu
+                case 4://Delete Menu
                     mainview.GotoDeleteMenu(userPermissionLevel);
                     break;
-                case 26://Logout
+                case 5://Logout
                     mainview.DisplayLogoutConfirmation();
                     break;
-                case 27://Exit
+                case 6://Exit
                     mainview.DisplayExitConfirmation();
                     break;
-                case 28://Report Menu
+                case 7://Report Menu
                     mainview.GotoReportMenu(userPermissionLevel);
+                    break;
+                case 8://A menu option. Further seperation of values necessary.
+                    //Send control to a method for determining what this generic option points to
+                    switch (mainview.PageNum)
+                    {
+                        case < 8:
+                            //points to tableColumnNames
+                            //pass tableColumnNames[userPageChangeValue] to display method
+                            //insert pages
+                            mainview.DisplayInsertRecordsPage(tableColumnNames[genericValue], tableColumnDatatypes[genericValue]);
+                            //method to get records to insert; assign to a List<var> or similar
+
+                            //pass list from previous to insert method
+                            break;
+                        case < 12:
+                            //points to tableColumnNames
+                            //pass tableColumnNames[userPageChangeValue] to display method
+                            //update pages
+                            break;
+                        case < 14:
+                            //points to tableColumnNames
+                            //pass tableColumnNames[userPageChangeValue] to display method
+                            //delete pages.
+                            break;
+                        case < 18:
+                            //points to tablesInQueries
+                            //pass tablesInQueries[userPageChangeValue] to method
+                            //within method, foreach on that array to find potentially multiple arrays of column names, assigning them to a list and printing the list.
+                            //covers reports
+                            break;
+
+                        default:
+                            break;
+                    }
+                    if (true)//PageNum values not yet defined
+                    {
+                        //points to lists with records-needs to have a way to get the list to index
+                        //covers records
+
+                    }
+                    else if (true)//PageNum values not yet defined
+                    {
+                        //points to parameter pages(pages for query parameterisation, dependent on column datatype)
+                    }
+
                     break;
                 default:
                     break;
@@ -216,47 +258,7 @@ namespace RetailApplication
 
 
             //The following block will determine the page/table/record/etc the generic option points to. It will use the userPageChangeValue and PageNum to find where to find the relevant data for the following generic method.
-            switch (mainview.PageNum)
-            {
-                case < 8:
-                    //points to tableColumnNames
-                    //pass tableColumnNames[userPageChangeValue] to display method
-                    //insert pages
-                    mainview.DisplayInsertRecordsPage(tableColumnNames[userPageChangeValue], tableColumnDatatypes[userPageChangeValue]);
-                    //method to get records to insert; assign to a List<var> or similar
-
-                    //pass list from previous to insert method
-                    break;
-                case < 12:
-                    //points to tableColumnNames
-                    //pass tableColumnNames[userPageChangeValue] to display method
-                    //update pages
-                    break;
-                case < 14:
-                    //points to tableColumnNames
-                    //pass tableColumnNames[userPageChangeValue] to display method
-                    //delete pages.
-                    break;
-                case < 18:
-                    //points to tablesInQueries
-                    //pass tablesInQueries[userPageChangeValue] to method
-                    //within method, foreach on that array to find potentially multiple arrays of column names, assigning them to a list and printing the list.
-                    //covers reports
-                    break;
-
-                default:
-                    break;
-            }
-            if (true)//PageNum values not yet defined
-            {
-                //points to lists with records-needs to have a way to get the list to index
-                //covers records
-
-            }
-            else if (true)//PageNum values not yet defined
-            {
-                //points to parameter pages(pages for query parameterisation, dependent on column datatype)
-            }
+            
 
 
     

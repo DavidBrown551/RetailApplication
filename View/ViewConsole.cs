@@ -33,12 +33,15 @@ namespace RetailApplication.View
         #region validCharArrays
 
         //This is the set of generic characters which are used for multi-choice options, e.g. fields in a table. Please Note: The length of this array is the maximum number of options the user can be presented with. The current length is 21 characters.
-        static char[] genericOptionChars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e', 't', 'y', 'i', 'o', 'p', 'a', 's', 'f'];
+        static char[] genericOptionChars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e', 't', 'y', 'i', 'o', 'p', 'a', 's', 'f'];//unrequired in new system
         //This array may be too short for some lists of options. Functional testing required.
+
+        static int optionsOnPage;
 
 
         //The current length of the following array is 23 pages
         //This is the array of all the valid characters for each page in the application. The array reference of the valid characters for a page is equal to its PageNum value.
+        //O allows the user to choose a generic option
         static char[][] AllValidChars =
             [
             ['a'],//PageNum=0,Page=login
@@ -46,25 +49,25 @@ namespace RetailApplication.View
             ['c','C','h','H','r','R','l','L','\e','u','U'],//PageNum=2, Page=Per2MainMenu
             ['c','C','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=3, Page=Per3MainMenu
             ['c','C','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=4, Page=Per4MainMenu
-            ['m','M','h','H','r','R','l','L','\e'],//PageNum=5, Page=Per1InsertMenu
-            ['m','M','h','H','r','R','l','L','\e','u','U'],//PageNum=6, Page=Per2InsertMenu
-            ['m','M','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=7, Page=Per3InsertMenu
-            ['m','M','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=8, Page=Per4InsertMenu
-            ['c','C','h','H','r','R','l','L','\e','m','M'],//PageNum=9, Page=Per2UpdateMenu
-            ['c','C','h','H','r','R','l','L','\e','m','M','d','D'],//PageNum=10, Page=Per3UpdateMenu
-            ['c','C','h','H','r','R','l','L','\e','m','M','d','D'],//PageNum=11, Page=Per4UpdateMenu
-            ['c','C','h','H','r','R','l','L','\e','u','U','m','M'],//PageNum=12, Page=Per3DeleteMenu
-            ['c','C','h','H','r','R','l','L','\e','u','U','m','M'],//PageNum=13, Page=Per4DeleteMenu
-            ['c','C','h','H','m','M','l','L','\e'],//PageNum=14, Page=Per1ReportMenu
-            ['c','C','h','H','m','M','l','L','\e','u','U'],//PageNum=15, Page=Per2ReportMenu
-            ['c','C','h','H','m','M','l','L','\e','u','U','d','D'],//PageNum=16, Page=Per3ReportMenu
-            ['c','C','h','H','m','M','l','L','\e','u','U','d','D'],//PageNum=17, Page=Per4ReportMenu
+            ['m','M','h','H','r','R','l','L','\e','o','O'],//PageNum=5, Page=Per1InsertMenu
+            ['m','M','h','H','r','R','l','L','\e','u','U','o','O'],//PageNum=6, Page=Per2InsertMenu
+            ['m','M','h','H','r','R','l','L','\e','u','U','d','D','o','O'],//PageNum=7, Page=Per3InsertMenu
+            ['m','M','h','H','r','R','l','L','\e','u','U','d','D','o','O'],//PageNum=8, Page=Per4InsertMenu
+            ['c','C','h','H','r','R','l','L','\e','m','M','o','O'],//PageNum=9, Page=Per2UpdateMenu
+            ['c','C','h','H','r','R','l','L','\e','m','M','d','D','o','O'],//PageNum=10, Page=Per3UpdateMenu
+            ['c','C','h','H','r','R','l','L','\e','m','M','d','D','o','O'],//PageNum=11, Page=Per4UpdateMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U','m','M','o','O'],//PageNum=12, Page=Per3DeleteMenu
+            ['c','C','h','H','r','R','l','L','\e','u','U','m','M','o','O'],//PageNum=13, Page=Per4DeleteMenu
+            ['c','C','h','H','m','M','l','L','\e','o','O'],//PageNum=14, Page=Per1ReportMenu
+            ['c','C','h','H','m','M','l','L','\e','u','U','o','O'],//PageNum=15, Page=Per2ReportMenu
+            ['c','C','h','H','m','M','l','L','\e','u','U','d','D','o','O'],//PageNum=16, Page=Per3ReportMenu
+            ['c','C','h','H','m','M','l','L','\e','u','U','d','D','o','O'],//PageNum=17, Page=Per4ReportMenu
             ['c','C','m','M','r','R','l','L','\e'],//PageNum=18, Page=Per1Help
             ['c','C','m','M','r','R','l','L','\e','u','U'],//PageNum=19, Page=Per2Help
             ['c','C','m','M','r','R','l','L','\e','u','U','d','D'],//PageNum=20, Page=Per3Help
             ['c','C','m','M','r','R','l','L','\e','u','U','d','D'],//PageNum=21, Page=Per4Help
             [],//PageNum=22, Page=DisplayReport
-            ['\e','l','L'],//PageNum=23, Page=Update/Insert/Delete page
+            ['\e','l','L','o','O'],//PageNum=23, Page=Update/Insert/Delete page
             [],//PageNum=24,
             [],//PageNum=25,
 
@@ -149,7 +152,7 @@ namespace RetailApplication.View
         }
 
 
-        public int GetUserPageChangeValue()
+        public int GetUserPageChangeValue(out int genericValue)
         {
             char? a;
             int outInt=0;
@@ -162,45 +165,57 @@ namespace RetailApplication.View
             {
                 case 'm'://M=Main menu
                 case 'M':
-                    outInt = 21;
+                    outInt = 0;
+                    genericValue = 0;
                     break;
                 case 'c'://C=create records
                 case 'C':
-                    outInt = 22;
+                    outInt = 1;
+                    genericValue = 0;
                     break;
                 case 'H'://H=Help
                 case 'h':
-                    outInt = 23;
+                    outInt = 2;
+                    genericValue = 0;
                     break;
                 case 'u'://U=update menu
                 case 'U':
-                    outInt = 24;
+                    outInt = 3;
+                    genericValue = 0;
                     break;
                 case 'd'://D=delete menu
                 case 'D':
-                    outInt = 25;
+                    outInt = 4;
+                    genericValue = 0;
                     break;
                 case 'l'://L=Logout
                 case'L':
-                    outInt = 26;
+                    outInt = 5;
+                    genericValue = 0;
                     break;
                 case '\e':
-                    outInt = 27;
-                break;
+                    outInt = 6;
+                    genericValue = 0;
+                    break;
                 case 'r':
                 case 'R':
-                    outInt = 28;
+                    outInt = 7;
+                    genericValue = 0;
                     break;
 
-                default:
-                    for (int i = 0; i < genericOptionChars.Length; i++)
+                case 'o':
+                case 'O':
+                    outInt = 8;
+                    int uncheckedGenericValue;
+                    do
                     {
-                        if (genericOptionChars[i]==a)
-                        {
-                            outInt = i;
-                            break;
-                        }
-                    }
+                        uncheckedGenericValue = GetIntegerInput();
+                    } while (optionsOnPage<=uncheckedGenericValue);
+                    genericValue = uncheckedGenericValue;
+
+                    break;
+                default:
+                    genericValue = 0;
                     break;
             }
             
@@ -225,6 +240,7 @@ namespace RetailApplication.View
         #region DisplayMenuMethods
         public void GotoMainMenu(int userPerLevel)
         {
+            optionsOnPage = 0;
             Console.Title = MAINMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
@@ -285,6 +301,7 @@ namespace RetailApplication.View
 
         public void GotoInsertMenu(int userPerLevel)
         {
+            optionsOnPage = 0;
             Console.Title = CREATEMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
@@ -314,50 +331,50 @@ namespace RetailApplication.View
         public void DisplayPer1InsertMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 1
-            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
+            Console.WriteLine($"Log a transaction({optionsOnPage})"); optionsOnPage++;
             PageNum = 5;
         }
         public void DisplayPer2InsertMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 2
-            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
-            Console.WriteLine($"Order a product({genericOptionChars[1]})");
+            Console.WriteLine($"Log a transaction({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Order a product({optionsOnPage})"); optionsOnPage++;
             PageNum = 6;
         }
         public void DisplayPer3InsertMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 3
-            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
-            Console.WriteLine($"Order a product({genericOptionChars[1]})");
-            Console.WriteLine($"Add an employee({genericOptionChars[2]})");
-            Console.WriteLine($"Add shifts for an employee({genericOptionChars[3]})");
-            Console.WriteLine($"Add hours for a store({genericOptionChars[4]})");
-            Console.WriteLine($"Add a product({genericOptionChars[5]})");
-            Console.WriteLine($"Add a provider({genericOptionChars[6]})");
-            Console.WriteLine($"Add a new store({genericOptionChars[7]})");
-            Console.WriteLine($"Add a new job({genericOptionChars[8]})");
+            Console.WriteLine($"Log a transaction({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Order a product({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add an employee({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add shifts for an employee({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add hours for a store({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a product({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a provider({optionsOnPage})");optionsOnPage++;
+            Console.WriteLine($"Add a new store({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a new job({optionsOnPage})"); optionsOnPage++;
             PageNum = 7;
         }
         public void DisplayPer4InsertMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 4
-            Console.WriteLine($"Log a transaction({genericOptionChars[0]})");
-            Console.WriteLine($"Order a product({genericOptionChars[1]})");
-            Console.WriteLine($"Add an employee({genericOptionChars[2]})");
-            Console.WriteLine($"Add shifts for an employee({genericOptionChars[3]})");
-            Console.WriteLine($"Add hours for a store({genericOptionChars[4]})");
-            Console.WriteLine($"Add a product({genericOptionChars[5]})");
-            Console.WriteLine($"Add a provider({genericOptionChars[6]})");
-            Console.WriteLine($"Add a new store({genericOptionChars[7]})");
-            Console.WriteLine($"Add a new permission level({genericOptionChars[8]})");
-            Console.WriteLine($"Add a new job({genericOptionChars[9]})");
+            Console.WriteLine($"Log a transaction({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Order a product({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add an employee({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add shifts for an employee({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add hours for a store({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a product({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a provider({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a new store({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a new permission level({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Add a new job({optionsOnPage})"); optionsOnPage++;
             PageNum = 8;
         }
 
 
         public void GotoUpdateMenu(int userPerLevel)
         {
-
+            optionsOnPage = 0;
             Console.Title = UPDATEMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
@@ -383,45 +400,45 @@ namespace RetailApplication.View
         public void DisplayPer2UpdateMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 2
-            Console.WriteLine($"Update Order Status({genericOptionChars[0]})");
-            Console.WriteLine($"Update employee details({genericOptionChars[1]})");
-            Console.WriteLine($"Update employee shift({genericOptionChars[2]})");
+            Console.WriteLine($"Update Order Status({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update employee details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update employee shift({optionsOnPage})"); optionsOnPage++;
             PageNum = 9;
         }
         public void DisplayPer3UpdateMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 3
-            Console.WriteLine($"Update Order Status({genericOptionChars[0]})");
-            Console.WriteLine($"Update employee details({genericOptionChars[1]})");
-            Console.WriteLine($"Update employee shift({genericOptionChars[2]})");
-            Console.WriteLine($"Update provider contact details({genericOptionChars[3]})");
-            Console.WriteLine($"Update store details({genericOptionChars[4]})");
-            Console.WriteLine($"Update job details({genericOptionChars[5]})");
-            Console.WriteLine($"Update store hours({genericOptionChars[6]})");
-            Console.WriteLine($"Update product details({genericOptionChars[7]})");
+            Console.WriteLine($"Update Order Status({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update employee details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update employee shift({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update provider contact details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update store details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update job details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update store hours({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update product details({optionsOnPage})"); optionsOnPage++;
             PageNum = 10;
         }
         public void DisplayPer4UpdateMenu()
         {
             //This is the text to be displayed here, specific to users with a per level of 4
-            Console.WriteLine($"Update Order Status({genericOptionChars[0]})");
-            Console.WriteLine($"Update employee details({genericOptionChars[1]})");
-            Console.WriteLine($"Update employee shifts({genericOptionChars[2]})");
-            Console.WriteLine($"Update provider details({genericOptionChars[3]})");
-            Console.WriteLine($"Update store details({genericOptionChars[4]})");
-            Console.WriteLine($"Update job details({genericOptionChars[5]})");
-            Console.WriteLine($"Update permission levels({genericOptionChars[6]})");
-            Console.WriteLine($"Update transaction({genericOptionChars[7]})");
-            Console.WriteLine($"Update store hours({genericOptionChars[8]})");
-            Console.WriteLine($"Update store stocks({genericOptionChars[9]})");
-            Console.WriteLine($"Update product details({genericOptionChars[10]})");
+            Console.WriteLine($"Update Order Status({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update employee details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update employee shifts({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update provider details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update store details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update job details({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update permission levels({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update transaction({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update store hours({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update store stocks({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Update product details({optionsOnPage})"); optionsOnPage++;
             PageNum = 11;
         }
 
 
         public void GotoDeleteMenu(int userPerLevel)
         {
-
+            optionsOnPage = 0;
             Console.Title = "Delete Records";
             Console.Clear();
             switch (userPerLevel)
@@ -443,32 +460,30 @@ namespace RetailApplication.View
         public void DisplayPer3DeleteMenu()
         {
             //Add text to display here, specific to users with a per level of 3
-            Console.WriteLine($"Delete Stores({genericOptionChars[0]})");
-            Console.WriteLine($"Delete Employees({genericOptionChars[2]})");
-            Console.WriteLine($"Delete Product Providers({genericOptionChars[3]})");
-            Console.WriteLine($"Delete Products({genericOptionChars[4]})");
-            Console.WriteLine($"Delete Jobs({genericOptionChars[7]})");
-            Console.WriteLine($"Delete Store Hours({genericOptionChars[8]})");
-            Console.WriteLine($"Delete Employee Shifts({genericOptionChars[9]})");
+            Console.WriteLine($"Delete Stores({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Employees({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Product Providers({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Products({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Jobs({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Store Hours({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Employee Shifts({optionsOnPage})"); optionsOnPage++;
             Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
             PageNum = 12;
         }
         public void DisplayPer4DeleteMenu()
         {
             //Add text to display here, specific to users with a per level of 4
-            Console.WriteLine($"Delete Stores({genericOptionChars[0]})");
-            Console.WriteLine($"Delete Permission Levels({genericOptionChars[1]})");
-            Console.WriteLine($"Delete Employees({genericOptionChars[2]})");
-            Console.WriteLine($"Delete Product Providers({genericOptionChars[3]})");
-            Console.WriteLine($"Delete Products({genericOptionChars[4]})");
-            Console.WriteLine($"Delete Stock Levels({genericOptionChars[5]})");
-            Console.WriteLine($"Delete Transactions({genericOptionChars[6]})");
-            Console.WriteLine($"Delete Jobs({genericOptionChars[7]})");
-            Console.WriteLine($"Delete Store Hours({genericOptionChars[8]})");
-            Console.WriteLine($"Delete Employee Shifts({genericOptionChars[9]})");
-            Console.WriteLine($"Delete Product Orders({genericOptionChars[10]})");
-            Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
-
+            Console.WriteLine($"Delete Stores({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Permission Levels({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Employees({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Product Providers({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Products({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Stock Levels({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Transactions({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Jobs({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Store Hours({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Employee Shifts({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Delete Product Orders({optionsOnPage})"); optionsOnPage++;
             Console.WriteLine($"Note: some records may not be deleteable due to being a dependency for other records");
             PageNum = 13;
         }
@@ -477,6 +492,7 @@ namespace RetailApplication.View
 
         public void GotoReportMenu(int userPerLevel)
         {
+            optionsOnPage = 0;
             Console.Title = REPORTMENU_TITLE;
             Console.Clear();
             switch (userPerLevel)
@@ -687,14 +703,14 @@ namespace RetailApplication.View
         //This method displays the fields in a user-chosen table, labelled with the generic option characters.
         public void DisplayTableFieldOptions(string[] columnNames)
         {
-
+            optionsOnPage = 0;
             try
             {
                 int charOptionNumber = 0;
-                foreach (var column in columnNames)
+                foreach (string column in columnNames)
                 {
-                    Console.WriteLine(column + ": " + genericOptionChars[charOptionNumber]);
-                    charOptionNumber++;
+                    Console.WriteLine(column + ": " + optionsOnPage);
+                    optionsOnPage++;
                 }
             }
             catch (IndexOutOfRangeException)
