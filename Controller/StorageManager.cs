@@ -488,7 +488,6 @@ namespace RetailApplication.Controller
                     }
                     else
                     {
-                        
                         cmd.Parameters.AddWithValue("@", parameters);
                     }
                       
@@ -519,21 +518,25 @@ namespace RetailApplication.Controller
 
 
         //This method deletes the record with the provided ID from the provided table. It is used for all the tables in the database.
-        public int DeleteRecordByID(string table, string IDColName, string ID)
+        public int DeleteRecordsByID(string table, string IDColName, string[] IDs)
         {
             try
             {
-                using (SqlCommand cmd = new SqlCommand("DELETE FROM @table WHERE @IDColName = @ID", connection))
+                using (SqlCommand cmd = new SqlCommand("DELETE FROM @table WHERE @IDColName IN (@ID)", connection))
                 {
                     cmd.Parameters.AddWithValue("@table", table);
                     cmd.Parameters.AddWithValue("@IDColName", IDColName);
-                    cmd.Parameters.AddWithValue("@ID", ID);
+                    foreach (var Id in IDs)
+                    {
+                        cmd.Parameters.AddWithValue("@ID", Id+",@ID");
+                    }
+                    cmd.Parameters.Remove(",@ID");
                     return cmd.ExecuteNonQuery();
                 }
             }
             catch (SqlException e)
             {
-                Console.WriteLine($"Error deleting record: {e.Message}");
+                Console.WriteLine($"Database error deleting record: {e.Message}");
                 throw;
             }
             catch(Exception e)
