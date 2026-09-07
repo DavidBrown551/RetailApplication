@@ -42,35 +42,6 @@ namespace RetailApplication.Controller
             }
         }
 
-        public List<PermissionLevel> GetPermissionLevels()
-        {
-            List<PermissionLevel> perLevelList = new List<PermissionLevel> { };
-            string query = "SELECT * FROM scheduling.tblPermissionLevel ORDER BY PermissionLevel desc;";
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand(query, connection))
-                {
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            PermissionLevel perlevel = new PermissionLevel(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2));
-                            perLevelList.Add(perlevel);
-                        }
-                        reader.Close();
-                    }
-                }
-            }
-            catch (SqlException e)
-            {
-                Console.WriteLine($"SQL Error: {e.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error retrieving Permission Levels: {ex.Message}");
-            }
-            return perLevelList;
-        }
 
         public string GetUserPassword(int empId)
         {
@@ -167,6 +138,38 @@ namespace RetailApplication.Controller
 
             return allStores;
         }
+
+
+        public List<PermissionLevel> GetPermissionLevels()
+        {
+            List<PermissionLevel> perLevelList = new List<PermissionLevel> { };
+            string query = "SELECT * FROM scheduling.tblPermissionLevel ORDER BY PermissionLevel desc;";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PermissionLevel perlevel = new PermissionLevel(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2));
+                            perLevelList.Add(perlevel);
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Error: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving Permission Levels: {ex.Message}");
+            }
+            return perLevelList;
+        }
+
 
         public List<Job> GetAllJobs()
         {
@@ -477,7 +480,7 @@ namespace RetailApplication.Controller
         //This method gets a report using the provided query and parameters, returning it as a list of strings representing the records.
         public List<string[]> ReportHandler(string query, string parameters)
         {
-            List<string[]> output=new List<string[]>();
+            List<string[]> output=[];
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -518,7 +521,7 @@ namespace RetailApplication.Controller
 
 
         //This method deletes the record with the provided ID from the provided table. It is used for all the tables in the database.
-        public int DeleteRecordsByID(string table, string IDColName, string[] IDs)
+        public int DeleteRecordsByID(string table, string IDColName, List<int> IDs)
         {
             try
             {
