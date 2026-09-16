@@ -30,7 +30,7 @@ namespace RetailApplication.Model
 
         public override string ToString()
         {
-            return $"({EmpID},{StoreID},{WeekDay},{StartTime},{EndTime},{JobID})";
+            return $"({EmpID},{StoreID},{WeekDay},{StartTime.ToString("hh:mm:ss")},{EndTime.ToString("hh:mm:ss")},{JobID})";
         }
 
         public string ToDisplayString(out int storeId,out int employeeId,out int jobId)

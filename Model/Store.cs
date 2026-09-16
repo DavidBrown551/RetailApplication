@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,9 @@ namespace RetailApplication.Model
     public class Store
     {
         public int StoreID { get; }
+        [StringLength(30)]
         public string StoreName { get; set; }
+        [StringLength(40)]
         public string Address { get; set; }//The address should be checked for formatting here
         public  decimal Rent { get; set; }    
 
@@ -25,7 +28,7 @@ namespace RetailApplication.Model
         public override string ToString()
         {
             //Returns a string in the formatting used for inserting an sql record
-            return $"(\"{StoreName}\",\"{Address}\",{Rent})";
+            return $"\'{StoreName}\',\'{Address}\',{Rent}";
         }
 
         public string ToDisplayString()

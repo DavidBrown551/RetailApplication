@@ -11,11 +11,11 @@ namespace RetailApplication.Model
     {
         public int StoreHourID { get; }
         public int StoreID { get; }//Foreign Key
-        public string Weekday { get; set; }//Weekday has a maximum length of 9 characters and must be the name of one of the days of the week
+        public DayOfWeek Weekday { get; set; }//Weekday has a maximum length of 9 characters and must be the name of one of the days of the week
         public TimeOnly OpenTime { get; set; }
         public TimeOnly CloseTime { get; set; }//CloseTime must be after OpenTime
 
-        public StoreHour(int storeHourId,int storeId,string weekday, TimeOnly openTime, TimeOnly closeTime)
+        public StoreHour(int storeHourId,int storeId,DayOfWeek weekday, TimeOnly openTime, TimeOnly closeTime)
             //!URGENT!
         //TimeOnly may not be compatible with the SQL date/time formatting. This needs to be checked before completion of the project.
         {
@@ -28,7 +28,7 @@ namespace RetailApplication.Model
 
         public override string ToString()
         {
-            return $"({StoreID},{Weekday},{OpenTime},{CloseTime})";
+            return $"({StoreID},{Weekday},{OpenTime.ToString("hh:mm:ss")},{CloseTime.ToString("hh:mm:ss")})";
         }
 
         public string ToDisplayString(out int storeId)

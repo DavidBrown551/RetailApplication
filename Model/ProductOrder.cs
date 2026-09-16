@@ -27,7 +27,7 @@ namespace RetailApplication.Model
 
         public override string ToString()
         {
-            return $"({StoreID},{ProductID},{Quantity},{Date},{Filled})";
+            return $"({StoreID},{ProductID},{Quantity},{Date.ToString("yyyy-MM-dd")},{Filled})";
         }
 
         public string ToDisplayString(out int storeId,out int productId)

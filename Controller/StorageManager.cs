@@ -3,6 +3,7 @@ using RetailApplication.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -118,7 +119,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            Store store = new Store(reader.GetInt16(0), reader.GetString(1), reader.GetString(2),reader.GetDecimal(3));
+                            Store store = new Store(reader.GetInt32(0), reader.GetString(1), reader.GetString(2),reader.GetDecimal(3));
                             allStores.Add(store);
                         }
                         reader.Close();
@@ -241,7 +242,7 @@ namespace RetailApplication.Controller
 
         public List<Product> GetAllProducts()
         {
-            List<Product> allProducts = new List<Product> { };
+            List<Product> allProducts = [];
 
             string query = "SELECT * FROM sales.tblProduct;";
             try
@@ -252,7 +253,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            Product product = new Product(reader.GetInt32(0), reader.GetInt16(1), reader.GetString(2), reader.GetDecimal(3), reader.GetDecimal(4), reader.GetString(5));
+                            Product product = new Product(reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2), reader.GetDecimal(3), reader.GetDecimal(4), reader.GetString(5));
                             allProducts.Add(product);
                         }
                         reader.Close();
@@ -274,7 +275,7 @@ namespace RetailApplication.Controller
         }
         public List<Provider> GetAllProviders()
         {
-            List<Provider> allProviders = new List<Provider> { };
+            List<Provider> allProviders = [];
 
             string query = "SELECT * FROM sales.tblProvider;";
             try
@@ -308,7 +309,7 @@ namespace RetailApplication.Controller
 
         public List<StockLevel> GetAllStocks()
         {
-            List<StockLevel> allStocks = new List<StockLevel> { };
+            List<StockLevel> allStocks = [];
 
             string query = "SELECT * FROM sales.tblStockLevel;";
             try
@@ -341,7 +342,7 @@ namespace RetailApplication.Controller
 
         public List<Transaction> GetAllTransactions()
         {
-            List<Transaction> allTransactions = new List<Transaction> { };
+            List<Transaction> allTransactions = [];
 
             string query = "SELECT * FROM sales.tblTransaction;";
             try
@@ -374,7 +375,7 @@ namespace RetailApplication.Controller
 
         public List<EmployeeShift> GetAllEmployeeShifts()
         {
-            List<EmployeeShift> allEmpShifts = new List<EmployeeShift> { };
+            List<EmployeeShift> allEmpShifts = [];
 
             string query = "SELECT * FROM sscheduling.tblEmpShift;";
             try
@@ -385,7 +386,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            EmployeeShift empShift = new EmployeeShift(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),reader.GetDateTime(3).DayOfWeek,TimeOnly.FromDateTime(reader.GetDateTime(4)),TimeOnly.FromDateTime(reader.GetDateTime(5)),reader.GetInt32(6));
+                            EmployeeShift empShift = new EmployeeShift(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), (DayOfWeek)Enum.Parse(typeof(DayOfWeek), reader.GetString(3)),TimeOnly.FromDateTime(reader.GetDateTime(4)),TimeOnly.FromDateTime(reader.GetDateTime(5)),reader.GetInt32(6));
                             allEmpShifts.Add(empShift);
                         }
                         reader.Close();
@@ -407,7 +408,7 @@ namespace RetailApplication.Controller
 
         public List<ProductOrder> GetAllProductOrders()
         {
-            List<ProductOrder> allProductOrders = new List<ProductOrder> { };
+            List<ProductOrder> allProductOrders = [];
 
             string query = "SELECT * FROM sales.tblProductOrder;";
             try
@@ -440,7 +441,7 @@ namespace RetailApplication.Controller
 
         public List<StoreHour> GetAllStoreHours()
         {
-            List<StoreHour> allStoreHours = new List<StoreHour> { };
+            List<StoreHour> allStoreHours=[];
 
             string query = "SELECT * FROM scheduling.tblStoreHour;";
             try
@@ -451,7 +452,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            StoreHour storeHour = new StoreHour(reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2), TimeOnly.FromDateTime(reader.GetDateTime(3)), TimeOnly.FromDateTime(reader.GetDateTime(4)));
+                            StoreHour storeHour = new StoreHour(reader.GetInt32(0), reader.GetInt32(1), (DayOfWeek)Enum.Parse(typeof(DayOfWeek),reader.GetString(3)), TimeOnly.FromDateTime(reader.GetDateTime(4)), TimeOnly.FromDateTime(reader.GetDateTime(5)));
                             allStoreHours.Add(storeHour);
                         }
                         reader.Close();
@@ -525,15 +526,19 @@ namespace RetailApplication.Controller
         {
             try
             {
-                using (SqlCommand cmd = new SqlCommand("DELETE FROM @table WHERE @IDColName IN (@ID)", connection))
+                using (SqlCommand cmd = new SqlCommand($"DELETE FROM {table} WHERE {IDColName} IN (", connection))//DOES NOT WORK DUE TO INCORRECT COMMAND TEXT/PARAMETERS.
                 {
-                    cmd.Parameters.AddWithValue("@table", table);
-                    cmd.Parameters.AddWithValue("@IDColName", IDColName);
+                    int i = 0;
                     foreach (var Id in IDs)
                     {
-                        cmd.Parameters.AddWithValue("@ID", Id+",@ID");
+                        cmd.Parameters.AddWithValue("@ID"+i,Id);
+                        cmd.CommandText = cmd.CommandText.Insert(cmd.CommandText.Length,"@ID"+i);
+                        if (i<IDs.Count-1)
+                        {
+                            cmd.CommandText = cmd.CommandText.Insert(cmd.CommandText.Length,",");
+                        }
                     }
-                    cmd.Parameters.Remove(",@ID");
+                    cmd.CommandText = cmd.CommandText.Insert(cmd.CommandText.Length, ");");
                     return cmd.ExecuteNonQuery();
                 }
             }
@@ -552,16 +557,13 @@ namespace RetailApplication.Controller
         }
 
         //This method
-        public int UpdateRecordByID(string table, string IDColName, string ID,string colName,string value)
+        public int UpdateRecordByID(string table, string IDColName, int ID,string colName,string value)
         {
             try
             {
-                using (SqlCommand cmd = new SqlCommand($"UPDATE @table SET @colName = @value WHERE @IDColName = @ID", connection))
+                using (SqlCommand cmd = new SqlCommand($"UPDATE {table} SET {colName} = @value WHERE {IDColName} = @ID", connection))//There is no risk of sql injection here since the table and column name strings are not obtained from the user.
                 {
-                    cmd.Parameters.AddWithValue("@table", table);
-                    cmd.Parameters.AddWithValue("@colName", colName);
                     cmd.Parameters.AddWithValue("@value", value);
-                    cmd.Parameters.AddWithValue("@IDColName", IDColName);
                     cmd.Parameters.AddWithValue("@ID", ID);
                     return cmd.ExecuteNonQuery();
                 }
@@ -580,19 +582,62 @@ namespace RetailApplication.Controller
         }
 
         //This method handles the insertion of new records to the database. It takes a list of objects and inserts them into the supplied table.
-        public int InsertRecords<T>(List<T> records, string table)
+        public int InsertRecords<T>(List<T> records, string table, string[]columnNames)
         {
+            string columns="";
+            Type insertClass = typeof(T);
+            PropertyInfo[] classInfo = insertClass.GetProperties();
+            SqlParameter[,] recordParameters= new SqlParameter[records.Count, classInfo.Length-1]; 
+            //needs to format each record correctly, using the values of the fields.
+            //organisation of parameters?
+            for (int i=1; i< columnNames.Length; i++)//Formats the column names for the insert statements.
+            {
+               columns = columns.Insert(columns.Length, columnNames[i]);
+                if (i<columnNames.Length-1)
+                { 
+                    columns = columns.Insert(columns.Length, ",");
+                }
+            }
+            for (int i = 0; i < records.Count; i++)//Gets each field of the record and assigns it to an SqlParameter.
+            {
+                for(int j=1;j<classInfo.Length;j++)
+                {
+                   recordParameters[i,j-1]= new SqlParameter($"@{i}i{j}",classInfo[j].GetValue(records[i]));
+                }
+
+            }
+            StringBuilder inputString = new StringBuilder($"INSERT INTO {table} ({columns}) VALUES ");
+            for (int i = 0; i < records.Count; i++)//Gets each field of the record and assigns it to an SqlParameter.
+            {
+                inputString.Append('(');
+                for (int j = 1; j < classInfo.Length; j++)
+                {
+                   inputString.Append($"@{i}i{j}");
+                    if (j<classInfo.Length-1)
+                    {
+                        inputString.Append(',');
+                    }
+                }
+                inputString.Append(')');
+                if (i<records.Count-1)
+                {
+                    inputString.Append(',');
+                }
+
+            }
+            inputString.Append(';');
+            //create a new list or multidimensional array of record fields, then use the below foreach to insert them.
             try
             {
-                using (SqlCommand cmd=new SqlCommand($"INSERT INTO @table VALUES @values;",connection))
+                using (SqlCommand cmd=new SqlCommand(inputString.ToString(),connection))//Not vunerable to SQL injection since the input string is not obtained from the user.
                 {
-                    foreach (var record in records)
-                    {
-                        cmd.Parameters.AddWithValue("@table",table);
-                        cmd.Parameters.AddWithValue("@values", record + ",\n@values");//This calls the override ToString in the class, formatting the values like an SQL insert statement.
-                        //The above line replaces @values with the string representation of the object, followed by a comma, new line, and an @values for the next parameter.
-                    }
-                    cmd.Parameters.Remove(",\n@values");//Removes the parameter and statement terminator from the end of the query.
+                        for (int i = 0; i < records.Count; i++)
+                        {
+                            for (int j = 0; j < classInfo.Length-1; j++)
+                            {
+                                cmd.Parameters.Add(recordParameters[i,j]);//Adds a parameter to the list
+                            }
+                        }
                     return cmd.ExecuteNonQuery();
                 }
             }

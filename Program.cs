@@ -7,11 +7,6 @@ namespace RetailApplication
 {
     internal class Program
     {
-
-        private static MD5 hash;
-
-
-
         private static StorageManager connection;
         //This is the object that will manage the connection to the Sql Database
 
@@ -21,45 +16,27 @@ namespace RetailApplication
 
         //The following lists are used to store the records from the corresponding table.
         #region tableLists
-        static List<Employee> employees = new List<Employee> { };
-        static List<PermissionLevel> perLevels = new List<PermissionLevel> { };
-        static List<Store> stores = new List<Store> { };
-        static List<StoreHour> storeHours = new List<StoreHour> { };
-        static List<Job> jobs = new List<Job> { };
-        static List<Provider> providers = new List<Provider> { };
-        static List<ProductOrder> productOrders = new List<ProductOrder> { };
-        static List<Product> products = new List<Product> { };
-        static List<EmployeeShift> employeeShifts = new List<EmployeeShift> { };
-        static List<Transaction> transactions = new List<Transaction> { };
-        static List<StockLevel> stockLevels = new List<StockLevel> { };
+        static List<Employee> employees = [];
+        static List<PermissionLevel> perLevels = [];
+        static List<Store> stores =[];
+        static List<StoreHour> storeHours = [];
+        static List<Job> jobs = [];
+        static List<Provider> providers = [];
+        static List<ProductOrder> productOrders = [];
+        static List<Product> products = [];
+        static List<EmployeeShift> employeeShifts = [];
+        static List<Transaction> transactions = [];
+        static List<StockLevel> stockLevels = [];
         static List<object[]> recordsToInsert;
 
         #endregion
 
-        static void Main(string[] args)
-        {
-            string connectionString = "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=RetailDB;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
-            //This string allows connection to the database and must be changed if the file name or file path is changed.
-
-            mainview = new ViewConsole();
-            connection = new StorageManager(connectionString);
-            hash = MD5.Create();
-            //The MD5 class does not have a constructor
-
-            //The queries used to get reports from the database
-            #region Queries
-            //These will be passed to the ReportHandler method in the Controller folder and used to query the database. The '@' is a universal entry point for parameters to be added, and is replaced by whitespace if the query is not parameterised.
-            /*const string qryProductOrder = "SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM tblProduct P, tblStore S, tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 @ ORDER BY O.Date;";
-            const string qryEmployeeShifts = "SELECT (E.FirstName+E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS Start Time, I.EndTime AS End Time, I.Weekday AS Day, J.JobName AS Job FROM tblEmployee E, tblStore S, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID @ ORDER BY 2,1,6,5,3,4;";
-            const string qryProductSales = "SELECT COALESCE(P.ProductName,Total)AS Product, COALESCE(S.StoreName, Subtotal) AS Store, SUM(T.Quantity)AS QUANTITY, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblProduct P, tblTransaction T RIGHT JOIN tblStore S ON T.StoreID=S.StoreID WHERE P.ProductID=T.ProductID @ GROUP BY ROLLUP(S.StoreName,P.ProductName) ORDER BY 1,2;";
-            const string qryStoreSales = "SELECT COALESCE(S.StoreName,Grand Total)AS Store, COALESCE(P.ProductName, Total Sales) AS Product, SUM(T.Quantity)AS QUANTITY, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblStore S, tblTransaction T RIGHT JOIN tblProduct P ON T.ProductID=P.ProductID WHERE S.StoreID=T.StoreID @ GROUP BY ROLLUP(P.ProductName,S.StoreName) ORDER BY 1,2;";
-            const string qryBestProducts = "SELECT TOP 50 P.ProductName AS Product, SUM(T.Quantity) AS Total Sales, SUM(T.Quantity*P.CustomerPrice) AS Total Revenue, SUM((T.Quantity*P.CustomerPrice)-(T.Quantity*P.SupplyPrice)) AS Profit FROM tblProduct P, tblStore S, tblTransaction T WHERE S.StoreID=T.StoreID AND P.ProductID=T.ProductID @ GROUP BY P.ProductID ORDER BY 2 desc, 4 desc;";
-            const string qryEmployeePermissions = "SELECT E.EmpID AS Employee Number, E.FirstName+ ' '+ E.LastName AS Name, l.PermissionName AS Permission Level FROM tblEmployee E, tblPermissionLevel l WHERE E.LevelID=l.LevelID @ ORDER BY l.PermissionLevel desc, 2;";
-            const string qryEmployeePay = "SELECT COALESCE(E.FirstName + ' ' + E.LastName, Total) AS Employee Name, SUM(DATEDIFF(hh, I.EndTime, I.StartTime)*J.Pay) FROM tblEmployee E, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND J.JobID=I.JobID @ GROUP BY ROLLUP(E.EmpID) ORDER BY 1;";
-            const string qryProductStocks = "SELECT P.ProductName AS Product, S.StoreName AS Store, L.RmnStock AS Quantity FROM tblProduct P, tblStore S, tblStockLevel L WHERE P.ProductID=L.ProductID AND S.StoreID=L.StoreID @ ORDER BY 1,3 desc;";
-            const string qryAutoUpdateStocks = "UPDATE sales.tblStockLevel SET ";*/
-            string[,] queries = 
-                {
+        //The queries used to get reports from the database
+        #region Queries
+        //These will be passed to the ReportHandler method in the Controller folder and used to query the database. The '@' is a universal entry point for parameters to be added, and is replaced by whitespace if the query is not parameterised.
+        //const string qryAutoUpdateStocks = "UPDATE sales.tblStockLevel SET ";*/
+        readonly static string[,] queries =
+            {
                 {"qryProductOrder","SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM tblProduct P, tblStore S, tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 @ ORDER BY O.Date;" },
                 {"qryEmployeeShifts" ,"SELECT (E.FirstName+E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS Start Time, I.EndTime AS End Time, I.Weekday AS Day, J.JobName AS Job FROM tblEmployee E, tblStore S, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID @ ORDER BY 2,1,6,5,3,4;"},
                 {"qryProductSales" ,"SELECT COALESCE(P.ProductName,Total)AS Product, COALESCE(S.StoreName, Subtotal) AS Store, SUM(T.Quantity)AS Quantity, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblProduct P, tblTransaction T RIGHT JOIN tblStore S ON T.StoreID=S.StoreID WHERE P.ProductID=T.ProductID @ GROUP BY ROLLUP(S.StoreName,P.ProductName) ORDER BY 1,2;"},
@@ -69,21 +46,15 @@ namespace RetailApplication
                 {"qryEmployeePay" ,"SELECT COALESCE(E.FirstName + ' ' + E.LastName, Total) AS Employee Name, SUM(DATEDIFF(hh, I.EndTime, I.StartTime)*J.Pay) AS Shift Pay FROM tblEmployee E, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND J.JobID=I.JobID @ GROUP BY ROLLUP(E.EmpID) ORDER BY 1;"},
                 {"qryProductStocks" ,"SELECT P.ProductName AS Product, S.StoreName AS Store, L.RmnStock AS Quantity FROM tblProduct P, tblStore S, tblStockLevel L WHERE P.ProductID=L.ProductID AND S.StoreID=L.StoreID @ ORDER BY 1,3 desc;"}
                 };
-            #endregion
+        #endregion
 
+        //The following region contains the arrays that store the data used by the program(coulumn names, datatypes, etc.)
+        #region lookupArrays
 
-
-            byte userPermissionLevel; //This value is used to determine which pages the user can access
-            bool stayLoggedIn=true; //This value indicates whether the user has chosen to logout. It will remain true until changed by the logout system.
-            bool stayInProgram = true;//This value indicates whether the user has chosen to close the program. It will remain true until changed by the exit system.
-
-            //The following region contains the arrays that store the data used by the program(coulumn names, datatypes, etc.)
-            #region lookupArrays
-
-            //This array stores the names of the tables
-            string[] tables = 
-                [
-                "tblStore",
+        //This array stores the names of the tables
+        readonly static string[] tables =
+            [
+            "tblStore",
                 "tblPermissionLevel",
                 "tblEmployee",
                 "tblProvider",
@@ -94,13 +65,13 @@ namespace RetailApplication
                 "tblStoreHour",
                 "tblEmployeeShift",
                 "tblProductOrder"
-                ];
+            ];
 
-            //This array stores the column names of each table. Note that currently these are used in both user-facing display and query parameterisation.
-            //Note: the primary key column should always be the first one in the array. This is because the InsertRecords Page assumes that the primary key is the first column when excluding the key column.
-            string[][] tableColumnNames=
-                [
-                ["StoreID","StoreName","Address","Rent"],//tblStore
+        //This array stores the column names of each table. Note that currently these are used in both user-facing display and query parameterisation.
+        //Note: the primary key column should always be the first one in the array. This is because the InsertRecords Page assumes that the primary key is the first column when excluding the key column.
+        readonly static string[][] tableColumnNames =
+            [
+            ["StoreID","StoreName","Address","Rent"],//tblStore
                 ["LevelID","LevelName","PermissionLevel"],//tblPermissionLevel
                 ["EmpID","FirstName","LastName","LevelID"],//tblEmployee
                 ["ProviderID","ProviderName","Contact"],//tblProvider
@@ -111,25 +82,25 @@ namespace RetailApplication
                 ["StrHrID","StoreID","Weekday","OpenTime","CloseTime"],//tblStoreHour
                 ["ShiftID","EmpID","StoreID","WeekDay","StartTime","EndTime","JobID"],//tblEmployeeShift
                 ["OrderID","StoreID","ProductID","Quantity","Date","Filled"]//tblProductOrder
-                ];
+            ];
 
-            //0=int32
-            //1=int16
-            //2=string
-            //3=Time
-            //4=Date
-            //5=decimal
-            //6=Date+Time
-            //7=day of week
-            //8=bool
-            //could add another datatype representing a foreign key integer. this would need a way to find the primary key this corresponds to(could do by searching the first column name in tableColumnNames, but this would still need a way to find/get the corresponding string field etc from the other list.(could just find the index in the list and assign name? but identifying column name difficult.))
-            //can pattern match for the string with{Name} to get column(inefficient?)
-            //or define lookup array(foreignKeyLookUp?)
+        //0=int32
+        //1=int16
+        //2=string
+        //3=Time
+        //4=Date
+        //5=decimal
+        //6=Date+Time
+        //7=day of week
+        //8=bool
+        //could add another datatype representing a foreign key integer. this would need a way to find the primary key this corresponds to(could do by searching the first column name in tableColumnNames, but this would still need a way to find/get the corresponding string field etc from the other list.(could just find the index in the list and assign name? but identifying column name difficult.))
+        //can pattern match for the string with{Name} to get column(inefficient?)
+        //or define lookup array(foreignKeyLookUp?)
 
-            //This array stores a numerical representation of the datatypes in each table column
-            byte[][] tableColumnDatatypes=
-                [
-                [0,2,2,5],//tblStore
+        //This array stores a numerical representation of the datatypes in each table column
+        readonly static byte[][] tableColumnDatatypes =
+            [
+            [0,2,2,5],//tblStore
                 [0,2,0],//tblPermissionLevel
                 [0,2,2,1],//tblEmployee
                 [0,2,2],//tblProvider
@@ -140,12 +111,12 @@ namespace RetailApplication
                 [0,0,2,3,3],//tblStoreHour
                 [0,0,0,7,3,3,0],//tblEmployeeShift
                 [0,0,0,0,4,8]//tblProductOrder
-                ];
+            ];
 
-            //This array stores the array references to the tables used in the associated query
-            byte[][] tablesInQueries=
-                [
-                [0,4,6],//qryProductSales
+        //This array stores the array references to the tables used in the associated query
+        readonly static byte[][] tablesInQueries =
+            [
+            [0,4,6],//qryProductSales
                 [0,2,9],//qryEmployeeShifts
                 [0,8],//qryStoreHour
                 [2,7,9],//qryEmployeePay
@@ -159,11 +130,11 @@ namespace RetailApplication
                 [0,4,6],//qryStoreSales
                 [],//qry
                 ];//could remove qry from beginning of string when displaying
-            //could just name query columns directly(fixes naming of aggregate columns)
-            //also define column datatypes
-            string[][] queryColumns =
-                [
-                ["Product","Store","Quantity","Price"],
+                  //could just name query columns directly(fixes naming of aggregate columns)
+                  //also define column datatypes
+        readonly static string[][] queryColumns =
+            [
+            ["Product","Store","Quantity","Price"],
                 ["Name","Store","Start Time","End Time","Day","Job"],
                 ["Product","Store","Quantity","Revenue"],
                 ["Store","Product","Quantity","Revenue"],
@@ -175,10 +146,25 @@ namespace RetailApplication
 
 
 
-            #endregion
+        #endregion
+
+
+
+        static void Main(string[] args)
+        {
+            string connectionString = "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=RetailDB;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;";
+            //This string allows connection to the database and must be changed if the file name or file path is changed.
+        TryConnection:
+            mainview = new ViewConsole();
+            connection = new StorageManager(connectionString);
+            //The MD5 class does not have a constructor
 
             
 
+
+            byte userPermissionLevel; //This value is used to determine which pages the user can access
+            bool stayLoggedIn; //This value indicates whether the user has chosen to logout. It will remain true until changed by the logout system.
+            bool stayInProgram = true;//This value indicates whether the user has chosen to close the program. It will remain true until changed by the exit system.
 
             //After establishing a connection to the database, the login page is shown
         Login:
@@ -189,27 +175,35 @@ namespace RetailApplication
             int enteredEmpId=mainview.GetIntegerInput();
             //Gets an error-corrected integer from the user representing their employee number
             
-            string hashedUserPassword = Convert.ToHexStringLower(hash.ComputeHash(mainview.ConcealTypedField()));
-
-            if (hashedUserPassword.Equals(connection.GetUserPassword(enteredEmpId)))
+            string hashedUserPassword = Convert.ToHexStringLower(MD5.HashData(mainview.ConcealTypedField()));
+            try
             {
-                userPermissionLevel = connection.GetUserPermission(enteredEmpId);
-                goto Main_Menu;
+                if (hashedUserPassword.Equals(connection.GetUserPassword(enteredEmpId)))
+                {
+                    userPermissionLevel = connection.GetUserPermission(enteredEmpId);
+                    goto Main_Menu;
+                }
+                else
+                {
+                    //Send user back to password screen with error message
+                    goto Login;
+                }
             }
-            else
+            catch (Exception)//Try reproduce error and specify exception type
             {
-                //Send user back to password screen with error message
-                goto Login;
+                mainview.DisplayMessage("Connection timed out. Press any key to try again. if problems persist, contact support.");
+                goto TryConnection;
+                throw;
             }
+            
 
         Main_Menu:
             mainview.GotoMainMenu(userPermissionLevel);//Displays the main menu for the user
-            goto HandleCharInput;
 
-        HandleCharInput:
 
             do//Beginning of main program loop
             {
+                stayLoggedIn = true;
                 int userPageChangeValue= mainview.GetUserPageChangeValue(null,out int genericValue);
                 switch (userPageChangeValue)
                 {
@@ -231,16 +225,16 @@ namespace RetailApplication
                         break;
                     case 5://Logout
                         mainview.DisplayLogoutConfirmation();
-                        stayLoggedIn = mainview.GetYesNoInput("");
-                        if (!stayLoggedIn)
+                        stayLoggedIn = !mainview.GetYesNoInput("");
+                        if (stayLoggedIn)
                         {
                             mainview.DisplayMessage("Press M to return to the main menu");
                         }
                         break;
                     case 6://Exit
                         mainview.DisplayExitConfirmation();
-                        stayInProgram = mainview.GetYesNoInput("");
-                        if (!stayInProgram)
+                        stayInProgram = !mainview.GetYesNoInput("");
+                        if (stayInProgram)
                         {
                             mainview.DisplayMessage("Press M to return to the main menu");
                         }
@@ -249,33 +243,32 @@ namespace RetailApplication
                         mainview.GotoReportMenu(userPermissionLevel);
                         break;
                     case 8://A menu option. Further seperation of values necessary.
-                        //Determine what this generic option points to
-                        //The following block will determine the page/table/record/etc the generic option points to. It will use the userPageChangeValue and PageNum to find where to find the relevant data for the following  generic method.
+                        //The following block determines the page/table/record/etc the generic option points to. It uses genericValue and PageNum to find where to find the relevant data for the following  generic method.
                         //could make a method for readability?
                         switch (mainview.PageNum)
                         {
-                            case < 8:
+                            case < 9:
 
                                 //insert pages
-                                recordsToInsert= mainview.DisplayInsertRecordsPage(tableColumnNames[genericValue], tableColumnDatatypes[genericValue]);
+                                recordsToInsert= mainview.DisplayInsertRecordsPage(tableColumnNames[genericValue], tableColumnDatatypes[genericValue]);//tableColumns[genericValue] only represents the option the user pressed, not the table. This will have to be accounted for on a page-by-page basis.
                                 //method to get records to insert; assigns to a List<object[]>
 
                                 //pass list from previous to insert method
                                 InsertRecords(recordsToInsert, genericValue);
                                 break;
                             case < 12:
-                                //points to tableColumnNames
-                                //pass tableColumnNames[genericValue] to display method
-                                //update pages
-
-                                HandleRecordUpdating(tableColumnNames[genericValue],genericValue);//NOT DONE
+                                //Update pages
+                                //needs to get all the relevant records(just one table or all?)
+                                GetRelevantRecords(genericValue);
+                                int a= HandleRecordUpdating(tableColumnNames[genericValue],genericValue);//NOT DONE, needs to prompt user for input.
+                                mainview.DisplayMessage($"{a} row(s) updated.\nPress M to return to the main menu.");
                                 break;
                             case < 14:
-                                //points to tableColumnNames
-                                //pass tableColumnNames[genericValue] to display method
-                                //delete pages.
-
-                                HandleRecordDeletion(tableColumnNames[genericValue],genericValue);
+                                //Delete pages.
+                                //needs to get all the relevant records(just one table or all?)
+                                GetRelevantRecords(genericValue);
+                                int b=HandleRecordDeletion(tableColumnNames[genericValue],genericValue);
+                                mainview.DisplayMessage($"{b} row(s) deleted.\nPress M to return to the main menu.");
                                 break;
                             case < 18:
                                 //points to tablesInQueries
@@ -302,7 +295,6 @@ namespace RetailApplication
                         break;
                     default:
                         break;
-                        //where to from here? use gotos? methods?
                         //page has been printed and is ready for user input.
                 }
             } while (stayLoggedIn&&stayInProgram);//End of main program loop
@@ -342,161 +334,175 @@ namespace RetailApplication
         {
 
             //The following region is the block of code which inserts records into the database.
+            int rowsInserted=0;
             #region InsertStatement:
             switch (tableValue)
             {
                 case 0:
-                    List<Store> storeRecords = new List<Store> { };
+                    List<Store> storeRecords = [];
                     foreach (var record in recordsToInsert)
                     {
-                        storeRecords.Add(new Store(-1, (string)record[0], (string)record[1], (short)record[2]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
+                        storeRecords.Add(new Store(-1, (string)record[0], (string)record[1], (decimal)record[2]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<Store>(storeRecords, "scheduling.tblStore");
+                    rowsInserted= connection.InsertRecords<Store>(storeRecords, "scheduling.tblStore", tableColumnNames[tableValue]);
                     break;
                 case 1:
-                    List<PermissionLevel> permissionLevelRecords = new List<PermissionLevel> { };
+                    List<PermissionLevel> permissionLevelRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         permissionLevelRecords.Add(new PermissionLevel(-1, (string)record[0], (short)record[1]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<PermissionLevel>(permissionLevelRecords, "scheduling.tblPermissionLevel");
+                    rowsInserted = connection.InsertRecords<PermissionLevel>(permissionLevelRecords, "scheduling.tblPermissionLevel", tableColumnNames[tableValue]);
                     break;
                 case 2:
-                    List<Employee> empRecords = new List<Employee> { };
+                    List<Employee> empRecords = [];
                     foreach (var record in recordsToInsert)
                     {
-                        empRecords.Add(new Employee(-1, (string)record[0], (string)record[1], (short)record[2], Convert.ToHexStringLower(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes((string)record[3])))));
+                        empRecords.Add(new Employee(-1, (string)record[0], (string)record[1], (short)record[2], Convert.ToHexStringLower(MD5.HashData(System.Text.Encoding.UTF8.GetBytes((string)record[3])))));
                     }
-                    connection.InsertRecords<Employee>(empRecords, "scheduling.tblEmployee");
+                    rowsInserted = connection.InsertRecords<Employee>(empRecords, "scheduling.tblEmployee", tableColumnNames[tableValue]);
                     break;
                 case 3:
-                    List<Provider> providerRecords = new List<Provider> { };
+                    List<Provider> providerRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         providerRecords.Add(new Provider(-1, (string)record[0], (string)record[1]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<Provider>(providerRecords, "sales.tblProvider");
+                    rowsInserted = connection.InsertRecords<Provider>(providerRecords, "sales.tblProvider", tableColumnNames[tableValue]);
                     break;
                 case 4:
-                    List<Product> productRecords = new List<Product> { };
+                    List<Product> productRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         productRecords.Add(new Product(-1, (int)record[0], (string)record[1], (decimal)record[2], (decimal)record[3], (string)record[4]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<Product>(productRecords, "sales.tblProduct");
+                    rowsInserted = connection.InsertRecords<Product>(productRecords, "sales.tblProduct", tableColumnNames[tableValue]);
                     break;
                 case 5:
-                    List<StockLevel> stockLevelRecords = new List<StockLevel> { };
+                    List<StockLevel> stockLevelRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         stockLevelRecords.Add(new StockLevel(-1, (int)record[0], (int)record[1], (int)record[2]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<StockLevel>(stockLevelRecords, "sales.tblStockLevel");
+                    rowsInserted = connection.InsertRecords<StockLevel>(stockLevelRecords, "sales.tblStockLevel", tableColumnNames[tableValue]);
                     break;
                 case 6:
-                    List<Transaction> transactionRecords = new List<Transaction> { };
+                    List<Transaction> transactionRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         transactionRecords.Add(new Transaction(-1, (int)record[0], (int)record[1], (DateTime)record[2], (short)record[3]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<Transaction>(transactionRecords, "sales.tblTransaction");
+                    rowsInserted = connection.InsertRecords<Transaction>(transactionRecords, "sales.tblTransaction", tableColumnNames[tableValue]);
                     break;
                 case 7:
-                    List<Job> jobRecords = new List<Job> { };
+                    List<Job> jobRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         jobRecords.Add(new Job(-1, (string)record[0], (decimal)record[1]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<Job>(jobRecords, "scheduling.tblJob");
+                    rowsInserted = connection.InsertRecords<Job>(jobRecords, "scheduling.tblJob", tableColumnNames[tableValue]);
                     break;
                 case 8:
-                    List<StoreHour> storeHourRecords = new List<StoreHour> { };
+                    List<StoreHour> storeHourRecords = [];
                     foreach (var record in recordsToInsert)
                     {
-                        storeHourRecords.Add(new StoreHour(-1, (int)record[0], (string)record[1], (TimeOnly)record[2], (TimeOnly)record[3]));
+                        storeHourRecords.Add(new StoreHour(-1, (int)record[0], (DayOfWeek)record[1], (TimeOnly)record[2], (TimeOnly)record[3]));
                     }
-                    connection.InsertRecords<StoreHour>(storeHourRecords, "scheduling.tblStoreHours");
+                    rowsInserted = connection.InsertRecords<StoreHour>(storeHourRecords, "scheduling.tblStoreHours", tableColumnNames[tableValue]);
                     break;
                 case 9:
-                    List<EmployeeShift> employeeShiftRecords = new List<EmployeeShift> { };
+                    List<EmployeeShift> employeeShiftRecords =[];
                     foreach (var record in recordsToInsert)
                     {
                         employeeShiftRecords.Add(new EmployeeShift(-1, (int)record[0], (int)record[1], (DayOfWeek)record[2], (TimeOnly)record[3], (TimeOnly)record[4], (int)record[5]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<EmployeeShift>(employeeShiftRecords, "scheduling.tblEmpShift");
+                    rowsInserted = connection.InsertRecords<EmployeeShift>(employeeShiftRecords, "scheduling.tblEmpShift", tableColumnNames[tableValue]);
                     break;
                 case 10:
-                    List<ProductOrder> productOrderRecords = new List<ProductOrder> { };
+                    List<ProductOrder> productOrderRecords = [];
                     foreach (var record in recordsToInsert)
                     {
                         productOrderRecords.Add(new ProductOrder(-1, (int)record[0], (int)record[1], (short)record[2], (DateTime)record[3], (bool)record[4]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
-                    connection.InsertRecords<ProductOrder>(productOrderRecords, "scheduling.tblProductOrder");
+                    rowsInserted = connection.InsertRecords<ProductOrder>(productOrderRecords, "scheduling.tblProductOrder", tableColumnNames[tableValue]);
                     break;
                 default:
 
                     break;
             }
             #endregion
+            mainview.DisplayMessage($"Inserted {rowsInserted} rows\nPress M to return to the main menu");
+            
         }
 
         //Handles the deletion of records; includes prompting the user for records to delete and executing the resultant query.
         public static int HandleRecordDeletion(string[] tableColumnNames,int tableValue)
         {
             List<int> idsToDelete;
-
+            int rowsaffected;
             switch (tableValue)
             {
                 case 0://tblStore
                     idsToDelete = mainview.DisplayDeleteRecordsPage<Store>(tableColumnNames, stores);
-                    return connection.DeleteRecordsByID("scheduling.tblStore", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected= connection.DeleteRecordsByID("scheduling.tblStore", tableColumnNames[0], idsToDelete);
+                    stores.RemoveAll(x=>idsToDelete.Contains(x.StoreID));
+                    break;
                 case 1://tblPermissionLevel
                     idsToDelete = mainview.DisplayDeleteRecordsPage<PermissionLevel>(tableColumnNames, perLevels);
-                    return connection.DeleteRecordsByID("scheduling.tblPermissionLevel", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("scheduling.tblPermissionLevel", tableColumnNames[0], idsToDelete);
+                    perLevels.RemoveAll(x => idsToDelete.Contains(x.PerLevelID));
+                    break;
                 case 2://tblEmployee
                     idsToDelete = mainview.DisplayDeleteRecordsPage<Employee>(tableColumnNames, employees);
-                    return connection.DeleteRecordsByID("scheduling.tblEmployee", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("scheduling.tblEmployee", tableColumnNames[0], idsToDelete);
+                    employees.RemoveAll(x => idsToDelete.Contains(x.EmployeeID));
+                    break;
                 case 3://tblProvider
                     idsToDelete = mainview.DisplayDeleteRecordsPage<Provider>(tableColumnNames, providers);
-                    return connection.DeleteRecordsByID("sales.tblProvider", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("sales.tblProvider", tableColumnNames[0], idsToDelete);
+                    providers.RemoveAll(x => idsToDelete.Contains(x.ProviderID));
+                    break;
                 case 4://tblProduct
                     idsToDelete = mainview.DisplayDeleteRecordsPage<Product>(tableColumnNames, products);
-                    return connection.DeleteRecordsByID("sales.tblProduct", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("sales.tblProduct", tableColumnNames[0], idsToDelete);
+                    products.RemoveAll(x => idsToDelete.Contains(x.ProductID));
+                    break;
                 case 5://tblStockLevel
                     idsToDelete = mainview.DisplayDeleteRecordsPage<StockLevel>(tableColumnNames, stockLevels);
-                    return connection.DeleteRecordsByID("sales.tblStocklevel", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("sales.tblStocklevel", tableColumnNames[0], idsToDelete);
+                    stockLevels.RemoveAll(x => idsToDelete.Contains(x.StockLevelID));
+                    break;
                 case 6://tblTransaction
                     idsToDelete = mainview.DisplayDeleteRecordsPage<Transaction>(tableColumnNames, transactions);
-                    return connection.DeleteRecordsByID("sales.tblTransaction", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("sales.tblTransaction", tableColumnNames[0], idsToDelete);
+                    transactions.RemoveAll(x => idsToDelete.Contains(x.TransactionID));
+                    break;
                 case 7://tblJob
                     idsToDelete = mainview.DisplayDeleteRecordsPage<Job>(tableColumnNames, jobs);
-                    return connection.DeleteRecordsByID("scheduling.tblJob", tableColumnNames[0],idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("scheduling.tblJob", tableColumnNames[0],idsToDelete);
+                    jobs.RemoveAll(x => idsToDelete.Contains(x.JobID));
+                    break;
                 case 8://tblStoreHour
                     idsToDelete = mainview.DisplayDeleteRecordsPage<StoreHour>(tableColumnNames, storeHours);
-                    return connection.DeleteRecordsByID("scheduling.tblStoreHour", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("scheduling.tblStoreHour", tableColumnNames[0], idsToDelete);
+                    storeHours.RemoveAll(x => idsToDelete.Contains(x.StoreHourID));
+                    break;
                 case 9://tblEmpShift
                    idsToDelete= mainview.DisplayDeleteRecordsPage<EmployeeShift>(tableColumnNames,employeeShifts);
-                    return connection.DeleteRecordsByID("scheduling.tblEmpShift", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("scheduling.tblEmpShift", tableColumnNames[0], idsToDelete);
+                    employeeShifts.RemoveAll(x => idsToDelete.Contains(x.EmpShiftID));
+                    break;
                 case 10://tblProductOrder
                     idsToDelete = mainview.DisplayDeleteRecordsPage<ProductOrder>(tableColumnNames, productOrders);
-                    return connection.DeleteRecordsByID("sales.tblProductOrder", tableColumnNames[0], idsToDelete);
-                     
+                    rowsaffected = connection.DeleteRecordsByID("sales.tblProductOrder", tableColumnNames[0], idsToDelete);
+                    productOrders.RemoveAll(x => idsToDelete.Contains(x.OrderID));
+                    break;
                 default:
                     return 0;
                      
                     //returns the number of rows affected
             }
-           
+            return rowsaffected;
         }
         public static int HandleRecordUpdating(string[] tableColumnNames, int tableValue)
         {
@@ -511,7 +517,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<Store>(tableColumnNames,stores,out colNames,out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblStore", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblStore", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -519,7 +525,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<PermissionLevel>(tableColumnNames, perLevels, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblPermissionLevel", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblPermissionLevel", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -527,7 +533,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<Employee>(tableColumnNames, employees, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblEmployee", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblEmployee", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -535,7 +541,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<Provider>(tableColumnNames, providers, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("sales.tblProvider", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("sales.tblProvider", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -543,7 +549,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<Product>(tableColumnNames, products, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("sales.tblProduct", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("sales.tblProduct", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -551,7 +557,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<StockLevel>(tableColumnNames, stockLevels, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("sales.tblStockLevel", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("sales.tblStockLevel", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -559,7 +565,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<Transaction>(tableColumnNames, transactions, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("sales.tblTransaction", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("sales.tblTransaction", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -567,7 +573,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<Job>(tableColumnNames, jobs, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblJob", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblJob", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -575,7 +581,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<StoreHour>(tableColumnNames, storeHours, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblStoreHour", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblStoreHour", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -583,7 +589,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<EmployeeShift>(tableColumnNames, employeeShifts, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblEmpShift", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("scheduling.tblEmpShift", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     break;
@@ -591,7 +597,7 @@ namespace RetailApplication
                     idsToUpdate = mainview.DisplayUpdateRecordsPage<ProductOrder>(tableColumnNames, productOrders, out colNames, out newValues);
                     foreach (var recordId in idsToUpdate)
                     {
-                        totalAffectedRows += connection.UpdateRecordByID("sales.tblProductOrder", tableColumnNames[0], recordId.ToString(), colNames[i], newValues[i]);
+                        totalAffectedRows += connection.UpdateRecordByID("sales.tblProductOrder", tableColumnNames[0], recordId, colNames[i], newValues[i]);
                         i++;
                     }
                     //add method call here to auto-update tblStockLevel using reflection
@@ -599,9 +605,7 @@ namespace RetailApplication
                 default:
                     break;
             }
-
-
-            return 0;
+            return totalAffectedRows;
         }
 
         public static void GetRelevantRecords(int getTableRecordsValue)
@@ -612,7 +616,7 @@ namespace RetailApplication
             #region getRecordStrings
             switch (getTableRecordsValue)
             {
-                case 1://tblEmployee
+                case 2://tblEmployee
 
                     //Gets the Employees and Permission Levels from the database if they have not been gotten already
                     if (employees.Count == 0)
@@ -635,35 +639,35 @@ namespace RetailApplication
                     //Strings formatted, now create and pass a list of strings to be displayed.
 
                     break;
-                case 2://tblPermissionLevel
+                case 1://tblPermissionLevel
                     if (perLevels.Count == 0)
                     {
                         perLevels = connection.GetPermissionLevels();
                     }
 
                     break;
-                case 3://tblStore
+                case 0://tblStore
                     if (stores.Count == 0)
                     {
                         stores = connection.GetAllStores();
                     }
                     break;
 
-                case 4://tblProvider
+                case 3://tblProvider
                     if (providers.Count == 0)
                     {
                         providers = connection.GetAllProviders();
                     }
                     break;
 
-                case 5://tblJob
+                case 7://tblJob
                     if (jobs.Count == 0)
                     {
                         jobs = connection.GetAllJobs();
                     }
                     break;
 
-                case 6://tblProduct
+                case 4://tblProduct
                     if (products.Count == 0)
                     {
                         products = connection.GetAllProducts();
@@ -681,7 +685,7 @@ namespace RetailApplication
                     }
                     break;
 
-                case 7://tblStockLevel
+                case 5://tblStockLevel
                     if (stockLevels.Count == 0)
                     {
                         stockLevels = connection.GetAllStocks();
@@ -703,7 +707,7 @@ namespace RetailApplication
                         stockString = stockString.Replace("@store", storeString);//Assigns the name of the store to the stockLevel string.
                     }
                     break;
-                case 8://tblTransaction
+                case 6://tblTransaction
                     if (transactions.Count == 0)
                     {
                         transactions = connection.GetAllTransactions();
@@ -725,7 +729,7 @@ namespace RetailApplication
                         transactionString = transactionString.Replace("@store", storeString);//Assigns the name of the store to the transaction string.
                     }
                     break;
-                case 9://tblProductOrder
+                case 10://tblProductOrder
                     if (productOrders.Count == 0)
                     {
                         productOrders = connection.GetAllProductOrders();
@@ -748,7 +752,7 @@ namespace RetailApplication
                     }
                     break;
 
-                case 10://tblStoreHour
+                case 8://tblStoreHour
                     if (storeHours.Count == 0)
                     {
                         storeHours = connection.GetAllStoreHours();
@@ -766,7 +770,7 @@ namespace RetailApplication
                         storeHourString = storeHourString.Replace("@perlevel", storeString);//Assigns the name of the store to the storeHour string.
                     }
                     break;
-                case 11://tblEmployeeShift
+                case 9://tblEmployeeShift
                     if (employeeShifts.Count == 0)
                     {
                         employeeShifts = connection.GetAllEmployeeShifts();
