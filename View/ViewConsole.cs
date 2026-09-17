@@ -93,8 +93,8 @@ namespace RetailApplication.View
             [0,1,2,3,4,5,6,7,8,9,10],//Deleteper4
             [],//Reportper1(report menus unfinished,will reference queries.)
             [],//Reportper2
-            [],//Reportper3
-            []//Reportper4
+            [0,1,2,3,4,5,6,7],//Reportper3
+            [0, 1, 2, 3, 4, 5, 6, 7]//Reportper4
             ];
 
 
@@ -882,6 +882,7 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 3. This text should help explain how the website works and what they can and cannot do.
             Console.WriteLine(PER3MENUOPTIONS);
             Console.WriteLine("RULE ONE OF THIS SYSTEM: This system is unforgiving. Double-check all of your inputs and choices before entering.");
+            //Console.WriteLine("If ");
             PageNum = 20;
         }
         public void DisplayPer4Help()
@@ -890,7 +891,7 @@ namespace RetailApplication.View
             //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
             Console.WriteLine(PER4MENUOPTIONS);
             Console.WriteLine("RULE ONE OF THIS SYSTEM: This system is unforgiving. Double-check all of your inputs and choices before entering.");
-            Console.WriteLine("When ");
+            //Console.WriteLine("When ");
             PageNum = 21;
         }
 
@@ -943,7 +944,6 @@ namespace RetailApplication.View
                 }
                 DisplayTableFieldOptions(fieldNames);//needs to actually get the input of the column
                 //get datatype-dependent value from user and assign to newValues(method needed)
-                //use fieldInfo[enteredInt+1].GetType and assign to a type variable, then switch on type to find which method to pass to.
                 int optionInt= GetIntegerInput(optionsOnPage,0);
                 colNamesToUpdate.Add(fieldNames[optionInt]);
                 newValues.Add(GetTypeSpecificInputAsString(fieldInfo[optionInt+1]));
@@ -1226,7 +1226,7 @@ namespace RetailApplication.View
             int maxRecordsOnPage = 0;//Ideally a more elegant solution would be used. Having to define and use two variables is not ideal.
             int recordsOnPage;
             List<int> maxColumnLengths = GetMaxColumnLengths(records, columnHeadings);
-
+            records.RemoveAt(records.Count - 1);
             //Main pagination loop
             do
             {
@@ -1261,19 +1261,23 @@ namespace RetailApplication.View
                     maxRecordsOnPage = i;
                 }
                 recordsOnPage = i - (maxRecordsOnPage * (outputPageNum - 1));
-                Console.WriteLine($"Page {outputPageNum} of {Math.Ceiling((double)records.Count / maxRecordsOnPage)}");
+                Console.WriteLine($"Page {outputPageNum} of {Math.Ceiling((double)records.Count / maxRecordsOnPage)}\t\t<-Backspace   Enter->  Exit Report:Esc");
+
+                //Gets user input for what to do next.
             RetryInput:
                 char userkey = Console.ReadKey(true).KeyChar;
                 if (userkey == '\r' && (i < records.Count))
                 {
                     outputPageNum++;
                     exitReport = false;
+                    //Goes to next page if Enter key is pressed
                 }
                 else if (userkey == '\b' && outputPageNum > 1)
                 {
                     i -= (recordsOnPage + maxRecordsOnPage);
                     outputPageNum--;
                     exitReport = false;
+                    //Goes to previous page if Backspace is pressed
                 }
                 else if (userkey == '\b' || userkey == '\r')//This case occurs when the user presses a page increment/decrement key but they are already at the maximum/minimum page number.
                 {
@@ -1284,8 +1288,6 @@ namespace RetailApplication.View
                     exitReport = true;
                 }
             } while (!exitReport);
-            //extract the relevant part of this method and adapt it into a method that handles all of the pagination/multi-printing required.(DisplayRecords)
-            //note: this adaptation would have to include support for option characters.
 
         }
 
@@ -1318,14 +1320,13 @@ namespace RetailApplication.View
             //Main pagination loop
             do
             {
-                Console.Clear();
+                Console.Clear();//This block clears the console, prints the column names, and moves two lines down.
                 optionsOnPage = 0;
                 for (int j = 0; j < columnHeadings.Length; j++)
                 {
                     Console.Write(columnHeadings[j].PadRight(maxColumnLengths[j] + 1));//Prints and left-aligns the column headings.
                 }
-                Console.WriteLine("\n");//This block clears the console, prints the column names, and moves two lines down.
-                recordsOnPage = 0;
+                Console.WriteLine("\n");                recordsOnPage = 0;
                 try
                 {
                     do

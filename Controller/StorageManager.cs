@@ -19,7 +19,6 @@ namespace RetailApplication.Controller
             {
                 connection = new SqlConnection(connectionString);
                 connection.Open();
-                Console.WriteLine("Connection Successful");
             }
             catch (InvalidOperationException)
             {
@@ -153,7 +152,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            PermissionLevel perlevel = new PermissionLevel(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2));
+                            PermissionLevel perlevel = new PermissionLevel(reader.GetInt32(0), reader.GetString(1), reader.GetByte(2));
                             perLevelList.Add(perlevel);
                         }
                         reader.Close();
@@ -482,27 +481,28 @@ namespace RetailApplication.Controller
         public List<string[]> ReportHandler(string query, string parameters)
         {
             List<string[]> output=[];
+        TryExecute:
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
-                    if (parameters.Length==0)
+                    if (parameters.Length == 0)
                     {
-                        cmd.Parameters.AddWithValue("@"," ");
+                        cmd.CommandText = cmd.CommandText.Replace("@", " ");
                     }
                     else
                     {
-                        cmd.Parameters.AddWithValue("@", parameters);
+                        cmd.Parameters.AddWithValue("@", parameters);//Needs fixing when parameterisation added
                     }
-                      
+
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             string[] record = new string[reader.FieldCount];
-                            for(int i=0;i<reader.FieldCount;i++)
+                            for (int i = 0; i < reader.FieldCount; i++)
                             {
-                                record[i]=reader[i].ToString();
+                                record[i] = reader[i].ToString();
                             }
                             output.Add(record);
                         }
@@ -513,7 +513,11 @@ namespace RetailApplication.Controller
             catch (SqlException e)
             {
                 Console.WriteLine($"There was a database error while retrieving the report: {e.Message}");
-                
+                if (e.Message.Contains("Execution Timeout Expired"))
+                {
+                    Console.WriteLine("Retrying Execution..."); 
+                    goto TryExecute;
+                }
                 throw;
             }
 

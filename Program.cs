@@ -37,14 +37,14 @@ namespace RetailApplication
         //const string qryAutoUpdateStocks = "UPDATE sales.tblStockLevel SET ";*/
         readonly static string[,] queries =
             {
-                {"qryProductOrder","SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM tblProduct P, tblStore S, tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 @ ORDER BY O.Date;" },
-                {"qryEmployeeShifts" ,"SELECT (E.FirstName+E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS Start Time, I.EndTime AS End Time, I.Weekday AS Day, J.JobName AS Job FROM tblEmployee E, tblStore S, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID @ ORDER BY 2,1,6,5,3,4;"},
-                {"qryProductSales" ,"SELECT COALESCE(P.ProductName,Total)AS Product, COALESCE(S.StoreName, Subtotal) AS Store, SUM(T.Quantity)AS Quantity, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblProduct P, tblTransaction T RIGHT JOIN tblStore S ON T.StoreID=S.StoreID WHERE P.ProductID=T.ProductID @ GROUP BY ROLLUP(S.StoreName,P.ProductName) ORDER BY 1,2;"},
-                {"qryStoreSales" ,"SELECT COALESCE(S.StoreName,Grand Total)AS Store, COALESCE(P.ProductName, Total Sales) AS Product, SUM(T.Quantity)AS Quantity, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM tblStore S, tblTransaction T RIGHT JOIN tblProduct P ON T.ProductID=P.ProductID WHERE S.StoreID=T.StoreID @ GROUP BY ROLLUP(P.ProductName,S.StoreName) ORDER BY 1,2;"},
-                { "qryBestProducts","SELECT TOP 50 P.ProductName AS Product, SUM(T.Quantity) AS Total Sales, SUM(T.Quantity*P.CustomerPrice) AS Total Revenue, SUM((T.Quantity*P.CustomerPrice)-(T.Quantity*P.SupplyPrice)) AS Profit FROM tblProduct P, tblStore S, tblTransaction T WHERE S.StoreID=T.StoreID AND P.ProductID=T.ProductID @ GROUP BY P.ProductID ORDER BY 2 desc, 4 desc;"},
-                {"qryEmployeePermissions" ,"SELECT E.EmpID AS Employee Number, E.FirstName+ ' '+ E.LastName AS Name, l.PermissionName AS Permission Level FROM tblEmployee E, tblPermissionLevel l WHERE E.LevelID=l.LevelID @ ORDER BY l.PermissionLevel desc, 2;"},
-                {"qryEmployeePay" ,"SELECT COALESCE(E.FirstName + ' ' + E.LastName, Total) AS Employee Name, SUM(DATEDIFF(hh, I.EndTime, I.StartTime)*J.Pay) AS Shift Pay FROM tblEmployee E, tblEmpShift I, tblJob J WHERE E.EmpID=I.EmpID AND J.JobID=I.JobID @ GROUP BY ROLLUP(E.EmpID) ORDER BY 1;"},
-                {"qryProductStocks" ,"SELECT P.ProductName AS Product, S.StoreName AS Store, L.RmnStock AS Quantity FROM tblProduct P, tblStore S, tblStockLevel L WHERE P.ProductID=L.ProductID AND S.StoreID=L.StoreID @ ORDER BY 1,3 desc;"}
+                {"qryProductOrder","SELECT P.ProductName AS Product, S.StoreName AS Store, O.Quantity, P.SupplyPrice*O.Quantity AS Price FROM sales.tblProduct P, scheduling.tblStore S, sales.tblProductOrder O WHERE P.ProductID=O.ProductID AND S.StoreID=O.StoreID AND DATEDIFF(dy,GETDATE(),O.Date)<30 @ ORDER BY O.Date,S.StoreName;" },
+                {"qryEmployeeShifts" ,"SELECT (E.FirstName+ ' ' +E.LastName) AS Name, S.StoreName AS Store, I.StartTime AS \"Start Time\", I.EndTime AS \"End Time\", I.Weekday AS Day, J.JobName AS Job FROM scheduling.tblEmployee E, scheduling.tblStore S, scheduling.tblEmpShift I, scheduling.tblJob J WHERE E.EmpID=I.EmpID AND S.StoreID=I.StoreID AND J.JobID=I.JobID @ ORDER BY 2,1,6,5,3,4;"},
+                {"qryProductSales" ,"SELECT COALESCE(CONCAT_WS( ' ',P.ProductName,P.Amount),'Total')AS Product, COALESCE(S.StoreName, 'Subtotal') AS Store, SUM(T.Quantity)AS Quantity, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM sales.tblProduct P, sales.tblTransaction T RIGHT JOIN scheduling.tblStore S ON T.StoreID=S.StoreID WHERE P.ProductID=T.ProductID @ GROUP BY ROLLUP((P.ProductID,CONCAT_WS(' ',P.ProductName,P.Amount)),S.StoreName) ORDER BY P.ProductID,1;"},
+                {"qryStoreSales" ,"SELECT COALESCE(S.StoreName,'Grand Total')AS Store, COALESCE(CONCAT_WS(' ',P.ProductName,P.Amount), 'Subtotal') AS Product, SUM(T.Quantity)AS Quantity, SUM(T.Quantity*P.CustomerPrice)AS Revenue FROM scheduling.tblStore S, sales.tblTransaction T RIGHT JOIN sales.tblProduct P ON T.ProductID=P.ProductID WHERE S.StoreID=T.StoreID @ GROUP BY ROLLUP((S.StoreID,S.StoreName),(P.ProductID,CONCAT_WS(' ',P.ProductName,P.Amount))) ORDER BY S.StoreID,1;"},
+                { "qryBestProducts","SELECT TOP 50 CONCAT_WS(' ',P.ProductName,P.Amount) AS Product, SUM(T.Quantity) AS \"Total Sales\", SUM(T.Quantity*P.CustomerPrice) AS \"Total Revenue\", SUM((T.Quantity*P.CustomerPrice)-(T.Quantity*P.SupplyPrice)) AS Profit FROM sales.tblProduct P, scheduling.tblStore S, sales.tblTransaction T WHERE S.StoreID=T.StoreID AND P.ProductID=T.ProductID @ GROUP BY P.ProductID,P.ProductName,P.Amount ORDER BY 2 desc, 4 desc;"},
+                {"qryEmployeePermissions" ,"SELECT E.EmpID AS \"Employee Number\", E.FirstName+ ' '+ E.LastName AS Name, l.LevelName AS \"Permission Level\" FROM scheduling.tblEmployee E, scheduling.tblPermissionLevel l WHERE E.LevelID=l.LevelID @ ORDER BY l.PermissionLevel desc, 2;"},
+                {"qryEmployeePay" ,"SELECT COALESCE(E.FirstName + ' ' + E.LastName, 'Employee Total') AS \"Employee Name\", SUM(DATEDIFF(hh, I.StartTime, I.EndTime)*J.Pay) AS \"Shift Pay\" FROM scheduling.tblEmployee E, scheduling.tblEmpShift I, scheduling.tblJob J WHERE E.EmpID=I.EmpID AND J.JobID=I.JobID @ GROUP BY E.EmpID,E.FirstName,E.LastName ORDER BY 1;"},
+                {"qryProductStocks" ,"SELECT P.ProductName AS Product, S.StoreName AS Store, L.RmnStock AS Quantity FROM sales.tblProduct P, scheduling.tblStore S, sales.tblStockLevel L WHERE P.ProductID=L.ProductID AND S.StoreID=L.StoreID @ ORDER BY 1,3 desc;"}
                 };
         #endregion
 
@@ -112,26 +112,6 @@ namespace RetailApplication
                 [0,0,0,7,3,3,0],//tblEmployeeShift
                 [0,0,0,0,4,8]//tblProductOrder
             ];
-
-        //This array stores the array references to the tables used in the associated query
-        readonly static byte[][] tablesInQueries =
-            [
-            [0,4,6],//qryProductSales
-                [0,2,9],//qryEmployeeShifts
-                [0,8],//qryStoreHour
-                [2,7,9],//qryEmployeePay
-                [0,4,5],//qryProductStocks
-                [0,4,6],//qryBestProducts
-                [0,4,10],//qryProductOrders
-                [1,2],//qryEmployeePermissions
-                [2],//qryEmployee
-                [1],//qryPermissions
-                [3,4],//qryProductProviders
-                [0,4,6],//qryStoreSales
-                [],//qry
-                ];//could remove qry from beginning of string when displaying
-                  //could just name query columns directly(fixes naming of aggregate columns)
-                  //also define column datatypes
         readonly static string[][] queryColumns =
             [
             ["Product","Store","Quantity","Price"],
@@ -157,10 +137,7 @@ namespace RetailApplication
         TryConnection:
             mainview = new ViewConsole();
             connection = new StorageManager(connectionString);
-            //The MD5 class does not have a constructor
-
-            
-
+          
 
             byte userPermissionLevel; //This value is used to determine which pages the user can access
             bool stayLoggedIn; //This value indicates whether the user has chosen to logout. It will remain true until changed by the logout system.
@@ -281,8 +258,7 @@ namespace RetailApplication
                                 //get column names here
                                 var recordsToDisplay = connection.ReportHandler(queries[genericValue, 1], "");//(does not work pending testing)
                                 mainview.DisplayReport(queryColumns[genericValue],recordsToDisplay,queries[genericValue,0].TrimStart(['q','r','y']));
-
-                                break;
+                                goto Main_Menu;
 
                             default:
                                 break;
@@ -313,19 +289,10 @@ namespace RetailApplication
             
             
             //Remaining to do: 
-            //-fill out array of valid characters(mostly done)
             //-finish parameterisation methods(finish after everything else)
-            //-connect finished blocks to complete functionality
-            //-implement string-length checks on all string values in the Model folder
-            //-make all CRUD blocks functional
-            //-Update/delete blocks need the code to get the records to update/delete
-            //update/delete blocks need to get the records from the database
+            //-make report block functional
             //-other?
             //fully organise and comment code(stretch goal)
-
-            //-Delete functional
-            //-Insert functional but missing user prompts
-            //-Update and report unfinished
 
 
         End:;
@@ -350,7 +317,7 @@ namespace RetailApplication
                     List<PermissionLevel> permissionLevelRecords = [];
                     foreach (var record in recordsToInsert)
                     {
-                        permissionLevelRecords.Add(new PermissionLevel(-1, (string)record[0], (short)record[1]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
+                        permissionLevelRecords.Add(new PermissionLevel(-1, (string)record[0], (byte)record[1]));//negative one is used since it will never occur in an actual record and is a blatant marker of an invalid record.
                     }
                     rowsInserted = connection.InsertRecords<PermissionLevel>(permissionLevelRecords, "scheduling.tblPermissionLevel", tableColumnNames[tableValue]);
                     break;

@@ -9,12 +9,12 @@ namespace RetailApplication.Model
 {
     public class PermissionLevel
     {
-        public short PerLevelID { get; }
+        public int PerLevelID { get; }
         [StringLength(15)]
         public String LevelName { get; set; }
-        public short PerLevel { get; set; }
+        public byte PerLevel { get; set; }
 
-        public PermissionLevel(short perLevelId,String levelName,short perLevel)
+        public PermissionLevel(int perLevelId,String levelName,byte perLevel)
         {
             this.PerLevelID = perLevelId;
             this.LevelName = levelName;
