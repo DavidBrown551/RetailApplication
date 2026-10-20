@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,6 +44,7 @@ namespace RetailApplication.Controller
         }
 
 
+        //This method gets the password value from the employee with the specified ID
         public string GetUserPassword(int empId)
         {
             string password="null";
@@ -62,11 +64,10 @@ namespace RetailApplication.Controller
                     }
                 }
             }
-            catch (SqlException)
+            catch (SqlException)//This can occur if empId does not appear in the table
             {
                 Console.WriteLine();
-                password = "Error";
-                throw;
+                password = "Error";//Since the passwords are compared to a hashed value, comparing the input password with this will always evaluate to false
             }
             return password;
         }
@@ -94,7 +95,6 @@ namespace RetailApplication.Controller
             {
                 Console.WriteLine();
                 perLevel = 0;
-                throw;
             }
 
             return perLevel;
@@ -107,7 +107,7 @@ namespace RetailApplication.Controller
         #region GetRecordMethods
         public List<Store> GetAllStores() 
         {
-            List<Store> allStores = new List<Store> { };
+            List<Store> allStores = [];
 
             string query = "SELECT * FROM scheduling.tblStore;";
             try
@@ -142,7 +142,7 @@ namespace RetailApplication.Controller
 
         public List<PermissionLevel> GetPermissionLevels()
         {
-            List<PermissionLevel> perLevelList = new List<PermissionLevel> { };
+            List<PermissionLevel> perLevelList = [];
             string query = "SELECT * FROM scheduling.tblPermissionLevel ORDER BY PermissionLevel desc;";
             try
             {
@@ -173,7 +173,7 @@ namespace RetailApplication.Controller
 
         public List<Job> GetAllJobs()
         {
-            List<Job> allJobs = new List<Job> { };
+            List<Job> allJobs = [];
 
             string query = "SELECT * FROM scheduling.tblJob;";
             try
@@ -184,7 +184,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            Job job = new Job(reader.GetInt16(0), reader.GetString(1), reader.GetDecimal(2));
+                            Job job = new Job(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2));
                             allJobs.Add(job);
                         }
                         reader.Close();
@@ -207,9 +207,9 @@ namespace RetailApplication.Controller
 
         public List<Employee> GetAllEmployees()
         {
-            List<Employee> allEmployees = new List<Employee> { };
+            List<Employee> allEmployees = [];
 
-            string query = "SELECT * FROM scheduling.tblEmployee;";//This string is hardcoded since it is not used anywhere else.
+            string query = "SELECT EmpID,FirstName,LastName,LevelID,COALESCE(Password,'Null') FROM scheduling.tblEmployee;";//This string is hardcoded since it is not used anywhere else.
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -218,7 +218,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            Employee employee = new Employee(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetInt16(3), reader.GetString(4));
+                            Employee employee = new Employee(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetInt32(3), reader.GetString(4));
                             allEmployees.Add(employee);
                         }
                         reader.Close();
@@ -376,7 +376,7 @@ namespace RetailApplication.Controller
         {
             List<EmployeeShift> allEmpShifts = [];
 
-            string query = "SELECT * FROM sscheduling.tblEmpShift;";
+            string query = "SELECT * FROM scheduling.tblEmpShift;";
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -385,7 +385,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            EmployeeShift empShift = new EmployeeShift(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), (DayOfWeek)Enum.Parse(typeof(DayOfWeek), reader.GetString(3)),TimeOnly.FromDateTime(reader.GetDateTime(4)),TimeOnly.FromDateTime(reader.GetDateTime(5)),reader.GetInt32(6));
+                            EmployeeShift empShift = new EmployeeShift(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), Enum.Parse<DayOfWeek>(reader.GetString(3)),TimeOnly.Parse(reader.GetTimeSpan(4).ToString()),TimeOnly.Parse(reader.GetTimeSpan(5).ToString()),reader.GetInt32(6));
                             allEmpShifts.Add(empShift);
                         }
                         reader.Close();
@@ -418,7 +418,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            ProductOrder productOrder = new ProductOrder(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),  reader.GetInt16(3),reader.GetDateTime(4),reader.GetBoolean(5));
+                            ProductOrder productOrder = new ProductOrder(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2),  reader.GetInt16(3),DateOnly.FromDateTime(reader.GetDateTime(4)),reader.GetBoolean(5));
                             allProductOrders.Add(productOrder);
                         }
                         reader.Close();
@@ -442,7 +442,7 @@ namespace RetailApplication.Controller
         {
             List<StoreHour> allStoreHours=[];
 
-            string query = "SELECT * FROM scheduling.tblStoreHour;";
+            string query = "SELECT * FROM scheduling.tblStoreHours;";
             try
             {
                 using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -451,7 +451,7 @@ namespace RetailApplication.Controller
                     {
                         while (reader.Read())
                         {
-                            StoreHour storeHour = new StoreHour(reader.GetInt32(0), reader.GetInt32(1), (DayOfWeek)Enum.Parse(typeof(DayOfWeek),reader.GetString(3)), TimeOnly.FromDateTime(reader.GetDateTime(4)), TimeOnly.FromDateTime(reader.GetDateTime(5)));
+                            StoreHour storeHour = new StoreHour(reader.GetInt32(0), reader.GetInt32(1), Enum.Parse<DayOfWeek>(reader.GetString(2)), TimeOnly.Parse(reader.GetTimeSpan(3).ToString()), TimeOnly.Parse(reader.GetTimeSpan(4).ToString()));
                             allStoreHours.Add(storeHour);
                         }
                         reader.Close();
@@ -513,7 +513,7 @@ namespace RetailApplication.Controller
             catch (SqlException e)
             {
                 Console.WriteLine($"There was a database error while retrieving the report: {e.Message}");
-                if (e.Message.Contains("Execution Timeout Expired"))
+                if (e.Message.Contains("Execution Timeout Expired"))//This handles errors where the connection times out
                 {
                     Console.WriteLine("Retrying Execution..."); 
                     goto TryExecute;
@@ -530,7 +530,7 @@ namespace RetailApplication.Controller
         {
             try
             {
-                using (SqlCommand cmd = new SqlCommand($"DELETE FROM {table} WHERE {IDColName} IN (", connection))//DOES NOT WORK DUE TO INCORRECT COMMAND TEXT/PARAMETERS.
+                using (SqlCommand cmd = new SqlCommand($"DELETE FROM {table} WHERE {IDColName} IN (", connection))
                 {
                     int i = 0;
                     foreach (var Id in IDs)
@@ -541,6 +541,7 @@ namespace RetailApplication.Controller
                         {
                             cmd.CommandText = cmd.CommandText.Insert(cmd.CommandText.Length,",");
                         }
+                        i++;
                     }
                     cmd.CommandText = cmd.CommandText.Insert(cmd.CommandText.Length, ");");
                     return cmd.ExecuteNonQuery();
@@ -560,7 +561,7 @@ namespace RetailApplication.Controller
            
         }
 
-        //This method
+        //This method updates the specified column of the the record with the specified ID. This method is used for all of the tables in the database
         public int UpdateRecordByID(string table, string IDColName, int ID,string colName,string value)
         {
             try
@@ -575,25 +576,25 @@ namespace RetailApplication.Controller
             catch (SqlException e)
             {
                 Console.WriteLine($"Database Error updating record: {e.Message}");
-                throw;
+                return 0;
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error updating record: {e.Message}");
-                throw;
+                return 0;
             }
             
         }
 
         //This method handles the insertion of new records to the database. It takes a list of objects and inserts them into the supplied table.
-        public int InsertRecords<T>(List<T> records, string table, string[]columnNames)
+        public int InsertRecords<T>(List<T> records, string table, string[]columnNames) where T:class
         {
             string columns="";
-            Type insertClass = typeof(T);
-            PropertyInfo[] classInfo = insertClass.GetProperties();
+            int rowsInserted=0;
+            PropertyInfo[] classInfo = typeof(T).GetProperties(BindingFlags.NonPublic| BindingFlags.Public|BindingFlags.Instance);//Gets information about all the properties in the generic class(includes non-public properties)
             SqlParameter[,] recordParameters= new SqlParameter[records.Count, classInfo.Length-1]; 
-            //needs to format each record correctly, using the values of the fields.
-            //organisation of parameters?
+
+
             for (int i=1; i< columnNames.Length; i++)//Formats the column names for the insert statements.
             {
                columns = columns.Insert(columns.Length, columnNames[i]);
@@ -602,35 +603,35 @@ namespace RetailApplication.Controller
                     columns = columns.Insert(columns.Length, ",");
                 }
             }
-            for (int i = 0; i < records.Count; i++)//Gets each field of the record and assigns it to an SqlParameter.
+            for (int i = 0; i < records.Count; i++)
             {
-                for(int j=1;j<classInfo.Length;j++)
+                for(int j=1;j<classInfo.Length;j++)//Loops through each non-PK field of the record
                 {
-                   recordParameters[i,j-1]= new SqlParameter($"@{i}i{j}",classInfo[j].GetValue(records[i]));
+                   recordParameters[i,j-1]= new SqlParameter($"@{i}i{j}",classInfo[j].GetValue(records[i]));//Assigns a field of the record to an SqlParameter.
                 }
 
             }
-            StringBuilder inputString = new StringBuilder($"INSERT INTO {table} ({columns}) VALUES ");
-            for (int i = 0; i < records.Count; i++)//Gets each field of the record and assigns it to an SqlParameter.
+            StringBuilder inputString = new StringBuilder($"INSERT INTO {table} ({columns}) VALUES ");//StringBuilder is used because it is more efficient when performing many modifications on a string
+            for (int i = 0; i < records.Count; i++)//This loop adds the text for each SqlParameter created above to the INSERT statement
             {
                 inputString.Append('(');
                 for (int j = 1; j < classInfo.Length; j++)
                 {
-                   inputString.Append($"@{i}i{j}");
-                    if (j<classInfo.Length-1)
+                   inputString.Append($"@{i}i{j}");//Adds text corresponding to an SqlParameter created above
+                    if (j<classInfo.Length-1)//If this is not the last field, add the field separator(',')
                     {
                         inputString.Append(',');
                     }
                 }
-                inputString.Append(')');
-                if (i<records.Count-1)
+                inputString.Append(')');//Adds the record terminator
+                if (i<records.Count-1)//If this is not the last record, add the record separator(',')
                 {
                     inputString.Append(',');
                 }
 
             }
-            inputString.Append(';');
-            //create a new list or multidimensional array of record fields, then use the below foreach to insert them.
+            inputString.Append(';');//Appends the statement terminator
+            //creates a new multidimensional array of record fields, then uses the below foreach to insert them.
             try
             {
                 using (SqlCommand cmd=new SqlCommand(inputString.ToString(),connection))//Not vunerable to SQL injection since the input string is not obtained from the user.
@@ -642,19 +643,18 @@ namespace RetailApplication.Controller
                                 cmd.Parameters.Add(recordParameters[i,j]);//Adds a parameter to the list
                             }
                         }
-                    return cmd.ExecuteNonQuery();
+                    rowsInserted= cmd.ExecuteNonQuery();
                 }
             }
             catch(SqlException e)
             {
                 Console.WriteLine($"Database Error inserting record/s: {e.Message}");
-                throw;
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error inserting record/s: {e.Message}");
-                throw;
             }
+            return rowsInserted;
         }
 
     }

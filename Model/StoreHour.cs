@@ -11,13 +11,11 @@ namespace RetailApplication.Model
     {
         public int StoreHourID { get; }
         public int StoreID { get; }//Foreign Key
-        public DayOfWeek Weekday { get; set; }//Weekday has a maximum length of 9 characters and must be the name of one of the days of the week
+        public DayOfWeek Weekday { get; set; }
         public TimeOnly OpenTime { get; set; }
         public TimeOnly CloseTime { get; set; }//CloseTime must be after OpenTime
 
         public StoreHour(int storeHourId,int storeId,DayOfWeek weekday, TimeOnly openTime, TimeOnly closeTime)
-            //!URGENT!
-        //TimeOnly may not be compatible with the SQL date/time formatting. This needs to be checked before completion of the project.
         {
             this.StoreHourID = storeHourId;
             this.StoreID = storeId;

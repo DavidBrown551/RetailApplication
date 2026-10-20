@@ -9,11 +9,11 @@ namespace RetailApplication.Model
 {
     public class Job
     {
-        public short JobID { get; }
+        public int JobID { get; }
         [StringLength(20)]
         public string JobName { get; set; }//JobName has a maximum length of 20 characters
         public decimal Pay { get; set; }
-        public Job(short jobId,string jobName,decimal pay)
+        public Job(int jobId,string jobName,decimal pay)
         {
             this.JobID = jobId;
             this.JobName = jobName;

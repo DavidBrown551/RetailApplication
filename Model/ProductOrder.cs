@@ -12,9 +12,9 @@ namespace RetailApplication.Model
         public int StoreID { get; }
         public int ProductID { get; }
         public short Quantity { get; }
-        public DateTime Date { get; }
+        public DateOnly Date { get; }
         public bool Filled { get; set; }
-        public ProductOrder(int orderId,int storeId,int productId,short quantity, DateTime date,bool filled)
+        public ProductOrder(int orderId,int storeId,int productId,short quantity, DateOnly date,bool filled)
         {
             OrderID = orderId;
             StoreID = storeId;

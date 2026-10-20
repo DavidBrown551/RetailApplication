@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -23,10 +24,10 @@ namespace RetailApplication.View
         private const string INVALIDPERLEVELMESSAGE = "Error: the user does not have a valid permission level";
         private const string READONLYFIELDMESSAGE = "Error: This field is read-only. Please try updating a different field.";
         private const string INVALIDCHARINPUTMESSAGE = "Error: That is not a character recognised by the system in the current state. Please try again.";
-        private const string BADDECIMALMESSAGE = "You must input a decimal with at most one decimal point, of maximum size:";
+        private const string BADDECIMALMESSAGE = "You must input a decimal with at most two decimal digits that is less than ";
 
 
-        //The following are the page titles
+        //The following are the page titles and headers
         private const string HELP_TITLE = "Help Page";
         private const string MAINMENU_TITLE = "Main Menu";
         private const string CREATEMENU_TITLE = "Add Records";
@@ -43,12 +44,12 @@ namespace RetailApplication.View
         //The arrays of valid characters used by the program to check user input.
         #region validCharArrays
 
-        //The current length of the following array is 23 pages
+        //The current length of the following array is 25 pages
         //This is the array of all the valid characters for each page in the application. The array reference of the valid characters for a page is equal to its PageNum value.
         //O allows the user to choose a generic option
-        static char[][] AllValidChars =
+        static readonly char[][] AllValidChars =
             [
-            ['a'],//PageNum=0,Page=login
+            [],//PageNum=0,Page=login
             ['c','C','h','H','r','R','l','L','\e'],//PageNum=1, Page=Per1MainMenu
             ['c','C','h','H','r','R','l','L','\e','u','U'],//PageNum=2, Page=Per2MainMenu
             ['c','C','h','H','r','R','l','L','\e','u','U','d','D'],//PageNum=3, Page=Per3MainMenu
@@ -73,11 +74,10 @@ namespace RetailApplication.View
             [],//PageNum=22, Page=DisplayReport
             ['\e','l','L','o','O'],//PageNum=23, Page=Update/Insert/Delete page
             ['m','M'],//PageNum=24, Page=Logout/Exit confirmation
-            [],//PageNum=25,
 
             ];
         //The AllValidChars array has characters in both cases to avoid having to set the character value to always be uppercase/lowercase
-        //all of the insert,update,delete,and report menus have the generic option characters as well
+
 
         //This array stores how the generic input options of each menu map to the tables/queries they reference.
         static int[][] genericInputMapping =
@@ -91,16 +91,14 @@ namespace RetailApplication.View
             [10,2,9,3,0,7,1,6,8,5,4],//Updateper4
             [0,2,3,4,7,8,9],//Deleteper3
             [0,1,2,3,4,5,6,7,8,9,10],//Deleteper4
-            [],//Reportper1(report menus unfinished,will reference queries.)
-            [],//Reportper2
-            [0,1,2,3,4,5,6,7],//Reportper3
-            [0, 1, 2, 3, 4, 5, 6, 7]//Reportper4
+            [1,5,6,11],//Reportper1
+            [1,5,6,0,7,11],//Reportper2
+            [0,1,2,3,4,5,6,7,8,9,10,11],//Reportper3
+            [0, 1, 2, 3, 4, 5, 6, 7,8,9,10,11]//Reportper4
             ];
 
-
-
-
         #endregion
+
 
         public int PageNum { get; set; }
         //This value represents the page the user is currently seeing.
@@ -113,11 +111,11 @@ namespace RetailApplication.View
         public void DisplayLoginPage()
         {
             Console.Title = "Login Page";
-            Console.Clear();
+            ClearScreen();
             Console.WriteLine("Please Enter your Employee Number:");
             Console.WriteLine();
             Console.WriteLine("Please Enter your Password:");
-            Console.SetCursorPosition(0,1);
+            Console.SetCursorPosition(0,1);//Sets the cursor to be in the field below the first line of text
             PageNum = 0;
             return;
         }
@@ -127,46 +125,55 @@ namespace RetailApplication.View
         {
             PageNum = 24;
             Console.Title = "Confirm Logout";
-            Console.Clear();
+            ClearScreen();
             Console.WriteLine("Log out of the program? User State will not be preserved.\nLogout:Y\t Return to the program:N");
 
-            //The PageNum value is not changed to allow the program to maintain user state if the user stays logged in. If the user logs out, they will be taken to the login screen, otherwise they will return to their previous page(realistic with current program?)
-            //Logout will only be allowed from menus, to avoid the difficulties of maintaining complex user states
+            //The PageNum value is not changed to allow the program to maintain user state if the user stays logged in. If the user logs out, they will be taken to the login screen.
+            //Logout is only be allowed from menus.
         }
 
         public void DisplayExitConfirmation()
         {
             PageNum = 24;
             Console.Title = "Confirm Exit";
-            Console.Clear();
+            ClearScreen();
             Console.WriteLine("Exit the program? User state will not be preserved and the program will have to reconnect on startup\nExit the program:Y \t Return to the menu:N");
             //This method is similar in function to DisplayLogoutConfirmation, but will ask if the user wishes to close the program instead of if they wish to log out.
         }
         #endregion
 
         //This method is implemented here instead of using Console.WriteLine in Program.cs to comply with MVC architecture
-        public void DisplayMessage(String message)
+        public static void DisplayMessage(String message)
         {
             Console.WriteLine(message);
         }
 
+        //This method clears the entire console buffer, including strings not currently visible
+        public static void ClearScreen()
+        {
+            Console.Clear();
+            Console.WriteLine("\x1b[3J");
+            Console.Clear();
+        }
+
+
         //This region contains all if the methods for getting user input of a specific type.
         #region Get[Type]_Methods
-        public char GetCharacterInput()
+        public static char GetCharacterInput()
         {
             
             return Console.ReadKey(true).KeyChar;
         }
 
         //This method gets and returns a (error-corrected) int32, displaying a default error message if the user enters an invalid string
-        public int GetIntegerInput()
+        public static int GetIntegerInput()
         {
             bool exitLoop = false;
             int returnValue;
             do
             {
                 string inputString = Console.ReadLine();
-                if (!int.TryParse(inputString, out returnValue))//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
+                if (!int.TryParse(inputString, out returnValue)||returnValue<1)//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
                 {
                     Console.WriteLine(BADINTMESSAGE + Int32.MaxValue);
                 }
@@ -180,7 +187,7 @@ namespace RetailApplication.View
         }
 
         //This method gets and returns an (error-corrected) integer, displaying the errorMessage string to the user if an invalid input is made
-        public int GetIntegerInput(string errorMessage)
+        public static int GetIntegerInput(string errorMessage)
         {
             bool exitLoop=false;
             int returnValue;
@@ -201,7 +208,7 @@ namespace RetailApplication.View
         }
 
         //This method gets and returns an (error-corrected) integer with the provided maximum size
-        public int GetIntegerInput(int maxsize,int minsize)
+        public static int GetIntegerInput(int maxsize,int minsize)
         {
             bool exitLoop = false;
             int returnValue;
@@ -221,7 +228,26 @@ namespace RetailApplication.View
             return returnValue;
         }
 
-        public short GetShortIntegerInput(short maxsize, short minsize)
+        public static int GetIntegerInput(int maxsize,string errorMessage)
+        {
+            bool exitLoop = false;
+            int returnValue;
+            do
+            {
+                string inputString = Console.ReadLine();
+                if (!int.TryParse(inputString, out returnValue) || maxsize < returnValue || returnValue < 0)//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
+                {
+                    Console.WriteLine(errorMessage + maxsize);
+                }
+                else
+                {
+                    exitLoop = true;
+                }
+            } while (!exitLoop);
+
+            return returnValue;
+        }
+        public static short GetShortIntegerInput(short maxsize, short minsize)
         {
             bool exitLoop = false;
             short returnValue;
@@ -241,16 +267,16 @@ namespace RetailApplication.View
             return returnValue;
         }
 
-        public int GetIntegerInput(int maxsize,string errorMessage)
+        public static byte GetByteInput() 
         {
             bool exitLoop = false;
-            int returnValue;
+            byte returnValue;
             do
             {
                 string inputString = Console.ReadLine();
-                if (!int.TryParse(inputString, out returnValue) || maxsize < returnValue || returnValue < 0)//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
+                if (!byte.TryParse(inputString, out returnValue))//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
                 {
-                    Console.WriteLine(errorMessage + maxsize);
+                    Console.WriteLine(BADINTMESSAGE + "255");
                 }
                 else
                 {
@@ -261,17 +287,18 @@ namespace RetailApplication.View
             return returnValue;
         }
 
+
         //This method gets an error-corrected decimal of a specified maximum size and precision from the user.
-        public decimal GetDecimalInput(int maxsize,int maxPlaces)
+        public static decimal GetDecimalInput(int maxintsize,int maxPlaces)
         {
             bool exitLoop = false;
             decimal returnValue;
             do
             {
                 string inputString = Console.ReadLine();
-                if (!decimal.TryParse(inputString, out returnValue) || maxsize < returnValue || returnValue < 0)//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
+                if (!decimal.TryParse(inputString, out returnValue) || maxintsize+1 <= returnValue || returnValue < 0)//If the input string fails to parse(due to containing incorrect characters), this will be caught and a error message will be output.
                 {
-                    Console.WriteLine(BADDECIMALMESSAGE + maxsize);
+                    Console.WriteLine(BADDECIMALMESSAGE + (maxintsize+1));
                 }
                 else
                 {
@@ -283,7 +310,7 @@ namespace RetailApplication.View
         }
 
         //This method gets the user's answer to a yes/no question, e.g. confirming the user's exit from the program 
-        public bool GetYesNoInput(string userQuery)
+        public static bool GetYesNoInput(string userQuery)
         {
             Console.WriteLine(userQuery);
             do
@@ -305,20 +332,21 @@ namespace RetailApplication.View
             } while (true);//Acceptable coding?
         }
 
-        public string GetStringInput(char[] validChars,int maxLength)
+        public static string GetStringInput(char[] inValidChars,int maxLength)
         {
-            bool validString = true;
+            bool validString;
             string userString;
             do
             {
+                validString = true;
                 userString = Console.ReadLine();
                 if (string.IsNullOrEmpty(userString)||userString.Length>maxLength)
                 {
                     validString = false;
-                    //error message needed
-                    break;
+                    Console.WriteLine("Please enter a string with length greater than zero and less than or equal to "+maxLength);
+                    continue;
                 }
-                foreach (var item in validChars)
+                foreach (var item in inValidChars)
                 {
                     if (userString.Contains(item))
                     {
@@ -331,31 +359,38 @@ namespace RetailApplication.View
             return userString;
         }
 
-        public TimeOnly GetTimeInput()//NO VALIDATION.
+        //This method returns a TimeOnly value. The user is prompted for a time in 24-hour format. The input string is checked with a regular expression, before being converted to a TimeOnly.
+        public static TimeOnly GetTimeInput()
         {
             string userString;
-            bool validString = true;
-            Console.WriteLine("Please enter a time in the format xx:yy:zz A/PM");
+            bool validString;
+            Console.WriteLine("Please enter a time in the format hh:mm:ss (24-hour time)");
             do
             {
+                validString = true;
                 userString = Console.ReadLine();
                 if (string.IsNullOrEmpty(userString))
                 {
                     validString = false;
-                    //errormessage here
+                    Console.WriteLine("Error: No string was input. Try again.");
                 }
-                //try get a date/time input here. Format:xx:yy:zz aM where xx<=12>=0,59>=yy>=0, 0<=zz<=59
-                //IGNORE FOR NOW
+                else if (!Regex.IsMatch(userString, "([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]") || userString.Length > 8)//If the user input does not match the specified pattern or has a length greater than 8, it is not valid.
+                {
+                    validString = false;
+                    Console.WriteLine("Error: The input string is not in the correct format. Please enter a time in the format hh:mm:ss (24-hour time)");
+                }
+
             } while (!validString);
 
 
             return TimeOnly.FromDateTime(Convert.ToDateTime(userString));
         }
 
-        public DayOfWeek GetDayOfWeekInput()
+        //This method prompts the user to choose one of the days of the week by inputting a number. The metho then returns the corresponding Day of Week.
+        public static DayOfWeek GetDayOfWeekInput()
         {
-            DayOfWeek returnDay=DayOfWeek.Monday;//Only set so the compiler knows this has a value- this is not a default value.
-            Console.WriteLine("Please enter a day of week. This is one of:");
+            DayOfWeek returnDay;
+            Console.WriteLine("Please select a day of week. This is one of:");
             Console.WriteLine("Monday[0]");
             Console.WriteLine("Tuesday[1]");
             Console.WriteLine("Wednesday[2]");
@@ -363,16 +398,8 @@ namespace RetailApplication.View
             Console.WriteLine("Friday[4]");
             Console.WriteLine("Saturday[5]");
             Console.WriteLine("Sunday[6]");
-                /*userString = Console.ReadLine();
-                if (string.IsNullOrEmpty(userString))
-                {
-                    validString = false;
-                    //errormessage here
-                    continue;
-                }*/
-                //try get a dayofweek here
                 
-                switch (GetIntegerInput(6,0))
+                switch (GetIntegerInput(6, 0))
                 {
                     case 0:
                         returnDay = DayOfWeek.Monday;
@@ -413,14 +440,14 @@ namespace RetailApplication.View
             return false;
         }
 
-        //This method handles input that changes the page the user is on. The extInput parameter allows characters the user entered when not 
+        //This method handles input that changes the page the user is on. The extInput parameter allows characters the user entered when a different method had control to be processed, but is currently unused.
         public int GetUserPageChangeValue(char? extInput, out int genericValue)
         {
             int outInt = 0;
             char? a;
             if (extInput.HasValue)
             {
-                a = extInput;
+                a = extInput;//This block cannot currently be triggered. It is designed to handle cases where user input is collected outside this method.
                 goto userInputSkipped;
             }
 
@@ -483,6 +510,7 @@ namespace RetailApplication.View
                     }
                     break;
                 default:
+                    //The default(which should not occur due to input validation in HandleCharInput) sends the user to the main menu
                     genericValue = 0;
                     break;
             }
@@ -497,7 +525,7 @@ namespace RetailApplication.View
         {
             optionsOnPage = 0;
             Console.Title = MAINMENU_TITLE;
-            Console.Clear();
+            ClearScreen();
             switch (userPerLevel)
             {
                 case 1:
@@ -513,7 +541,7 @@ namespace RetailApplication.View
                     this.DisplayPer4MainMenu();
                     break;
                 default:
-                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
+                    DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -552,7 +580,7 @@ namespace RetailApplication.View
         {
             optionsOnPage = 0;
             Console.Title = CREATEMENU_TITLE;
-            Console.Clear();
+            ClearScreen();
             switch (userPerLevel)
             {
                 case 1:
@@ -568,7 +596,7 @@ namespace RetailApplication.View
                     this.DisplayPer4InsertMenu();
                     break;
                 default:
-                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
+                    DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -633,7 +661,7 @@ namespace RetailApplication.View
         {
             optionsOnPage = 0;
             Console.Title = UPDATEMENU_TITLE;
-            Console.Clear();
+            ClearScreen();
             switch (userPerLevel)
             {
                 case 2:
@@ -646,7 +674,7 @@ namespace RetailApplication.View
                     this.DisplayPer4UpdateMenu();
                     break;
                 default:
-                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
+                    DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -703,7 +731,7 @@ namespace RetailApplication.View
         {
             optionsOnPage = 0;
             Console.Title = "Delete Records";
-            Console.Clear();
+            ClearScreen();
             switch (userPerLevel)
             {
                 
@@ -714,7 +742,7 @@ namespace RetailApplication.View
                     this.DisplayPer4DeleteMenu();
                     break;
                 default:
-                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
+                    DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -761,7 +789,7 @@ namespace RetailApplication.View
         {
             optionsOnPage = 0;
             Console.Title = REPORTMENU_TITLE;
-            Console.Clear();
+            ClearScreen();
             switch (userPerLevel)
             {
                 case 1:
@@ -777,7 +805,7 @@ namespace RetailApplication.View
                     this.DisplayPer4ReportMenu();
                     break;
                 default:
-                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
+                    DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -787,22 +815,31 @@ namespace RetailApplication.View
 
         public void DisplayPer1ReportMenu()
         {
-            //Add text to display here, specific to users with a per level of 1
-            Console.WriteLine(PER2MENUOPTIONS);
+            //The text to display here, specific to users with a per level of 1
+            Console.WriteLine(PER1MENUOPTIONS);
             Console.WriteLine(OPTIONSMESSAGE);
+            Console.WriteLine($"All employee shifts({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All employee permission levels({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Employee Pay({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All Permission Levels({optionsOnPage})");optionsOnPage++;
             PageNum = 14;
         }
         public void DisplayPer2ReportMenu()
         {
-            //Add text to display here, specific to users with a per level of 2
+            //The text to display here, specific to users with a per level of 2
+            Console.WriteLine(PER1MENUOPTIONS);
             Console.WriteLine(OPTIONSMESSAGE);
-
-
+            Console.WriteLine($"All employee shifts({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All employee permission levels({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Employee Pay({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All product orders({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All product stocks({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All Permission Levels({optionsOnPage})"); optionsOnPage++;
             PageNum = 15;
         }
         public void DisplayPer3ReportMenu()
         {
-            //Add text to display here, specific to users with a per level of 3
+            //The text to display, specific to users with a per level of 3
             Console.WriteLine(PER3MENUOPTIONS);
             Console.WriteLine(OPTIONSMESSAGE);
             Console.WriteLine($"All product orders({optionsOnPage})"); optionsOnPage++;
@@ -813,11 +850,15 @@ namespace RetailApplication.View
             Console.WriteLine($"All employee permission levels({optionsOnPage})"); optionsOnPage++;
             Console.WriteLine($"Employee Pay({optionsOnPage})"); optionsOnPage++;
             Console.WriteLine($"All product stocks({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Product Providers({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All Store Hours({optionsOnPage})");optionsOnPage++;
+            Console.WriteLine($"All Employees({optionsOnPage})");optionsOnPage++;
+            Console.WriteLine($"All Permission Levels({optionsOnPage})"); optionsOnPage++;
             PageNum = 16;
         }
         public void DisplayPer4ReportMenu()
         {
-            //The text to display, specific to users with a per level of 4
+            //The text to display, specific to users with a per level of 4(currently the same as for a PerLevel of 3)
             Console.WriteLine(PER4MENUOPTIONS);
             Console.WriteLine(OPTIONSMESSAGE);
             Console.WriteLine($"All product orders({optionsOnPage})"); optionsOnPage++;
@@ -828,6 +869,10 @@ namespace RetailApplication.View
             Console.WriteLine($"All employee permission levels({optionsOnPage})"); optionsOnPage++;
             Console.WriteLine($"Employee Pay({optionsOnPage})"); optionsOnPage++;
             Console.WriteLine($"All product stocks({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"Product Providers({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All Store Hours({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All Employees({optionsOnPage})"); optionsOnPage++;
+            Console.WriteLine($"All Permission Levels({optionsOnPage})"); optionsOnPage++;
             PageNum = 17;
         }
 
@@ -837,7 +882,7 @@ namespace RetailApplication.View
         {
 
             Console.Title = HELP_TITLE;
-            Console.Clear();
+            ClearScreen();
             switch (userPerLevel)
             {
                 case 1:
@@ -853,7 +898,7 @@ namespace RetailApplication.View
                     this.DisplayPer4Help();
                     break;
                 default:
-                    this.DisplayMessage(INVALIDPERLEVELMESSAGE);
+                    DisplayMessage(INVALIDPERLEVELMESSAGE);
                     //Current handling of this error insufficient
                     break;
             }
@@ -862,36 +907,34 @@ namespace RetailApplication.View
 
         public void DisplayPer1Help() 
         {
-            //Add header here
-            //Add text to display here, specific to users with a per level of 1. This text should help explain how the website works and what they can and cannot do.
             Console.WriteLine(PER1MENUOPTIONS);
             Console.WriteLine("RULE ONE OF THIS SYSTEM: This system is unforgiving. Double-check all of your inputs and choices before entering.");
+            Console.WriteLine("Remember to press O before trying to select a numbered option");
+            Console.WriteLine("Remember that unless stated otherwise, no numeric field accepts negative input.");
             PageNum = 18;
         }
         public void DisplayPer2Help()
         {
-            //Add header here
-            //Add text to display here, specific to users with a per level of 2. This text should help explain how the website works and what they can and cannot do.
             Console.WriteLine(PER2MENUOPTIONS);
             Console.WriteLine("RULE ONE OF THIS SYSTEM: This system is unforgiving. Double-check all of your inputs and choices before entering.");
+            Console.WriteLine("Remember to press O before trying to select a numbered option");
+            Console.WriteLine("Remember that unless stated otherwise, no numeric field accepts negative input.");
             PageNum = 19;
         }
         public void DisplayPer3Help()
         {
-            //Add header here
-            //Add text to display here, specific to users with a per level of 3. This text should help explain how the website works and what they can and cannot do.
             Console.WriteLine(PER3MENUOPTIONS);
             Console.WriteLine("RULE ONE OF THIS SYSTEM: This system is unforgiving. Double-check all of your inputs and choices before entering.");
-            //Console.WriteLine("If ");
+            Console.WriteLine("Remember to press O before trying to select a numbered option");
+            Console.WriteLine("Remember that unless stated otherwise, no numeric field accepts negative input.");
             PageNum = 20;
         }
         public void DisplayPer4Help()
         {
-            //Add header here
-            //Add text to display here, specific to users with a per level of 4. This text should help explain how the website works and what they can and cannot do.
             Console.WriteLine(PER4MENUOPTIONS);
             Console.WriteLine("RULE ONE OF THIS SYSTEM: This system is unforgiving. Double-check all of your inputs and choices before entering.");
-            //Console.WriteLine("When ");
+            Console.WriteLine("Remember to press O before trying to select a numbered option");
+            Console.WriteLine("Remember that unless stated otherwise, no numeric field accepts negative input.");
             PageNum = 21;
         }
 
@@ -909,9 +952,9 @@ namespace RetailApplication.View
             int listIndex;
 
             //DisplayRecords clears the console before displaying
-            List<string[]> stringRecords=new List<string[]> { };
+            List<string[]> stringRecords=[];
             Type listType = typeof(T);
-            PropertyInfo[] fieldInfo= listType.GetProperties();//now needs to return the actual ToString values of those fields
+            PropertyInfo[] fieldInfo= listType.GetProperties();//Gets information about all the public properties of the specified type
            
             foreach (var record in recordList)
             {
@@ -919,55 +962,43 @@ namespace RetailApplication.View
                 int i = 0;
                 foreach (var field in fieldInfo)
                 {
-                   stringRecord[i]= field.GetValue(record).ToString();
+                   stringRecord[i]= field.GetValue(record).ToString();//Converts records to string representation
                     i++;
                 }
                 stringRecords.Add(stringRecord);
-                //converts records to string representation
             }
-            //could make this a method e.g. FormatRecordsToStrings
 
             do
             {
-               listIndex= DisplayRecordOptions(stringRecords, tableColumns);
-                idsToUpdate.Add((int)fieldInfo[0].GetValue(recordList[listIndex]));
-                string[] raworiginalRecord = stringRecords.Find(x => x[0].Equals(idsToUpdate.Last().ToString()));
-                string originalRecord =String.Join(" | ",raworiginalRecord);
+               listIndex= DisplayRecordOptions(stringRecords, tableColumns);//Displays the records and returns the index of the record to modify. 
+                idsToUpdate.Add((int)fieldInfo[0].GetValue(recordList[listIndex]));//Gets the database identifier of the record, using the specified listIndex and the fieldInfo previously specified for the type.
+                string[] raworiginalRecord = stringRecords.Find(x => x[0].Equals(idsToUpdate.Last().ToString()));//Finds the stringRecord with the specified idToUpdate(guaranteed to be the last idToUpdate)
+                string originalRecord =String.Join(" | ",raworiginalRecord);//Joins the stringRecord to be in the format: (field1) | (field2) | (field3) | ...(fieldn)
                 Console.WriteLine("Original record: "+originalRecord);
                 //here get column and new value
-                //get each non-ID field and display with options. get value from user and assign to colNamesToUpdate.(method needed)
                 Console.WriteLine("Please pick a field to modify:");
                 string[] fieldNames = new string[fieldInfo.Length - 1];
-                for (int i = 1; i < fieldInfo.Length; i++)
+                for (int i = 1; i < fieldInfo.Length; i++)//Gets the field names of the record being updated using fieldInfo. Note that the first(ID) column cannot be updated and therefore is not obtained or shown.
                 {
                     fieldNames[i - 1] = fieldInfo[i].Name;
                 }
-                DisplayTableFieldOptions(fieldNames);//needs to actually get the input of the column
-                //get datatype-dependent value from user and assign to newValues(method needed)
-                int optionInt= GetIntegerInput(optionsOnPage,0);
+                DisplayTableFieldOptions(fieldNames);//Displays the options for which column to update
+                int optionInt= GetIntegerInput(optionsOnPage-1,0);//Gets the user input for which column to update
                 colNamesToUpdate.Add(fieldNames[optionInt]);
-                newValues.Add(GetTypeSpecificInputAsString(fieldInfo[optionInt+1]));
+                newValues.Add(GetTypeSpecificInputAsString(fieldInfo[optionInt+1]));//Gets user input specific to the type of the column.
 
                 continueUpdating = GetYesNoInput("Select more records to update?[Y/N]");
             } while (continueUpdating);
-            //could show records and changes, prompting users to confirm.
 
-            colNames = colNamesToUpdate;
+            colNames = colNamesToUpdate;//Assigns out parameters and returns to main program.
             newVals = newValues;
             return idsToUpdate;
-            //-re-retrieve record using these values((pagenumber-1)*(records/page)+i where inputval=x for the xth record on the page.
-
-            //Get user input for which record to modify(done)
-            //get user input for which column to modify
-            //allow user to input literal to modify column in record to
-            //perform input validation on literal
-            //exit when valid literal aquired
-
         }
 
+        
         private string GetTypeSpecificInputAsString(PropertyInfo fieldInfo)
         {
-            Dictionary<Type, int> typeTable = new Dictionary<Type, int> { { typeof(Int32), 0 }, { typeof(String), 2 } ,{typeof(TimeOnly),3 },{ typeof(DateOnly),4},{typeof(decimal),5 },{typeof(DateTime),6 },{typeof(DayOfWeek),7 },{typeof(bool),8 } };
+            Dictionary<Type, int> typeTable = new Dictionary<Type, int> { { typeof(Int32), 0 }, {typeof(Int16),1 }, { typeof(String), 2 } ,{typeof(TimeOnly),3 },{ typeof(DateOnly),4},{typeof(decimal),5 },{typeof(DateTime),6 },{typeof(DayOfWeek),7 },{typeof(bool),8 },{typeof(byte),9 } };
             Type fieldtype = fieldInfo.GetType();
             switch (typeTable[fieldInfo.PropertyType])
             {
@@ -976,22 +1007,22 @@ namespace RetailApplication.View
                     return GetIntegerInput(Int32.MaxValue,1).ToString();//Int32
                 case 1:
                     Console.WriteLine("Enter an integer greater than 0 and less than 32768");
-                    return GetIntegerInput(32767,1).ToString();//Int16
+                    return GetShortIntegerInput(Int16.MaxValue,1).ToString();//Int16
                 case 2:
-                    Console.WriteLine($"Enter text with a maximum length of: {fieldInfo.GetCustomAttribute<StringLengthAttribute>().MaximumLength} characters");
+                    Console.WriteLine($"Enter text with a maximum length of {fieldInfo.GetCustomAttribute<StringLengthAttribute>().MaximumLength} characters");
                     return GetStringInput([], fieldInfo.GetCustomAttribute<StringLengthAttribute>().MaximumLength);//String
                 case 3:
                     //Prompting handled within method
                     return GetTimeInput().ToString("hh:mm:ss");//Time
                 case 4:
                     Console.WriteLine("Field Autofilled");
-                    return DateTime.Today.ToString();//Date(does not need to be updated due to being used for record-keeping purposes)(is updated automatically to DateTime.Now because I have no time to deal with this)
+                    return DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd");//Date(does not need to be updated due to being used only for record-keeping purposes)
                 case 5:
-                    Console.WriteLine("Please enter a decimal no larger than 9999. Any decimal places beyond two will be rounded.");
-                    return GetDecimalInput(9999,2).ToString();//decimal
+                    Console.WriteLine("Please enter a decimal no larger than 99999. Any decimal places beyond two will be rounded.");
+                    return GetDecimalInput(99999,2).ToString();//decimal
                 case 6:
                     Console.WriteLine("Field Autofilled");
-                    return DateTime.Now.ToString();//DateTime(should not be updated due to only being used in timestamps)
+                    return DateTime.Now.ToString("O");//DateTime(should not be updated due to only being used in timestamps)
                 case 7:
                     //Prompting handled within method
                     return GetDayOfWeekInput().ToString();//DayofWeek
@@ -1000,12 +1031,15 @@ namespace RetailApplication.View
                     bool boolInput= GetYesNoInput("Please enter a boolean value[Y=true,N=false]");
                     if (boolInput)
                     {
-                        return "1";//bool
+                        return "1";//boolean true
                     }
                     else
                     {
-                        return "0";//bool
+                        return "0";//boolean false
                     }
+                case 9:
+                    Console.WriteLine("Please enter a number no greater than 255");
+                    return GetByteInput().ToString();
                 default:
                     return "";
             }
@@ -1013,15 +1047,15 @@ namespace RetailApplication.View
        
 
 
-
+        //This method displays the page for record deletion(for records of type T), prompts the user for which records to delete, and returns a list of the corresponding Ids.
         public List<int> DisplayDeleteRecordsPage<T>(string[] tableColumns, List<T> recordList) where T:class
         {
             Console.Title="Delete Records";
             bool continueDeleting;
             List<int> idsToDelete= [] ;
-            List<string[]> stringRecords = new List<string[]> { };
-            Type listType = typeof(T);
-            PropertyInfo[] fieldInfo = listType.GetProperties();//now needs to return the actual string values of those fields
+            List<string[]> stringRecords = [];
+            Type listType = typeof(T);//The type of recordList
+            PropertyInfo[] fieldInfo = listType.GetProperties();//Gets the properties of the type that recordList is a list of.
 
             foreach (var record in recordList)
             {
@@ -1029,13 +1063,12 @@ namespace RetailApplication.View
                 int i = 0;
                 foreach (var field in fieldInfo)
                 {
-                    stringRecord[i] = field.GetValue(record).ToString();
+                    stringRecord[i] = field.GetValue(record).ToString();//Converts records to string representation so they can be displayed
                     i++;
                 }
                 stringRecords.Add(stringRecord);
-                //converts records to string representation
             }
-            Console.WriteLine("");
+            Console.WriteLine();//Adds a line of whitespace to the console
             do
             {
                 int listIndex = DisplayRecordOptions(stringRecords, tableColumns);
@@ -1043,45 +1076,42 @@ namespace RetailApplication.View
                 //this uses reflection to get the actual ID from the record using the list index.
                 continueDeleting = GetYesNoInput("Select more records to delete?[Y/N]");
             } while (continueDeleting);
-            //could prompt user for confirmation to delete records
 
-            //This returns the IDs of the records to delete
-            return idsToDelete;
-            //code block functional but untested
+            return idsToDelete;  //This returns the IDs of the records to delete
         }
 
 
-
+        //This method displays the page for and gets records to insert from the user, returning a List<object[]> of records to insert. Each object in an object[] represents a field in a record.
+        //This method has no awareness of the actual fields of the database. It should be modified in a future update to allow this
         public List<object[]> DisplayInsertRecordsPage(string[] columnNames, byte[] columnDatatypes)
         {
-            Console.Clear();
+            ClearScreen();
             Console.Title = "Insert Records";
-            List<object[]> recordsToInsert = new List<object[]> { };
+            List<object[]> recordsToInsert = [];
             bool addMoreRecords;
+
             Console.WriteLine($"The columns are:");
-            for (int j = 1; j < columnNames.Length; j++)//loops through and prints all of the non-Primary Key columns(PK column should always be first)
+            for (int j = 1; j < columnNames.Length; j++)//loops through and prints all of the non-Primary Key columns(PK column is always first)
             {
                 Console.Write(columnNames[j]+"  ");
             }
             Console.WriteLine();
-            do
+            do//Main loop for getting records to insert
             {
-                object[] fields = new object[columnDatatypes.Length-1];
+                object[] fields = new object[columnDatatypes.Length-1];//Creates an array representing a record
                 int i = -1;
                 foreach (var column in columnDatatypes)
                 {
 
-                    //gets input from the user dependent on the datatype; date/time fields are handled automatically
-                    //should print text prompting the user to enter data
-                    if (i==-1)
+                    if (i==-1)//This skips the first (Primary Key) column, since the primary key is added automatically by the database.
                     {
                         goto skipInput;
                     }
-                    switch (column)
+                    switch (column)//columnDatatypes uses numbers to represent different datatypes.
                     {
                         case 0:
                             Console.WriteLine("Please enter an integer(Int32):");
-                            fields[i] = GetIntegerInput(int.MaxValue,0);//needs checking for validity
+                            fields[i] = GetIntegerInput(int.MaxValue,1);//Minvalue of one prevents the user from setting a foreign key balue as zero(invalid), but also prevents other int32 values such as the RmnStock column in tblStockLevel from being created with value of zero, which is not ideal.
                             break;
                         case 1:
                             Console.WriteLine("Please enter an integer(Int16):");
@@ -1089,17 +1119,16 @@ namespace RetailApplication.View
                             break;
                         case 2:
                             Console.WriteLine("Please enter a string:");
-                            fields[i] = GetStringInput([], 0);//needs a way to get the max length and valid characters
+                            fields[i] = GetStringInput([], 75);//needs a way to get the max length and invalid characters. Address in future update.
                             break;
                         case 3:
                             //time
-                            fields[i] = TimeOnly.FromDateTime(DateTime.Now);//Not ideal, since the time is not the same as when the record is actually saved.
-                            Console.WriteLine("Field autofilled");
+                            fields[i] = GetTimeInput();//Gets an error-corrected time value
                             break;
                         case 4:
                             //date
                             Console.WriteLine("Field autofilled");
-                            fields[i] = DateOnly.FromDateTime(DateTime.Now);//Should be fine
+                            fields[i] = DateOnly.FromDateTime(DateTime.Now);
                             break;
                         case 5:
                             //decimal
@@ -1109,13 +1138,11 @@ namespace RetailApplication.View
                         case 6:
                             //Date+time
                             Console.WriteLine("Field autofilled");
-                            fields[i] = DateTime.Now;//this and other time fields should be the last thing to be done
+                            fields[i] = DateTime.Now;//Autofills timestamp values with the current system date and time.
                             break;
                         case 7:
                             //Day of week
-                            //automatically handled by system. Returns an integer from 0-6 inclusive(Sunday-Saturday). Use ToString to make it a day name before assigning.
-                            Console.WriteLine("Field autofilled");
-                            fields[i] = DateTime.Now.DayOfWeek;
+                            fields[i] =GetDayOfWeekInput();
 
                             break;
                         case 8:
@@ -1124,12 +1151,12 @@ namespace RetailApplication.View
                             Console.WriteLine("Field autofilled");
                             fields[i] = false;
                             break;
+                        case 9:
+                            Console.WriteLine("Please enter a number no greater than 255");
+                            fields[i] =GetByteInput();
+                            break;
                         default:
                             break;
-                            //all need to be assigned to variables
-                            //autofill current store using current time, day of week, logged-in employee, to find empshift then find storeID of empshift(needs exception handing)
-                            //challenge: how to make compiler realise that fields will be valid.
-                            //challenge: how to ensure type requirements are met.
                     }
                 skipInput:
                     i++;
@@ -1144,12 +1171,13 @@ namespace RetailApplication.View
 
         public byte[] ConcealTypedField()
         {
-            //This method will obscure the password field when the employee logs in
-            //Will get and store each character, replace it with a *, allow mid-string replacement of characters(FIRST PART)
+            //This method obscures the password field when the employee logs in
+            //Gets and stores each character pressed, replacing it with a * on the console.
+            //Allows editing of password as it is being written.
             //Checked for matching string with .Equals outside this method
-            List<char> password = new List<char>();//A list is used due to its variable length
+            List<char> password = [];//A list is used due to its variable length
             char buffer;
-            Console.SetCursorPosition(Console.GetCursorPosition().Left, Console.GetCursorPosition().Top + 1);//Moves the cursor down one row.
+            Console.SetCursorPosition(Console.GetCursorPosition().Left, Console.GetCursorPosition().Top + 1);//Moves the cursor down one row. This is done to put the cursor in the correct part of the login screen.
             do
             {
                 buffer = Console.ReadKey(true).KeyChar;//This gets the inputted character without it being printed to the console
@@ -1165,8 +1193,7 @@ namespace RetailApplication.View
                         if (password.Count > 0)//This conditional prevents a System.ArgumentOutOfRangeException that could occur if the user pressed backspace when the password had length=0.
                         {
                             password.RemoveAt(password.Count - 1);//Removes the previous character in the list
-                            Console.Write('\b');
-
+                            Console.Write('\b');//Moves the cursor one space to the left
                         }
                         break;
                     default:
@@ -1187,15 +1214,12 @@ namespace RetailApplication.View
                 //The length-unfixed List<char> is converted to a byte[] to format it for hashing
             }
             return bytepassword;
-            //This is the current version of the method. There are currently two identified problems:
-            //1: Pressing backspace now changes the position of the cursor, but does not remove the *.(This functionality is availible automatically when using Console.ReadLine, but obsfuscating the characters becomes harder.
-            //2: The arrow keys do not move the cursor within the console(potentially beyond project scope to fix)
 
         }
 
 
-        //This method displays the fields in a user-chosen table, labelled with the generic option characters.
-        public void DisplayTableFieldOptions(string[] columnNames)
+        //This method displays the fields in a user-chosen table, labelled with generic option numbers.
+        public static void DisplayTableFieldOptions(string[] columnNames)
         {
             optionsOnPage = 0;
             try
@@ -1209,8 +1233,7 @@ namespace RetailApplication.View
             catch (IndexOutOfRangeException)
             {
                 Console.WriteLine(TOOMANYOPTIONSMESSAGE);
-                //This exception will occur if there are more columns in the table than generic option characters.
-                throw;
+                //
             }
         }
 
@@ -1226,11 +1249,10 @@ namespace RetailApplication.View
             int maxRecordsOnPage = 0;//Ideally a more elegant solution would be used. Having to define and use two variables is not ideal.
             int recordsOnPage;
             List<int> maxColumnLengths = GetMaxColumnLengths(records, columnHeadings);
-            records.RemoveAt(records.Count - 1);
             //Main pagination loop
             do
             {
-                Console.Clear();
+                ClearScreen();
                 for (int j = 0; j < columnHeadings.Length; j++)
                 {
                     Console.Write(columnHeadings[j].PadRight(maxColumnLengths[j] + 1));//Prints and left-aligns the column headings.
@@ -1241,7 +1263,7 @@ namespace RetailApplication.View
                 {
                     do
                     {
-                        for (int j = 0; j < records[i].Length; j++)
+                        for (int j = 0; j < records[i].Length; j++)//Loops through all the fields in a record
                         {
                             Console.Write(records[i][j].PadRight(maxColumnLengths[j] + 1));
                             //Prints one field in the record, followed by a space. If the field is shorter than the corresponding column heading, the space to the right of the text will be padded with spaces to make up the difference.
@@ -1266,26 +1288,26 @@ namespace RetailApplication.View
                 //Gets user input for what to do next.
             RetryInput:
                 char userkey = Console.ReadKey(true).KeyChar;
-                if (userkey == '\r' && (i < records.Count))
+                if (userkey == '\r' && (i < records.Count))//Cannot evaluate to true if the report is on the last page
                 {
                     outputPageNum++;
                     exitReport = false;
                     //Goes to next page if Enter key is pressed
                 }
-                else if (userkey == '\b' && outputPageNum > 1)
+                else if (userkey == '\b' && outputPageNum > 1)//Cannot evaluate to true if the report is on the first page
                 {
                     i -= (recordsOnPage + maxRecordsOnPage);
                     outputPageNum--;
                     exitReport = false;
                     //Goes to previous page if Backspace is pressed
                 }
-                else if (userkey == '\b' || userkey == '\r')//This case occurs when the user presses a page increment/decrement key but they are already at the maximum/minimum page number.
-                {
-                    goto RetryInput;//Instead of reprinting the page, input is retried.
-                }
-                else
+                else if (userkey == '\e')//Exits the report if Esc is pressed
                 {
                     exitReport = true;
+                }
+                else//This statement includes the cases where the user presses either Backspace or Enter, but the report is already on the minimum or maximum page respectively
+                {
+                    goto RetryInput;//Instead of reprinting the page, input is retried.
                 }
             } while (!exitReport);
 
@@ -1294,7 +1316,7 @@ namespace RetailApplication.View
         //This method gets the maximum column lengths from a List<string[]>. The column lengths are returned as a List<int>, and are used to align the columns when displayed to the console.
         public static List<int> GetMaxColumnLengths(List<string[]> table, string[] headings)
         {
-            table.Add(headings);
+            table.Add(headings);//Adds the column headings to the list.
             // Source - https://stackoverflow.com/a/32716864
             // Posted by Tim Schmelter, modified by community. See post 'Timeline' for change history
             // Retrieved 2026-08-27, License - CC BY-SA 3.0
@@ -1302,44 +1324,44 @@ namespace RetailApplication.View
                 .Select(i => table.Max(arr => arr[i].Length))
                 .ToList();
             //selects and assigns to a List<int> the greatest string length of each column.
+            table.RemoveAt(table.Count - 1);//Removes the column headings from the list, so they do not show up as a record.
             return Result;
         }
 
 
-        //this method is used for both update and delete functions
-        public int DisplayRecordOptions(List<string[]> records, string[]columnHeadings)
+        //this method is used for both update and delete functions, displaying records in left-aligned columns. Pagination is supported. This method returns the list index of the record the user selects.
+        public static int DisplayRecordOptions(List<string[]> records, string[]columnHeadings)
         {
-            //return an integer representing the list index of the chosen record.
-            int i = 0;
-            int outputPageNum = 1;
+            int i = 0;//This number represents the index of the next record to display.
+            int outputPageNum = 1;//This number is used as the page number
             bool makeInput;
-            int maxRecordsOnPage = 0;//Ideally a more elegant solution would be used. Having to define and use two variables is not ideal.
-            int recordsOnPage;
-            List<int> maxColumnLengths = GetMaxColumnLengths(records, columnHeadings);
-            records.RemoveAt(records.Count - 1);
+            int maxRecordsOnPage = 0;//Used to calculate operations involving pages
+            List<int> maxColumnLengths = GetMaxColumnLengths(records, columnHeadings);//Gets the maximum width of columns and their headings
+
             //Main pagination loop
             do
             {
-                Console.Clear();//This block clears the console, prints the column names, and moves two lines down.
-                optionsOnPage = 0;
+                //This block clears the console, prints the column names, and moves two lines down.
+                ClearScreen();
+                optionsOnPage = 0;//This is true, since the console has just been cleared.
                 for (int j = 0; j < columnHeadings.Length; j++)
                 {
                     Console.Write(columnHeadings[j].PadRight(maxColumnLengths[j] + 1));//Prints and left-aligns the column headings.
                 }
-                Console.WriteLine("\n");                recordsOnPage = 0;
+                Console.WriteLine("\n");
+
                 try
                 {
                     do
                     {
-                        for (int j = 0; j < records[i].Length; j++)
+                        for (int j = 0; j < records[i].Length; j++)//Cycles through every field in the record
                         {
                             Console.Write(records[i][j].PadRight(maxColumnLengths[j] + 1));
                             //Prints one field in the record, followed by a space. If the field is shorter than the corresponding column heading, the space to the right of the text will be padded with spaces to make up the difference.
                             //Note: This method of printing records does not currently allow using the foreign key connections
                         }
-                        Console.WriteLine($"[{recordsOnPage}]");
+                        Console.WriteLine($"[{optionsOnPage}]");//Prints the number the user will use to select records and moves to the next line.
                         i++;
-                        recordsOnPage++;
                         optionsOnPage++;
                     } while (Console.CursorTop < (Console.BufferHeight - 2) && i < records.Count);//Stops printing records one line above the bottom of the buffer.
 
@@ -1347,29 +1369,27 @@ namespace RetailApplication.View
                 catch (ArgumentOutOfRangeException e)
                 {
                     Console.WriteLine($"Error:{e.Message}");
-                    throw;
                 }
                 if (outputPageNum == 1)
                 {
-                    maxRecordsOnPage = i;
+                    maxRecordsOnPage = i;//Since the first page is printed, the maximum possible number of records for this table is now on screen
                 }
                 Console.WriteLine($"Page {outputPageNum} of {Math.Ceiling((double)records.Count / maxRecordsOnPage)}\t\t<-Backspace   Enter->  Chose record:O");
             RetryInput:
-                char userkey = Console.ReadKey(true).KeyChar;
-                if (userkey == '\r' && (i < records.Count))
+                char userkey = Console.ReadKey(true).KeyChar;//Gets a character from the user
+                if (userkey == '\r' && (i < records.Count))//Enter increments the page if there are still more records to display
                 {
                     outputPageNum++;
                     makeInput = false;
                 }
-                else if (userkey == '\b' && outputPageNum > 1)
+                else if (userkey == '\b' && outputPageNum > 1)//Backspace decrements the page if the page is not the first page
                 {
-                    i -= (recordsOnPage + maxRecordsOnPage);
+                    i -= (optionsOnPage + maxRecordsOnPage);
                     outputPageNum--;
                     makeInput = false;
                 }
-                else if (userkey == 'o' || userkey == 'O')
+                else if (userkey == 'o' || userkey == 'O')//O allows the user to choose a record on the current page
                 {
-                    //return GetIntegerInput(recordsOnPage);
                     makeInput = true;
                 }
                 else//This case can occur when the user presses a page increment/decrement key but they are already at the maximum/minimum page number.
@@ -1377,11 +1397,11 @@ namespace RetailApplication.View
                     goto RetryInput;//Instead of reprinting the page, input is retried.
                 }
             } while (!makeInput);//End main pagination loop
-            //((pagenumber-1)*(records/page)+i
-            int userValue= (GetIntegerInput(recordsOnPage-1,0));//this returns the list index of the record the user selected
-            return ((outputPageNum - 1) * maxRecordsOnPage) + userValue;
-            //needs to have a way to simply escape the update/delete page and allow normal character input
+
+            int userValue= (GetIntegerInput(optionsOnPage-1,0));//Gets the option for the record to update from the user
+            return ((outputPageNum - 1) * maxRecordsOnPage) + userValue;//This returns the list index of the record the user selected
         }
+
 
         //This region contains currently-unused code for allowing the user to parameterise what reports return.
         #region Parameterisation
@@ -1398,13 +1418,12 @@ namespace RetailApplication.View
             char userKey;
             int charOptionNumber = 0;
             string finalParameters = "";
-            //This block prints each column in the tables that the query uses, along with a character allowing the choice of that column.
+            //This block prints each column in the tables that the query uses, along with a number allowing the choice of that column.
             try
             {
                 foreach (var table in queryTables[querynum])
                 {
                     DisplayTableFieldOptions(columnNames[table]);
-
 
                 }
             }

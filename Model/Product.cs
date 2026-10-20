@@ -12,11 +12,11 @@ namespace RetailApplication.Model
         public int ProductID { get; }
         public int ProviderID { get; }
         [StringLength(75)]
-        public string ProductName { get; set; }//ProductName has a maximum length of 50 characters
+        public string ProductName { get; set; }//ProductName has a maximum length of 75 characters
         public Decimal CustomerPrice { get; set; }
         public Decimal SupplyPrice { get; set; }
         [StringLength(8)]
-        public string Amount { get; set; }//Amount has a maximum length of 7 characters
+        public string Amount { get; set; }//Amount has a maximum length of 8 characters
 
         public Product(int productId, int providerId, string productName, decimal customerPrice, decimal supplyPrice, string amount)
         {
